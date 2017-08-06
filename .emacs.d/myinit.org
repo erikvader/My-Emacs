@@ -119,6 +119,12 @@ reflected in the local value.
 
   ;;support för font awesome
   (set-fontset-font "fontset-default" '(#xf000 . #xffff) "Font Awesome")
+
+  (defun backward-symbol (&optional arg)
+   "Move backward until encountering the beginning of a symbol.
+  With argument, do this that many times."
+   (interactive "p")
+   (forward-symbol (- (or arg 1))))
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -206,6 +212,7 @@ reflected in the local value.
     (not (lxor a b)))
 
   (defun is-boundary (char)
+    "Checks whether char is a space, newline or tab"
     (or
      (= char 32) ;;space
      (= char 10) ;;newline
@@ -915,30 +922,54 @@ All default keybindings have been commented out in the source file 'auto-complet
                           (bookmarks . 5)
                           (projects . 5)))
 #+end_src
-* eriks smart delete stuff
+* eriks smart delete stuff o copy
 #+begin_src emacs-lisp :tangle yes
   (defun eriks-delete-backward ()
     (interactive)
     (let ((c (preceding-char)))
-      (if (or
-           (= 32 c)
-           (= 9 c)
-           (= 10 c))
+      (if (is-boundary c)
           (hungry-delete-backward 1)
         (sp-backward-delete-word 1))))
 
   (defun eriks-delete-forward ()
     (interactive)
     (let ((c (following-char)))
-      (if (or
-           (= 32 c)
-           (= 9 c)
-           (= 10 c))
+      (if (is-boundary c)
           (hungry-delete-forward 1)
         (sp-delete-word 1))))
 
+  (defun eriks-delete-forward-symbol ()
+    (interactive)
+    (let ((c (following-char)))
+      (if (is-boundary c)
+          (hungry-delete-forward 1)
+        (sp-delete-symbol 1))))
+
+  (defun eriks-delete-backward-symbol ()
+    (interactive)
+    (let ((c (preceding-char)))
+      (if (is-boundary c)
+          (hungry-delete-backward 1)
+        (sp-backward-delete-symbol 1))))
+
   (define-key my-keys-map (kbd "C-<backspace>") 'eriks-delete-backward)
   (define-key my-keys-map (kbd "C-<delete>") 'eriks-delete-forward)
+
+  (defun eriks-duplicate-line ()
+    (interactive)
+    (let* (
+           (b (progn
+                (beginning-of-line)
+                (point)))
+           (e (progn
+                (end-of-line)
+                (point)))
+           (line (buffer-substring b e)))
+      (end-of-line)
+      (newline)
+      (insert line)))
+
+
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -968,13 +999,15 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "W" "M-w")
   (modalka-define-kbd "a" "C-a")
   (modalka-define-kbd "e" "C-e")
-  (modalka-define-kbd "g" "C-g")
+  ;;(modalka-define-kbd "g" "C-g")
   (modalka-define-kbd "y" "C-y")
   (modalka-define-kbd "Y" "M-y")
   (modalka-define-kbd "m" "<C-m>")
   (modalka-define-kbd "M" "C-M-SPC")
 
-  (modalka-define-kbd "c" "M-;")
+  (modalka-define-kbd ";" "M-;")
+
+  (define-key modalka-mode-map (kbd "c") 'eriks-duplicate-line)
 
   ;;vim
   (modalka-define-kbd "h" "C-b")
@@ -989,13 +1022,19 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (modalka-define-kbd "f" "M-f")
   (modalka-define-kbd "b" "M-b")
+  (define-key modalka-mode-map "F" 'forward-symbol)
+  (define-key modalka-mode-map "B" 'backward-symbol)
 
-  (modalka-define-kbd "d d" "C-k")
-  (modalka-define-kbd "d D" "C-M-k")
-  (modalka-define-kbd "d f" "C-<delete>")
-  (modalka-define-kbd "d b" "C-<backspace>")
+  (modalka-define-kbd               "d d" "C-k")
+  (modalka-define-kbd               "d D" "C-M-k")
+  (modalka-define-kbd               "d f" "C-<delete>")
+  (modalka-define-kbd               "d b" "C-<backspace>")
+  (define-key modalka-mode-map (kbd "d F") 'eriks-delete-forward-symbol)
+  (define-key modalka-mode-map (kbd "d B") 'eriks-delete-backward-symbol)
   (define-key modalka-mode-map (kbd "d l") 'eriks-kill-line)
   (define-key modalka-mode-map (kbd "d r") 'delete-region)
+
+
 
   (define-key modalka-mode-map (kbd ".") 'repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
@@ -1006,21 +1045,41 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "O" "C-S-<return>")
   (modalka-define-kbd "+" "C-+")
   (define-key modalka-mode-map (kbd "p") 'hydra-smartparens/body)
+
   (modalka-define-kbd "s" "C-s")
+  (define-key modalka-mode-map (kbd "S") 'swiper-selection)
 
   (modalka-define-kbd "v" "C-v")
   (modalka-define-kbd "V" "M-v")
 
   (modalka-define-kbd "r" "C-r")
-  (modalka-define-kbd "x" "M-x")
+  (modalka-define-kbd "x" "<deletechar>")
+  (modalka-define-kbd "X" "DEL")
 
   ;;avy
-  (define-prefix-command 'modalka-avy-map)
-  (define-key modalka-mode-map (kbd ",") 'modalka-avy-map)
-  (define-key modalka-avy-map (kbd ",") 'avy-goto-char)
-  (define-key modalka-avy-map (kbd ".") 'avy-goto-char-2)
-  (define-key modalka-avy-map (kbd "-") 'avy-goto-line)
+  (define-key modalka-mode-map (kbd "g g") 'avy-goto-char)
+  (define-key modalka-mode-map (kbd "g l") 'avy-goto-line)
+  (define-key modalka-mode-map (kbd "g w") 'avy-goto-word-0)
+  (define-key modalka-mode-map (kbd "g n") 'goto-line)
+  (define-key modalka-mode-map (kbd "g a") 'beginning-of-buffer)
+  (define-key modalka-mode-map (kbd "g e") 'end-of-buffer)
 
+  (modalka-define-kbd "q" "C-q")
+
+  (define-key modalka-mode-map (kbd "ö") 'hydra-windows/body)
+
+  (modalka-define-kbd "<left>" "")
+  (modalka-define-kbd "<right>" "")
+  (modalka-define-kbd "<down>" "")
+  (modalka-define-kbd "<up>" "")
+
+  (dotimes (i 10)
+    (modalka-define-kbd (format "%d" i) (format "M-%d" i)))
+
+  (defun swiper-selection ()
+    (interactive)
+    (deactivate-mark)
+    (swiper (buffer-substring (point) (mark))))
 
   ;;altgr
   ;; (define-key modalka-mode-map (kbd "7")
@@ -1034,13 +1093,6 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;     (interactive)
   ;;     (insert-char 91) ;;[]
   ;;     (run-hooks 'post-self-insert-hook)))
-
-  ;;copy above line
-  ;;forward symbol
-  ;;siffror
-  ;;begging/end of buffer
-  ;;kanske byta ut sp-funktionerna i eriks smart delete
-  ;;search with selection
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

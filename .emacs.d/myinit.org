@@ -125,6 +125,9 @@ reflected in the local value.
   With argument, do this that many times."
    (interactive "p")
    (forward-symbol (- (or arg 1))))
+
+  (define-key my-keys-map (kbd "<f3>") 'kmacro-start-macro)
+
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -922,7 +925,7 @@ All default keybindings have been commented out in the source file 'auto-complet
                           (bookmarks . 5)
                           (projects . 5)))
 #+end_src
-* eriks smart delete stuff o copy
+* eriks smart delete stuff o copy o stuff
 #+begin_src emacs-lisp :tangle yes
   (defun eriks-delete-backward ()
     (interactive)
@@ -969,7 +972,27 @@ All default keybindings have been commented out in the source file 'auto-complet
       (newline)
       (insert line)))
 
+  (defun eriks-find-char (ARG c)
+    "Like vim's f-command. 
 
+  With no prefix argument or as 1, move cursor forward until the first occurence of c.
+  With ARG as -1 (M--), move backward until the first occurence of c.
+  If c can't be found, do nothing and print a nice message.
+
+  Ignores case!"
+    (interactive "p\ncJump to char: ")
+    (let ((start (point))
+          (finished nil))
+      (while (and
+              (not (or (eobp) (bobp)))
+              (not finished))
+        (forward-char ARG)
+        (if (= (downcase c) (downcase (following-char)))
+            (setq finished t)))
+      (if (not finished)
+          (progn
+            (goto-char start)
+            (message "Couldn't find '%c' :(" c)))))
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -1076,10 +1099,14 @@ All default keybindings have been commented out in the source file 'auto-complet
   (dotimes (i 10)
     (modalka-define-kbd (format "%d" i) (format "M-%d" i)))
 
+  (modalka-define-kbd "-" "M--")
+
   (defun swiper-selection ()
     (interactive)
     (deactivate-mark)
     (swiper (buffer-substring (point) (mark))))
+
+  (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
 
   ;;altgr
   ;; (define-key modalka-mode-map (kbd "7")

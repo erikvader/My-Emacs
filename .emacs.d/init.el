@@ -37,7 +37,7 @@
  '(c-basic-offset 3)
  '(c-hanging-braces-alist (quote set-from-style))
  '(column-number-mode t)
- '(counsel-mode nil)
+ '(counsel-mode t)
  '(create-lockfiles nil)
  '(cua-enable-cua-keys nil)
  '(cua-remap-control-z t)

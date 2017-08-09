@@ -971,33 +971,37 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 * eriks smart delete stuff o copy o stuff
 #+begin_src emacs-lisp :tangle yes
-  (defun eriks-delete-backward ()
-    (interactive)
-    (let ((c (preceding-char)))
+  (defun eriks-delete-stuff (n symbol)
+    (let ((c (if (< n 0) (preceding-char) (following-char))))
       (if (is-boundary c)
-          (hungry-delete-backward 1)
-        (sp-backward-delete-word 1))))
+          (eriks-hungry-delete-whitespace n)
+        (if symbol
+            (sp-delete-symbol n)
+          (sp-delete-word n)))))
 
-  (defun eriks-delete-forward ()
-    (interactive)
-    (let ((c (following-char)))
-      (if (is-boundary c)
-          (hungry-delete-forward 1)
-        (sp-delete-word 1))))
+  (defun eriks-delete-backward (ARG)
+    (interactive "p")
+    (eriks-delete-stuff (- 0 ARG) nil))
 
-  (defun eriks-delete-forward-symbol ()
-    (interactive)
-    (let ((c (following-char)))
-      (if (is-boundary c)
-          (hungry-delete-forward 1)
-        (sp-delete-symbol 1))))
+  (defun eriks-delete-forward (ARG)
+    (interactive "p")
+    (eriks-delete-stuff ARG nil))
 
-  (defun eriks-delete-backward-symbol ()
-    (interactive)
-    (let ((c (preceding-char)))
-      (if (is-boundary c)
-          (hungry-delete-backward 1)
-        (sp-backward-delete-symbol 1))))
+  (defun eriks-delete-forward-symbol (ARG)
+    (interactive "p")
+    (eriks-delete-stuff ARG t))
+
+  (defun eriks-delete-backward-symbol (ARG)
+    (interactive "p")
+    (eriks-delete-stuff (- 0 ARG) t))
+
+  (defun eriks-hungry-delete-whitespace (ARG)
+    (interactive "p")
+    (if (< ARG 0)
+        (while (is-boundary (preceding-char))
+          (delete-backward-char 1))
+      (while (is-boundary (following-char))
+        (delete-char 1))))
 
   (define-key my-keys-map (kbd "C-<backspace>") 'eriks-delete-backward)
   (define-key my-keys-map (kbd "C-<delete>") 'eriks-delete-forward)
@@ -1016,15 +1020,19 @@ All default keybindings have been commented out in the source file 'auto-complet
       (newline)
       (insert line)))
 
+  ;;TODO make ARG execute the command ARG times
   (defun eriks-find-char (ARG c)
-    "Like vim's f-command. 
+    "Like vim's f-command.
 
   With no prefix argument or as 1, move cursor forward until the first occurence of c.
   With ARG as -1 (M--), move backward until the first occurence of c.
   If c can't be found, do nothing and print a nice message.
 
-  Ignores case!"
+  Ignores case!
+
+  Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'"
     (interactive "p\ncJump to char: ")
+    (setq eriks-find-char-last-command (list ARG c))
     (let ((start (point))
           (finished nil))
       (while (and
@@ -1038,10 +1046,26 @@ All default keybindings have been commented out in the source file 'auto-complet
             (goto-char start)
             (message "Couldn't find '%c' :(" c)))))
 
-  (defun eriks-find-char-cur (ARG)
-    "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
-    (interactive "p")
-    (eriks-find-char ARG (following-char)))
+  (defun eriks-find-char-backward (ARG c)
+    "Exactly the same bahaviour as `eriks-find-char' except this goes backwards by negating ARG"
+    (interactive "p\ncJump to char backwards: ")
+    (eriks-find-char (- 0 ARG) c))
+
+  (defun eriks-find-char-repeat ()
+    "Repeats the last call to `eriks-find-char' or `eriks-find-char-backward'"
+    (interactive)
+    (let ((l eriks-find-char-last-command))
+      (if (boundp 'eriks-find-char-last-command)
+          (let ((arg (nth 0 l))
+                (c (nth 1 l)))
+            (message "Searching for '%c' with ARG=%d" c arg)
+            (eriks-find-char arg c))
+        (message "You havent even called eriks-find-char even once :("))))
+
+  ;; (defun eriks-find-char-cur (ARG)
+  ;;   "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
+  ;;   (interactive "p")
+  ;;   (eriks-find-char ARG (following-char)))
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -1159,7 +1183,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     (swiper (buffer-substring (point) (mark))))
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
-  (define-key modalka-mode-map (kbd "N") 'eriks-find-char-cur)
+  (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
+  (define-key modalka-mode-map (kbd ":") 'eriks-find-char-repeat)
+
 
   ;;altgr
   ;; (define-key modalka-mode-map (kbd "7")
@@ -1182,6 +1208,7 @@ All default keybindings have been commented out in the source file 'auto-complet
             (lambda ()
               (diminish 'autopair-mode)))
 
+  (diminish 'counsel-mode)
   (diminish 'which-key-mode)
   (diminish 'ivy-mode)
   (diminish 'undo-tree-mode)

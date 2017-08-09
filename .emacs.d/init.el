@@ -46,7 +46,7 @@
  '(custom-enabled-themes (quote (dracula)))
  '(custom-safe-themes
    (quote
-    ("06e4e8633af9c9f4f62b3d2e49dbda9ec2780c67aaf1b9b8e8328479eea8081a" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "1157a4055504672be1df1232bed784ba575c60ab44d8e6c7b3800ae76b42f8bd" "795bfbd35dc1f1492041ff27a9af4207d57d6fb438696377f02f33bfbe7b01f5" "b8fda2e478dbaaaff0600969f42d015f4f557c7fc91494a0e49287f5ff240e81" "237b8e54647b20d1f159dadeec0176839942389ca19ece24d5332df7cfd20ea7" "c8e1726d0d31b3564914d28f8e1849e30fcb2b457834f73b04765491503c3ffb" "82d79ee356fd38fe81deb201e8cb575931406a816b1415b245f2670303d50b07" "85f950051876972d2e5d0c45d0057b02cdd7420f31e5b7efc1b230bcccf4c62a" "09ecc80176744f57ddf75914df698a8e2daef2c3e1713dbdfe2fd539fa6dcfb5" "3c7fef838368f3eb596ba2a66bcd8b26b94ec41090d04bcbda24cdcb0dcf5a76" "cca41afaaa77fea8b6c4ee97b3fe4ef0b87b389a31e481abaa10fe1d4c673a01" "f8cf128fa0ef7e61b5546d12bb8ea1584c80ac313db38867b6e774d1d38c73db" "7f72dd635d7078f5c4152b138aefe8f73dfa55b731245fbf4b7793c72b633519" "28ec8ccf6190f6a73812df9bc91df54ce1d6132f18b4c8fcc85d45298569eb53" "f9574c9ede3f64d57b3aa9b9cef621d54e2e503f4d75d8613cbcc4ca1c962c21" default)))
+    ("1ec751fd3959b808684d378c631fa813e1846ab7211e508a4895516dd77e88a4" "06e4e8633af9c9f4f62b3d2e49dbda9ec2780c67aaf1b9b8e8328479eea8081a" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "1157a4055504672be1df1232bed784ba575c60ab44d8e6c7b3800ae76b42f8bd" "795bfbd35dc1f1492041ff27a9af4207d57d6fb438696377f02f33bfbe7b01f5" "b8fda2e478dbaaaff0600969f42d015f4f557c7fc91494a0e49287f5ff240e81" "237b8e54647b20d1f159dadeec0176839942389ca19ece24d5332df7cfd20ea7" "c8e1726d0d31b3564914d28f8e1849e30fcb2b457834f73b04765491503c3ffb" "82d79ee356fd38fe81deb201e8cb575931406a816b1415b245f2670303d50b07" "85f950051876972d2e5d0c45d0057b02cdd7420f31e5b7efc1b230bcccf4c62a" "09ecc80176744f57ddf75914df698a8e2daef2c3e1713dbdfe2fd539fa6dcfb5" "3c7fef838368f3eb596ba2a66bcd8b26b94ec41090d04bcbda24cdcb0dcf5a76" "cca41afaaa77fea8b6c4ee97b3fe4ef0b87b389a31e481abaa10fe1d4c673a01" "f8cf128fa0ef7e61b5546d12bb8ea1584c80ac313db38867b6e774d1d38c73db" "7f72dd635d7078f5c4152b138aefe8f73dfa55b731245fbf4b7793c72b633519" "28ec8ccf6190f6a73812df9bc91df54ce1d6132f18b4c8fcc85d45298569eb53" "f9574c9ede3f64d57b3aa9b9cef621d54e2e503f4d75d8613cbcc4ca1c962c21" default)))
  '(default-input-method "ipa")
  '(echo-keystrokes 0.001)
  '(eclim-auto-save nil)
@@ -70,12 +70,20 @@
  '(perl-indent-level 3)
  '(powerline-display-buffer-size nil)
  '(python-indent-offset 3)
- '(rm-whitelist (quote (" my-keys")))
+ '(rm-base-text-properties
+   (quote
+    ((quote help-echo)
+     (quote rm--help-echo)
+     (quote mouse-face)
+     (quote mode-line-highlight)
+     (quote local-map)
+     mode-line-minor-mode-keymap)))
+ '(rm-whitelist nil)
  '(setq global-linum-mode t)
  '(show-paren-mode t)
  '(show-trailing-whitespace nil)
- '(size-indication-mode t)
- '(sml/theme (quote dark))
+ '(size-indication-mode nil)
+ '(sml/theme (quote dark-erik))
  '(sp-autodelete-closing-pair nil)
  '(sp-autodelete-opening-pair nil)
  '(sp-autodelete-pair nil)

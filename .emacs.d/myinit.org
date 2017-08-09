@@ -69,7 +69,16 @@ reflected in the local value.
 * misc
 #+begin_src emacs-lisp :tangle yes
   (browse-kill-ring-default-keybindings)
-  (powerline-default-theme)
+  ;; (powerline-default-theme)
+
+  (require 'all-the-icons)
+  ;; (require 'all-the-icons-ivy)
+  ;; (all-the-icons-ivy-setup)
+  (all-the-icons-dired-mode)
+
+  (require 'smart-mode-line)
+  (sml/setup)
+
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-set-key (kbd "<f5>") 'revert-buffer)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
@@ -86,10 +95,7 @@ reflected in the local value.
   (setq auto-save-file-name-transforms
         `(("\\(?:[^/]*/\\)*\\(.*\\)" ,(concat autosave-dir "\\1") t)))
 
-  ;; (add-hook 'dired-mode-hook
-  ;;           (lambda ()
-  ;;             (define-key dired-mode-map (kbd "å") 'dired-up-directory)
-  ;;             ))
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
   (winner-mode 1)
 
@@ -118,7 +124,7 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-r") 'replace-char)
 
   ;;support för font awesome
-  (set-fontset-font "fontset-default" '(#xf000 . #xffff) "Font Awesome")
+  ;; (set-fontset-font "fontset-default" '(#xf000 . #xffff) "Font Awesome")
 
   (defun backward-symbol (&optional arg)
    "Move backward until encountering the beginning of a symbol.
@@ -1043,15 +1049,15 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   ;;(defvar-local mode-line-cookie nil)
 
-  (add-hook 'modalka-mode-hook
-            (lambda ()
-              (if (bound-and-true-p modalka-mode)
-                  (setq-local mode-line-cookie
-                              (face-remap-add-relative
-                               'mode-line '((:background "#d2691e") mode-line)))
-                (face-remap-remove-relative mode-line-cookie))
-              ;;(powerline-reset)
-              ))
+  ;; (add-hook 'modalka-mode-hook
+  ;;           (lambda ()
+  ;;             (if (bound-and-true-p modalka-mode)
+  ;;                 (setq-local mode-line-cookie
+  ;;                             (face-remap-add-relative
+  ;;                              'mode-line '((:background "#d2691e") mode-line)))
+  ;;               (face-remap-remove-relative mode-line-cookie))
+  ;;             ;;(powerline-reset)
+  ;;             ))
 
   (defun toggle-modalka ()
     (interactive)
@@ -1182,11 +1188,26 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'auto-complete-mode)
   (diminish 'yas-minor-mode)
   (diminish 'global-disable-mouse-mode)
-  (diminish 'modalka-mode)
 
-  (add-hook 'smartparens-mode-hook
-            (lambda ()
-              (diminish 'smartparens-mode)))
+  ;;rm-text-properties, ta bort sakerna som smart-mode-line lägger till (face och sml/global(?)).
+  (diminish 'modalka-mode (format " %s" (propertize (all-the-icons-fileicon "emacs")
+                                                    'face `(:family ,(all-the-icons-fileicon-family) :height 0.8 :foreground "cyan")
+                                                    'display '(raise -0.1)
+                                                    )))
+
+  (diminish 'my-keys-minor-mode (format " %s" (propertize (all-the-icons-faicon "keyboard-o")
+                                                          'face `(:family ,(all-the-icons-faicon-family) :height 0.9)
+                                                          'display '(raise 0.0)
+                                                          )))
+
+  (diminish 'smartparens-mode)
+
+  (diminish 'projectile-mode)
+  (diminish 'all-the-icons-dired-mode)
+
+  ;; (add-hook 'smartparens-mode-hook
+  ;;           (lambda ()
+  ;;             (diminish 'smartparens-mode)))
 
   ;;doesnt run :(
   (add-hook 'abbrev-mode-hook

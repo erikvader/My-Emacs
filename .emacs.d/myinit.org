@@ -688,7 +688,7 @@ All default keybindings have been commented out in the source file 'auto-complet
    [_u_] : shrink      ^^          [_k_] : kill           ^^^^  [_4_] : kill and close
    [_i_] : enlarge     ^^          [_f_] : find file        ^ ^
    ^ ^                 ^^          [_x_] : run command
-   [arrows] : switch window
+   [arrows] : switch window   Winner :: [_z_], [_Z_]
    _q_uit
   "
     ("<left>" windmove-left nil)
@@ -717,6 +717,8 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("4" kill-buffer-and-window nil)
     ("x" execute-extended-command nil)
     ("f" counsel-find-file nil)
+    ("z" winner-undo nil)
+    ("Z" winner-redo nil)
     ("q" nil nil :color blue))
   (define-key 'eriks-map (kbd "w") 'hydra-windows/body)
 
@@ -741,6 +743,42 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("r" mc/mark-all-in-region-regexp nil :exit t)
     ("q" nil nil))
   (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
+
+
+#+end_src
+** transpose
+#+begin_src emacs-lisp :tangle yes
+  (defun eriks-transpose-char-forward ()
+    (interactive)
+    (forward-char)
+    (transpose-chars 1)
+    (forward-char -1))
+
+  (defun eriks-transpose-char-backward ()
+    (interactive)
+    (transpose-chars 1)
+    (forward-char -2))
+
+  (defun eriks-transpose-word-forward ()
+    (interactive)
+    (transpose-words 1))
+
+  (defun eriks-transpose-word-backward ()
+    (interactive)
+    (transpose-words -1)
+    (backward-word))
+
+  (defhydra hydra-transpose ()
+    "Transpose: "
+    ("k" move-line-up "line up")
+    ("j" move-line-down "line down")
+    ("h" eriks-transpose-char-backward "char backward")
+    ("l" eriks-transpose-char-forward "char forward")
+    ("f" eriks-transpose-word-forward "word forward")
+    ("b" eriks-transpose-word-backward "word backward")
+    ("q" nil "quit"))
+
+
 #+end_src
 ** org-table to hydra
 *** macro definition
@@ -993,6 +1031,11 @@ All default keybindings have been commented out in the source file 'auto-complet
           (progn
             (goto-char start)
             (message "Couldn't find '%c' :(" c)))))
+
+  (defun eriks-find-char-cur (ARG)
+    "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
+    (interactive "p")
+    (eriks-find-char ARG (following-char)))
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -1017,6 +1060,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key my-keys-map (kbd "§") 'toggle-modalka)
 
   ;; (modalka-global-mode)
+
+  (define-key modalka-mode-map (kbd "t") 'hydra-transpose/body)
 
   (modalka-define-kbd "w" "C-w")
   (modalka-define-kbd "W" "M-w")
@@ -1100,6 +1145,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     (modalka-define-kbd (format "%d" i) (format "M-%d" i)))
 
   (modalka-define-kbd "-" "M--")
+  (define-key modalka-mode-map (kbd ",") 'repeat-complex-command)
 
   (defun swiper-selection ()
     (interactive)
@@ -1107,6 +1153,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     (swiper (buffer-substring (point) (mark))))
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
+  (define-key modalka-mode-map (kbd "N") 'eriks-find-char-cur)
 
   ;;altgr
   ;; (define-key modalka-mode-map (kbd "7")

@@ -1036,7 +1036,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     (let ((start (point))
           (finished nil))
       (while (and
-              (not (or (eobp) (bobp)))
+              (not (or
+                    (and (> ARG 0) (eobp))
+                    (and (< ARG 0) (bobp))))
               (not finished))
         (forward-char ARG)
         (if (= (downcase c) (downcase (following-char)))

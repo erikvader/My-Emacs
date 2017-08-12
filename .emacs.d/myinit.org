@@ -294,15 +294,15 @@ reflected in the local value.
   ;;       (message "Maybe unbalanced '\"', started inside string or just end of buffer"))
   ;;   )
 
-  (define-key my-keys-map (kbd "M-p")
-    (lambda ()
-      (interactive)
-      (previous-line 3)))
+  ;; (define-key my-keys-map (kbd "M-p")
+  ;;   (lambda ()
+  ;;     (interactive)
+  ;;     (previous-line 3)))
 
-  (define-key my-keys-map (kbd "M-n")
-    (lambda ()
-      (interactive)
-      (next-line 3)))
+  ;; (define-key my-keys-map (kbd "M-n")
+  ;;   (lambda ()
+  ;;     (interactive)
+  ;;     (next-line 3)))
 #+end_src
 * yasnippet
 #+begin_src emacs-lisp :tangle yes
@@ -603,8 +603,8 @@ All default keybindings have been commented out in the source file 'auto-complet
       (previous-line 1)
       (move-to-column col)))
 
-  (define-key my-keys-map (kbd "M-<up>") 'move-line-up)
-  (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
+  ;; (define-key my-keys-map (kbd "M-<up>") 'move-line-up)
+  ;; (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
 
 #+end_src
 * golden ratio scroll

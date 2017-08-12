@@ -1068,6 +1068,24 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;   "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
   ;;   (interactive "p")
   ;;   (eriks-find-char ARG (following-char)))
+
+  (defun eriks-repeat ()
+    "If the last command was `eriks-find-char' or `eriks-find-char-backward' then use `eriks-find-char-repeat' to properly repeat them.
+  Else do a normal `repeat'"
+    (interactive)
+    (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
+    (setq real-this-command last-repeatable-command)
+    (cond ((or
+            (eq last-repeatable-command 'eriks-find-char)
+            (eq last-repeatable-command 'eriks-find-char-backward))
+           (eriks-find-char-repeat))
+          (t (call-interactively 'repeat))))
+
+  (defun eriks-insert-char (ARG c)
+    (interactive "p\ncInsert: ")
+    (dotimes (i ARG)
+      (insert c)))
+
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -1136,10 +1154,11 @@ All default keybindings have been commented out in the source file 'auto-complet
 
 
 
-  (define-key modalka-mode-map (kbd ".") 'repeat)
+  (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
   (define-key modalka-mode-map (kbd "SPC") 'self-insert-command)
   (define-key modalka-mode-map (kbd "i") 'toggle-modalka)
+  (define-key modalka-mode-map (kbd "I") 'eriks-insert-char)
 
   (modalka-define-kbd "o" "C-<return>")
   (modalka-define-kbd "O" "C-S-<return>")
@@ -1186,7 +1205,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
-  (define-key modalka-mode-map (kbd ":") 'eriks-find-char-repeat)
+  ;;(define-key modalka-mode-map (kbd ":") 'eriks-find-char-repeat)
 
 
   ;;altgr

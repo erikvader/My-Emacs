@@ -682,7 +682,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("q" nil "quit" :color blue))
   (define-key eriks-map (kbd "z") 'hydra-zoom/body)
 
-  (defhydra hydra-windows (:hint nil)
+  (defhydra hydra-windows (:hint nil :color blue)
     "
    ^Resize^         ^Transpose^    ^Buffer/tabbar^       ^^^^   ^Split^
   -----------------------------------------------------------------------------------
@@ -691,16 +691,16 @@ All default keybindings have been commented out in the source file 'auto-complet
    [_p_] : enlarge      ^_S_^           ^_s_^                   [_0_] : close
     ^ ^                                               ^^^^^^^^  [_1_] : close other
     ^Vertical^         ^^          [_b_] : switch buffer  ^^^^  [_+_] : balance
-   [_u_] : shrink      ^^          [_k_] : kill           ^^^^  [_4_] : kill and close
+   [_u_] : shrink      ^^          [_K_] : kill           ^^^^  [_4_] : kill and close
    [_i_] : enlarge     ^^          [_f_] : find file        ^ ^
    ^ ^                 ^^          [_x_] : run command
-   [arrows] : switch window   Winner :: [_z_], [_Z_]
-   _q_uit
+   [vim keys] : switch window   Winner :: [_z_], [_Z_]
   "
-    ("<left>" windmove-left nil)
-    ("<right>" windmove-right nil)
-    ("<up>" windmove-up nil)
-    ("<down>" windmove-down nil)
+    ;; _q_uit
+    ("h" windmove-left nil)
+    ("l" windmove-right nil)
+    ("k" windmove-up nil)
+    ("j" windmove-down nil)
     ("o" shrink-window-horizontally nil)
     ("p" enlarge-window-horizontally nil)
     ("u" shrink-window nil)
@@ -714,7 +714,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("w" tabbar-forward-group nil)
     ("s" tabbar-backward-group nil)
     ("b" ivy-switch-buffer nil)
-    ("k" kill-this-buffer nil)
+    ("K" kill-this-buffer nil)
     ("3" split-window-horizontally nil)
     ("2" split-window-vertically nil)
     ("0" delete-window nil)
@@ -725,9 +725,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("f" counsel-find-file nil)
     ("z" winner-undo nil)
     ("Z" winner-redo nil)
-    ("q" nil nil :color blue))
+    ;; ("q" nil nil :color blue)
+    )
   (define-key 'eriks-map (kbd "w") 'hydra-windows/body)
-
 
   (defhydra hydra-multiple-cursors ()
     "

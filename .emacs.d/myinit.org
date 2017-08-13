@@ -971,29 +971,29 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 * eriks smart delete stuff o copy o stuff
 #+begin_src emacs-lisp :tangle yes
-  (defun eriks-delete-stuff (n symbol)
-    (let ((c (if (< n 0) (preceding-char) (following-char))))
-      (if (is-boundary c)
-          (eriks-hungry-delete-whitespace n)
+  (defun eriks-delete-stuff (dir symbol arg)
+    (if (equal arg '(4))
+        (eriks-hungry-delete-whitespace dir)
+      (let ((p (* dir (prefix-numeric-value arg))))
         (if symbol
-            (sp-delete-symbol n)
-          (sp-delete-word n)))))
+            (sp-delete-symbol p)
+          (sp-delete-word p)))))
 
   (defun eriks-delete-backward (ARG)
-    (interactive "p")
-    (eriks-delete-stuff (- 0 ARG) nil))
+    (interactive "P")
+    (eriks-delete-stuff -1 nil ARG))
 
   (defun eriks-delete-forward (ARG)
-    (interactive "p")
-    (eriks-delete-stuff ARG nil))
+    (interactive "P")
+    (eriks-delete-stuff 1 nil ARG))
 
   (defun eriks-delete-forward-symbol (ARG)
-    (interactive "p")
-    (eriks-delete-stuff ARG t))
+    (interactive "P")
+    (eriks-delete-stuff 1 t ARG))
 
   (defun eriks-delete-backward-symbol (ARG)
-    (interactive "p")
-    (eriks-delete-stuff (- 0 ARG) t))
+    (interactive "P")
+    (eriks-delete-stuff -1 t ARG))
 
   (defun eriks-hungry-delete-whitespace (ARG)
     (interactive "p")
@@ -1008,8 +1008,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (defun eriks-duplicate-line ()
     (interactive)
-    (let* (
-           (b (progn
+    (let* ((b (progn
                 (beginning-of-line)
                 (point)))
            (e (progn

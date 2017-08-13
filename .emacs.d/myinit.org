@@ -1086,6 +1086,23 @@ All default keybindings have been commented out in the source file 'auto-complet
     (dotimes (i ARG)
       (insert c)))
 
+  (defun eriks-skip-space (ARG)
+    "Move point forward or backward until it doesnt encounter whitespace anymore."
+    (interactive "p")
+    (if (< ARG 0)
+        (while (is-boundary (preceding-char))
+          (left-char))
+      (while (is-boundary (following-char))
+        (right-char))))
+
+  (defun eriks-beginning-of-line (ARG)
+    "Just as `beginning-of-line' except if prefixed with C-u it skips over whitespace at the beginning of the line."
+    (interactive "P")
+    (beginning-of-line)
+    (if (equal ARG '(4))
+        (eriks-skip-space 1)))
+
+  (define-key my-keys-map (kbd "C-a") 'eriks-beginning-of-line)
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -1122,6 +1139,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "Y" "M-y")
   (modalka-define-kbd "m" "<C-m>")
   (modalka-define-kbd "M" "C-M-SPC")
+
+  (modalka-define-kbd "u" "C-u")
 
   (modalka-define-kbd ";" "M-;")
 

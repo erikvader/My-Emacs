@@ -682,7 +682,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("q" nil "quit" :color blue))
   (define-key eriks-map (kbd "z") 'hydra-zoom/body)
 
-  (defhydra hydra-windows (:hint nil :color blue)
+  (defhydra hydra-windows (:hint nil)
     "
    ^Resize^         ^Transpose^    ^Buffer/tabbar^       ^^^^   ^Split^
   -----------------------------------------------------------------------------------
@@ -695,6 +695,7 @@ All default keybindings have been commented out in the source file 'auto-complet
    [_i_] : enlarge     ^^          [_f_] : find file        ^ ^
    ^ ^                 ^^          [_x_] : run command
    [vim keys] : switch window   Winner :: [_z_], [_Z_]
+   _q_uit
   "
     ;; _q_uit
     ("h" windmove-left nil)
@@ -725,8 +726,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("f" counsel-find-file nil)
     ("z" winner-undo nil)
     ("Z" winner-redo nil)
-    ;; ("q" nil nil :color blue)
-    )
+    ("q" nil nil :color blue))
   (define-key 'eriks-map (kbd "w") 'hydra-windows/body)
 
   (defhydra hydra-multiple-cursors ()
@@ -1203,7 +1203,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (modalka-define-kbd "q" "C-q")
 
-  (define-key modalka-mode-map (kbd "ö") 'hydra-windows/body)
+  ;; (define-key modalka-mode-map (kbd "ö") 'hydra-windows/body)
 
   (modalka-define-kbd "<left>" "")
   (modalka-define-kbd "<right>" "")

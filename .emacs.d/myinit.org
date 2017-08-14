@@ -134,6 +134,10 @@ reflected in the local value.
 
   (define-key my-keys-map (kbd "<f3>") 'kmacro-start-macro)
 
+  (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
+  (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
+  (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
+  (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -208,7 +212,7 @@ reflected in the local value.
 
 
 #+end_src
-* M-f, M-b, M-n, M-p
+** lxor & is-boundary
 #+begin_src emacs-lisp :tangle yes
   (defun lxor (a b)
     "logical xor"
@@ -229,82 +233,217 @@ reflected in the local value.
      ;;(bolp)
      ;;(eolp)
      ))
-
-  (defun erik-backward-word ()
-    "Move between space separated tokens backwards"
-    (interactive)
-    (let ((w (is-boundary (preceding-char))))
-      (while (lxnor w (is-boundary (preceding-char)))
-        (backward-char))
-      )
-    )
-
-  (defun erik-forward-word ()
-    "Move between space separated tokens forwards"
-    (interactive)
-    (let ((w (is-boundary (following-char))))
-      (while (lxnor w (is-boundary (following-char)))
-        (forward-char))
-      )
-    )
-
-  ;;(define-key my-keys-map (kbd "M-f") 'erik-forward-word)
-  ;;(define-key my-keys-map (kbd "M-b") 'erik-backward-word)
-
-  ;; experimental versions. skips quotes
-  ;; (defun erik-backward-word ()
-  ;;   "Move between space separated tokens backwards. Jumps over strings (weird behaviour if started inside a string)"
-  ;;   (interactive)
-  ;;   (let ((w (is-boundary (preceding-char)))
-  ;;         (inQuotes nil)
-  ;;         (prevQuote nil))
-  ;;     (while (or
-  ;;             inQuotes
-  ;;             (lxnor w (is-boundary (preceding-char))))
-  ;;       (if (and prevQuote (= 92 (preceding-char))) ;; \
-  ;;           (setq inQuotes (not inQuotes)))
-  ;;       (if (= 34 (preceding-char)) ;;" double quotes
-  ;;           (progn
-  ;;             (setq inQuotes (not inQuotes))
-  ;;             (setq prevQuote t))
-  ;;         (setq prevQuote nil))
-  ;;       (backward-char))
-  ;;     )
-  ;;   (if (bobp)
-  ;;       (message "Maybe unbalanced '\"', started inside string or just end of buffer"))
-  ;;   )
-
-  ;; (defun erik-forward-word ()
-  ;;   "Move between space separated tokens forwards. Jumps over strings (weird behaviour if started inside a string)"
-  ;;   (interactive)
-  ;;   (let ((w (is-boundary (following-char)))
-  ;;         (inQuotes nil)
-  ;;         (esc nil))
-  ;;     (while (or
-  ;;             inQuotes
-  ;;             (lxnor w (is-boundary (following-char))))
-  ;;       (if (and (not esc) (= 34 (following-char))) ;;" double quotes
-  ;;           (setq inQuotes (not inQuotes)))
-  ;;       (if (= 92 (following-char)) ;; \
-  ;;           (setq esc t)
-  ;;         (setq esc nil))
-  ;;       (forward-char))
-  ;;     )
-  ;;   (if (eobp)
-  ;;       (message "Maybe unbalanced '\"', started inside string or just end of buffer"))
-  ;;   )
-
-  ;; (define-key my-keys-map (kbd "M-p")
-  ;;   (lambda ()
-  ;;     (interactive)
-  ;;     (previous-line 3)))
-
-  ;; (define-key my-keys-map (kbd "M-n")
-  ;;   (lambda ()
-  ;;     (interactive)
-  ;;     (next-line 3)))
 #+end_src
-* yasnippet
+** erik-funktioner
+#+begin_src emacs-lisp :tangle yes
+  (defun eriks-delete-stuff (dir symbol arg)
+    (if (equal arg '(4))
+        (eriks-hungry-delete-whitespace dir)
+      (let ((p (* dir (prefix-numeric-value arg))))
+        (if symbol
+            (sp-delete-symbol p)
+          (sp-delete-word p)))))
+
+  (defun eriks-delete-backward (ARG)
+    (interactive "P")
+    (eriks-delete-stuff -1 nil ARG))
+
+  (defun eriks-delete-forward (ARG)
+    (interactive "P")
+    (eriks-delete-stuff 1 nil ARG))
+
+  (defun eriks-delete-forward-symbol (ARG)
+    (interactive "P")
+    (eriks-delete-stuff 1 t ARG))
+
+  (defun eriks-delete-backward-symbol (ARG)
+    (interactive "P")
+    (eriks-delete-stuff -1 t ARG))
+
+  (defun eriks-hungry-delete-whitespace (ARG)
+    (interactive "p")
+    (if (< ARG 0)
+        (while (is-boundary (preceding-char))
+          (delete-backward-char 1))
+      (while (is-boundary (following-char))
+        (delete-char 1))))
+
+  (define-key my-keys-map (kbd "C-<backspace>") 'eriks-delete-backward)
+  (define-key my-keys-map (kbd "C-<delete>") 'eriks-delete-forward)
+
+  (defun eriks-duplicate-line ()
+    (interactive)
+    (let* ((b (progn
+                (beginning-of-line)
+                (point)))
+           (e (progn
+                (end-of-line)
+                (point)))
+           (line (buffer-substring b e)))
+      (end-of-line)
+      (newline)
+      (insert line)))
+
+  ;;TODO make ARG execute the command ARG times
+  (defun eriks-find-char (ARG c)
+    "Like vim's f-command.
+
+  With no prefix argument or as 1, move cursor forward until the first occurence of c.
+  With ARG as -1 (M--), move backward until the first occurence of c.
+  If c can't be found, do nothing and print a nice message.
+
+  Ignores case!
+
+  Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'"
+    (interactive "p\ncJump to char: ")
+    (setq eriks-find-char-last-command (list ARG c))
+    (let ((start (point))
+          (finished nil))
+      (while (and
+              (not (or
+                    (and (> ARG 0) (eobp))
+                    (and (< ARG 0) (bobp))))
+              (not finished))
+        (forward-char ARG)
+        (if (= (downcase c) (downcase (following-char)))
+            (setq finished t)))
+      (if (not finished)
+          (progn
+            (goto-char start)
+            (message "Couldn't find '%c' :(" c)))))
+
+  (defun eriks-find-char-backward (ARG c)
+    "Exactly the same bahaviour as `eriks-find-char' except this goes backwards by negating ARG"
+    (interactive "p\ncJump to char backwards: ")
+    (eriks-find-char (- 0 ARG) c))
+
+  (defun eriks-find-char-repeat ()
+    "Repeats the last call to `eriks-find-char' or `eriks-find-char-backward'"
+    (interactive)
+    (let ((l eriks-find-char-last-command))
+      (if (boundp 'eriks-find-char-last-command)
+          (let ((arg (nth 0 l))
+                (c (nth 1 l)))
+            (message "Searching for '%c' with ARG=%d" c arg)
+            (eriks-find-char arg c))
+        (message "You havent even called eriks-find-char even once :("))))
+
+  ;; (defun eriks-find-char-cur (ARG)
+  ;;   "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
+  ;;   (interactive "p")
+  ;;   (eriks-find-char ARG (following-char)))
+
+  (defun eriks-repeat ()
+    "If the last command was `eriks-find-char' or `eriks-find-char-backward' then use `eriks-find-char-repeat' to properly repeat them.
+  Else do a normal `repeat'"
+    (interactive)
+    (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
+    (setq real-this-command last-repeatable-command)
+    (cond ((or
+            (eq last-repeatable-command 'eriks-find-char)
+            (eq last-repeatable-command 'eriks-find-char-backward))
+           (eriks-find-char-repeat))
+          (t (call-interactively 'repeat))))
+
+  (defun eriks-insert-char (ARG c)
+    (interactive "p\ncInsert: ")
+    (dotimes (i ARG)
+      (insert c)))
+
+  (defun eriks-skip-space (ARG)
+    "Move point forward or backward until it doesnt encounter whitespace anymore."
+    (interactive "p")
+    (if (< ARG 0)
+        (while (is-boundary (preceding-char))
+          (left-char))
+      (while (is-boundary (following-char))
+        (right-char))))
+
+  (defun eriks-beginning-of-line (ARG)
+    "Just as `beginning-of-line' except if prefixed with C-u it skips over whitespace at the beginning of the line."
+    (interactive "P")
+    (beginning-of-line)
+    (if (equal ARG '(4))
+        (eriks-skip-space 1)))
+
+  (define-key my-keys-map (kbd "C-a") 'eriks-beginning-of-line)
+#+end_src
+** o and O from VIM
+#+begin_src emacs-lisp :tangle yes
+  (setq newline-without-break-tab nil)
+
+  (defun newline-without-break-down ()
+    "Add new line below and go to it. tab if an argument is given"
+    (interactive)
+    (end-of-line)
+    (newline)
+    (if newline-without-break-tab (indent-for-tab-command)))
+
+  (defun newline-without-break-up ()
+    "Add new line above and go to it. tab if an argument is given"
+    (interactive)
+    (beginning-of-line)
+    (newline)
+    (forward-line -1)
+    (if newline-without-break-tab (indent-for-tab-command)))
+
+  ;;(define-key cua-global-keymap [C-return] nil) ;;ta bort C-return from cua
+  (define-key my-keys-map (kbd "<C-return>") 'newline-without-break-down)
+  (define-key my-keys-map (kbd "<C-S-return>") 'newline-without-break-up)
+
+#+end_src
+** move lines from internet
+#+begin_src emacs-lisp :tangle yes
+  ;; (defun move-line (n)
+  ;;   "Move the current line up or down by N lines. Buggar for second last line i buffern"
+  ;;   (interactive "p")
+  ;;   (setq col (current-column))
+  ;;   (beginning-of-line)
+  ;;   (setq start (point))
+  ;;   (end-of-line)
+  ;;   (if (eobp)
+  ;;       (newline)
+  ;;     (forward-char))
+  ;;   (setq end (point))
+  ;;   (let ((line-text (delete-and-extract-region start end)))
+  ;;     (forward-line n)
+  ;;     (if (eobp) (newline))
+  ;;     (insert line-text)
+  ;;     ;; restore point to original column in moved line
+  ;;     (forward-line -1)
+  ;;     (move-to-column col)))
+
+  ;; (defun move-line-up (n)
+  ;;   "Move the current line up by N lines."
+  ;;   (interactive "p")
+  ;;   (move-line (if (null n) -1 (- n))))
+
+  ;; (defun move-line-down (n)
+  ;;   "Move the current line down by N lines."
+  ;;   (interactive "p")
+  ;;   (move-line (if (null n) 1 n)))
+
+  (defun move-line-up ()
+    (interactive)
+    (let ((col (current-column)))
+      (transpose-lines 1)
+      (previous-line 2)
+      (move-to-column col)))
+
+  (defun move-line-down ()
+    (interactive)
+    (let ((col (current-column)))
+      (next-line 1)
+      (transpose-lines 1)
+      (previous-line 1)
+      (move-to-column col)))
+
+  ;; (define-key my-keys-map (kbd "M-<up>") 'move-line-up)
+  ;; (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
+
+#+end_src
+* packages
+** yasnippet
 #+begin_src emacs-lisp :tangle yes
   ;;(require 'yasnippet)
   (yas-global-mode 1)
@@ -321,7 +460,7 @@ reflected in the local value.
   (define-key yas-minor-mode-map (kbd "TAB") nil)
 
 #+end_src
-* Auto-complete
+** Auto-complete
 All default keybindings have been commented out in the source file 'auto-complete.el'
 
 #+begin_src emacs-lisp :tangle yes
@@ -367,7 +506,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
 
 #+end_src
-* undo-tree
+** undo-tree
 #+begin_src emacs-lisp :tangle yes
   (global-undo-tree-mode 1)
   (global-set-key (kbd "C-z") 'undo)
@@ -376,7 +515,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;(define-key my-keys-map (kbd "C-S-z") 'undo-tree-redo)
   (define-key eriks-map (kbd "u") 'undo-tree-visualize)
 #+end_src
-* ivy and avy
+** ivy and avy
 #+begin_src emacs-lisp :tangle yes
   ;;ivy
   (ivy-mode 1)
@@ -398,48 +537,150 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;            (define-key dired-mode-map (kbd "M-s s") 'avy-goto-char)))
   (setq ivy-use-selectable-prompt t)
 #+end_src
-* window manipulation
+** golden ratio scroll
 #+begin_src emacs-lisp :tangle yes
-  ;; (define-key my-keys-map (kbd "S-C-<left>") 'shrink-window-horizontally)
-  ;; (define-key my-keys-map (kbd "S-C-<right>") 'enlarge-window-horizontally)
-  ;; (define-key my-keys-map (kbd "S-C-<down>") 'shrink-window)
-  ;; (define-key my-keys-map (kbd "S-C-<up>") 'enlarge-window)
-
-  ;; (define-key my-keys-map (kbd "C-<right>") 'tabbar-forward-tab)
-  ;; (define-key my-keys-map (kbd "C-<left>") 'tabbar-backward-tab)
-  ;; (define-key my-keys-map (kbd "C-<up>") 'tabbar-forward-group)
-  ;; (define-key my-keys-map (kbd "C-<down>") 'tabbar-backward-group)
-
-  ;; ;;(windmove-default-keybindings)
-
-  (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
-  (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
-  (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
-  (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
+  (global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
+  (global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
 #+end_src
-* o and O from VIM
+** projectile
 #+begin_src emacs-lisp :tangle yes
-  (setq newline-without-break-tab nil)
+  (projectile-global-mode t)
+  (counsel-projectile-on)
+#+end_src
+** dumb jump
+#+begin_src emacs-lisp :tangle yes
+  ;;(dumb-jump-mode)
 
-  (defun newline-without-break-down ()
-    "Add new line below and go to it. tab if an argument is given"
-    (interactive)
-    (end-of-line)
-    (newline)
-    (if newline-without-break-tab (indent-for-tab-command)))
+  ;;(fset 'eriks-dumb-jump-keymap (make-sparse-keymap))
+  (define-prefix-command 'eriks-dumb-jump-keymap)
+  (define-key eriks-map (kbd "j") 'eriks-dumb-jump-keymap)
 
-  (defun newline-without-break-up ()
-    "Add new line above and go to it. tab if an argument is given"
+  (define-key 'eriks-dumb-jump-keymap (kbd "j") 'dumb-jump-go)
+  (define-key 'eriks-dumb-jump-keymap (kbd "b") 'dumb-jump-back)
+
+  (setq dumb-jump-selector 'ivy)
+
+#+end_src
+** neotree
+#+begin_src emacs-lisp :tangle yes
+  ;;When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
+  ;;(setq projectile-switch-project-action 'neotree-projectile-action)
+
+  ;;Every time when the neotree window is opened, let it find current file and jump to node.
+  ;;(setq neo-smart-open t)
+
+  ;;Similar to find-file-in-project, NeoTree can be opened (toggled) at projectile project root as follows:
+  (defun neotree-project-dir ()
+    "Open NeoTree using the git root."
     (interactive)
-    (beginning-of-line)
+    (let ((project-dir (projectile-project-root))
+          (file-name (buffer-file-name)))
+      (neotree-toggle)
+      (if project-dir
+          (if (neo-global--window-exists-p)
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name)))
+        (message "Could not find git project root."))))
+
+  ;; (global-set-key [f8] 'neotree-toggle)
+  ;; (global-set-key (kbd "S-<f8>") 'neotree-find)
+  ;; (global-set-key [f9] 'neotree-project-dir)
+
+  (defhydra hydra-neotree (:color blue)
+    "neotree"
+    ("<f8>" neotree-toggle "toggle")
+    ("f" neotree-find "file dir")
+    ("p" neotree-project-dir "project dir"))
+  (define-key my-keys-map (kbd "<f8>") 'hydra-neotree/body)
+#+end_src
+** multiple cursors
+#+begin_src emacs-lisp :tangle yes
+  ;; (define-key 'eriks-map (kbd "m l") 'mc/edit-lines)
+  ;; (define-key 'eriks-map (kbd "m m") 'mc/mark-next-like-this)
+  ;; (define-key 'eriks-map (kbd "m n") 'mc/mark-previous-like-this)
+  ;; (define-key 'eriks-map (kbd "m b") 'mc/mark-all-like-this)
+#+end_src
+** smartparens
+*** standard config
+#+begin_src emacs-lisp :tangle yes
+  (require 'smartparens-config)
+
+  (defun start-smartparens ()
+    (smartparens-mode t)
+
+    (define-key smartparens-mode-map (kbd "C-M-SPC") 'sp-mark-sexp)
+
+    (define-key smartparens-mode-map (kbd "C-M-n") 'sp-next-sexp)
+    (define-key smartparens-mode-map (kbd "C-M-p") 'sp-previous-sexp)
+
+    (define-key smartparens-mode-map (kbd "C-M-u") 'sp-backward-up-sexp)
+    (define-key smartparens-mode-map (kbd "C-M-d") 'sp-down-sexp)
+
+    (define-key smartparens-mode-map (kbd "C-M-f") 'sp-forward-sexp)
+    (define-key smartparens-mode-map (kbd "C-M-b") 'sp-backward-sexp)
+    
+    (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
+
+    ;;(define-key smartparens-mode-map (kbd "M-f") 'sp-forward-symbol)
+    ;;(define-key smartparens-mode-map (kbd "M-b") 'sp-backward-symbol)
+    
+    )
+
+  (defun start-hydra-smartparens-if-activated ()
+    (interactive)
+    (if (bound-and-true-p smartparens-mode)
+        (hydra-smartparens/body)
+      (message "smartparens not activated!")))
+
+  (define-key eriks-map (kbd "p") 'hydra-smartparens/body) ;;'start-hydra-smartparens-if-activated
+
+  (defhydra hydra-smartparens (:color blue)
+    "
+   ^forward^      ^backward^     ^Sexp^          ^Hybrid^
+  ^^^^^^^^-----------------------------------------------------
+   [_m_] : barf   [_i_] : slurp  [_K_] : kill    [_k_] : kill
+   [_n_] : slurp  [_o_] : barf   [_s_] : splice  [_w_] : slurp
+    ^ ^            ^ ^           [_S_] : split   [_e_] : barf
+    ^ ^            ^ ^           [_J_] : join     ^ ^
+  "
+    ("K" sp-kill-sexp nil)
+    ("s" sp-splice-sexp nil)
+    ("S" sp-split-sexp nil)
+    ("J" sp-join-sexp nil)
+    ("m" sp-forward-barf-sexp nil)
+    ("n" sp-forward-slurp-sexp nil)
+    ("i" sp-backward-slurp-sexp nil)
+    ("o" sp-backward-barf-sexp nil)
+    ("k" sp-kill-hybrid-sexp nil)
+    ("w" sp-slurp-hybrid-sexp nil)
+    ("e" sp-dedent-adjust-sexp nil)
+    )
+  ;;("q" nil "Quit" :color blue)
+
+#+end_src
+*** parenthesis
+#+begin_src emacs-lisp :tangle yes
+  (defun my-create-newline-and-enter-sexp (&rest _ignored)
+    "Open a new brace or bracket expression, with relevant newlines and indent. "
     (newline)
+    (indent-according-to-mode)
     (forward-line -1)
-    (if newline-without-break-tab (indent-for-tab-command)))
+    (indent-according-to-mode))
 
-  ;;(define-key cua-global-keymap [C-return] nil) ;;ta bort C-return from cua
-  (define-key my-keys-map (kbd "<C-return>") 'newline-without-break-down)
-  (define-key my-keys-map (kbd "<C-S-return>") 'newline-without-break-up)
 
+  (sp-local-pair '(c-mode java-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  ;;(sp-local-pair 'java-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+
+#+end_src
+** dashboard
+#+begin_src emacs-lisp :tangle yes
+  (require 'dashboard)
+  (dashboard-setup-startup-hook)
+
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)))
 #+end_src
 * prog-mode-hook
 ** prog-mode
@@ -556,120 +797,6 @@ All default keybindings have been commented out in the source file 'auto-complet
 *** non-eclim
 #+begin_src emacs-lisp :tangle yes
 
-#+end_src
-* move lines from internet
-#+begin_src emacs-lisp :tangle yes
-  ;; (defun move-line (n)
-  ;;   "Move the current line up or down by N lines. Buggar for second last line i buffern"
-  ;;   (interactive "p")
-  ;;   (setq col (current-column))
-  ;;   (beginning-of-line)
-  ;;   (setq start (point))
-  ;;   (end-of-line)
-  ;;   (if (eobp)
-  ;;       (newline)
-  ;;     (forward-char))
-  ;;   (setq end (point))
-  ;;   (let ((line-text (delete-and-extract-region start end)))
-  ;;     (forward-line n)
-  ;;     (if (eobp) (newline))
-  ;;     (insert line-text)
-  ;;     ;; restore point to original column in moved line
-  ;;     (forward-line -1)
-  ;;     (move-to-column col)))
-
-  ;; (defun move-line-up (n)
-  ;;   "Move the current line up by N lines."
-  ;;   (interactive "p")
-  ;;   (move-line (if (null n) -1 (- n))))
-
-  ;; (defun move-line-down (n)
-  ;;   "Move the current line down by N lines."
-  ;;   (interactive "p")
-  ;;   (move-line (if (null n) 1 n)))
-
-  (defun move-line-up ()
-    (interactive)
-    (let ((col (current-column)))
-      (transpose-lines 1)
-      (previous-line 2)
-      (move-to-column col)))
-
-  (defun move-line-down ()
-    (interactive)
-    (let ((col (current-column)))
-      (next-line 1)
-      (transpose-lines 1)
-      (previous-line 1)
-      (move-to-column col)))
-
-  ;; (define-key my-keys-map (kbd "M-<up>") 'move-line-up)
-  ;; (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
-
-#+end_src
-* golden ratio scroll
-#+begin_src emacs-lisp :tangle yes
-  (global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
-  (global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
-#+end_src
-* projectile
-#+begin_src emacs-lisp :tangle yes
-  (projectile-global-mode t)
-  (counsel-projectile-on)
-#+end_src
-* dumb jump
-#+begin_src emacs-lisp :tangle yes
-  ;;(dumb-jump-mode)
-
-  ;;(fset 'eriks-dumb-jump-keymap (make-sparse-keymap))
-  (define-prefix-command 'eriks-dumb-jump-keymap)
-  (define-key eriks-map (kbd "j") 'eriks-dumb-jump-keymap)
-
-  (define-key 'eriks-dumb-jump-keymap (kbd "j") 'dumb-jump-go)
-  (define-key 'eriks-dumb-jump-keymap (kbd "b") 'dumb-jump-back)
-
-  (setq dumb-jump-selector 'ivy)
-
-#+end_src
-* neotree
-#+begin_src emacs-lisp :tangle yes
-  ;;When running ‘projectile-switch-project’ (C-c p p), ‘neotree’ will change root automatically.
-  ;;(setq projectile-switch-project-action 'neotree-projectile-action)
-
-  ;;Every time when the neotree window is opened, let it find current file and jump to node.
-  ;;(setq neo-smart-open t)
-
-  ;;Similar to find-file-in-project, NeoTree can be opened (toggled) at projectile project root as follows:
-  (defun neotree-project-dir ()
-    "Open NeoTree using the git root."
-    (interactive)
-    (let ((project-dir (projectile-project-root))
-          (file-name (buffer-file-name)))
-      (neotree-toggle)
-      (if project-dir
-          (if (neo-global--window-exists-p)
-              (progn
-                (neotree-dir project-dir)
-                (neotree-find file-name)))
-        (message "Could not find git project root."))))
-
-  ;; (global-set-key [f8] 'neotree-toggle)
-  ;; (global-set-key (kbd "S-<f8>") 'neotree-find)
-  ;; (global-set-key [f9] 'neotree-project-dir)
-
-  (defhydra hydra-neotree (:color blue)
-    "neotree"
-    ("<f8>" neotree-toggle "toggle")
-    ("f" neotree-find "file dir")
-    ("p" neotree-project-dir "project dir"))
-  (define-key my-keys-map (kbd "<f8>") 'hydra-neotree/body)
-#+end_src
-* multiple cursors
-#+begin_src emacs-lisp :tangle yes
-  ;; (define-key 'eriks-map (kbd "m l") 'mc/edit-lines)
-  ;; (define-key 'eriks-map (kbd "m m") 'mc/mark-next-like-this)
-  ;; (define-key 'eriks-map (kbd "m n") 'mc/mark-previous-like-this)
-  ;; (define-key 'eriks-map (kbd "m b") 'mc/mark-all-like-this)
 #+end_src
 * Hydra
 ** various hydras
@@ -813,84 +940,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 ------------------------------------------------------
  [h] : grej  [g] : sasd  [<right>] : hej!  [a] : asd!
                          [F]       : :)
-* paredit
-#+begin_src emacs-lisp :tangle yes
-  ;; (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-backward-slurp-sexp)
-  ;; (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-backward-barf-sexp)
-#+end_src
-* smartparens
-** standard config
-#+begin_src emacs-lisp :tangle yes
-  (require 'smartparens-config)
-
-  (defun start-smartparens ()
-    (smartparens-mode t)
-
-    (define-key smartparens-mode-map (kbd "C-M-SPC") 'sp-mark-sexp)
-
-    (define-key smartparens-mode-map (kbd "C-M-n") 'sp-next-sexp)
-    (define-key smartparens-mode-map (kbd "C-M-p") 'sp-previous-sexp)
-
-    (define-key smartparens-mode-map (kbd "C-M-u") 'sp-backward-up-sexp)
-    (define-key smartparens-mode-map (kbd "C-M-d") 'sp-down-sexp)
-
-    (define-key smartparens-mode-map (kbd "C-M-f") 'sp-forward-sexp)
-    (define-key smartparens-mode-map (kbd "C-M-b") 'sp-backward-sexp)
-    
-    (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
-
-    ;;(define-key smartparens-mode-map (kbd "M-f") 'sp-forward-symbol)
-    ;;(define-key smartparens-mode-map (kbd "M-b") 'sp-backward-symbol)
-    
-    )
-
-  (defun start-hydra-smartparens-if-activated ()
-    (interactive)
-    (if (bound-and-true-p smartparens-mode)
-        (hydra-smartparens/body)
-      (message "smartparens not activated!")))
-
-  (define-key eriks-map (kbd "p") 'hydra-smartparens/body) ;;'start-hydra-smartparens-if-activated
-
-  (defhydra hydra-smartparens (:color blue)
-    "
-   ^forward^      ^backward^     ^Sexp^          ^Hybrid^
-  ^^^^^^^^-----------------------------------------------------
-   [_m_] : barf   [_i_] : slurp  [_K_] : kill    [_k_] : kill
-   [_n_] : slurp  [_o_] : barf   [_s_] : splice  [_w_] : slurp
-    ^ ^            ^ ^           [_S_] : split   [_e_] : barf
-    ^ ^            ^ ^           [_J_] : join     ^ ^
-  "
-    ("K" sp-kill-sexp nil)
-    ("s" sp-splice-sexp nil)
-    ("S" sp-split-sexp nil)
-    ("J" sp-join-sexp nil)
-    ("m" sp-forward-barf-sexp nil)
-    ("n" sp-forward-slurp-sexp nil)
-    ("i" sp-backward-slurp-sexp nil)
-    ("o" sp-backward-barf-sexp nil)
-    ("k" sp-kill-hybrid-sexp nil)
-    ("w" sp-slurp-hybrid-sexp nil)
-    ("e" sp-dedent-adjust-sexp nil)
-    )
-  ;;("q" nil "Quit" :color blue)
-
-#+end_src
-** parenthesis
-#+begin_src emacs-lisp :tangle yes
-  (defun my-create-newline-and-enter-sexp (&rest _ignored)
-    "Open a new brace or bracket expression, with relevant newlines and indent. "
-    (newline)
-    (indent-according-to-mode)
-    (forward-line -1)
-    (indent-according-to-mode))
-
-
-  (sp-local-pair '(c-mode java-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
-  ;;(sp-local-pair 'java-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
-
-#+end_src
-* rectangles
+** rectangles
 #+begin_src emacs-lisp :tangle yes
   (require 'picture)
 
@@ -959,149 +1009,6 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("u" undo nil)
     ("q" nil nil))
   (define-key my-keys-map (kbd "C-x SPC") 'hydra-rectangle/body)
-#+end_src
-* dashboard
-#+begin_src emacs-lisp :tangle yes
-  (require 'dashboard)
-  (dashboard-setup-startup-hook)
-
-  (setq dashboard-items '((recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)))
-#+end_src
-* eriks smart delete stuff o copy o stuff
-#+begin_src emacs-lisp :tangle yes
-  (defun eriks-delete-stuff (dir symbol arg)
-    (if (equal arg '(4))
-        (eriks-hungry-delete-whitespace dir)
-      (let ((p (* dir (prefix-numeric-value arg))))
-        (if symbol
-            (sp-delete-symbol p)
-          (sp-delete-word p)))))
-
-  (defun eriks-delete-backward (ARG)
-    (interactive "P")
-    (eriks-delete-stuff -1 nil ARG))
-
-  (defun eriks-delete-forward (ARG)
-    (interactive "P")
-    (eriks-delete-stuff 1 nil ARG))
-
-  (defun eriks-delete-forward-symbol (ARG)
-    (interactive "P")
-    (eriks-delete-stuff 1 t ARG))
-
-  (defun eriks-delete-backward-symbol (ARG)
-    (interactive "P")
-    (eriks-delete-stuff -1 t ARG))
-
-  (defun eriks-hungry-delete-whitespace (ARG)
-    (interactive "p")
-    (if (< ARG 0)
-        (while (is-boundary (preceding-char))
-          (delete-backward-char 1))
-      (while (is-boundary (following-char))
-        (delete-char 1))))
-
-  (define-key my-keys-map (kbd "C-<backspace>") 'eriks-delete-backward)
-  (define-key my-keys-map (kbd "C-<delete>") 'eriks-delete-forward)
-
-  (defun eriks-duplicate-line ()
-    (interactive)
-    (let* ((b (progn
-                (beginning-of-line)
-                (point)))
-           (e (progn
-                (end-of-line)
-                (point)))
-           (line (buffer-substring b e)))
-      (end-of-line)
-      (newline)
-      (insert line)))
-
-  ;;TODO make ARG execute the command ARG times
-  (defun eriks-find-char (ARG c)
-    "Like vim's f-command.
-
-  With no prefix argument or as 1, move cursor forward until the first occurence of c.
-  With ARG as -1 (M--), move backward until the first occurence of c.
-  If c can't be found, do nothing and print a nice message.
-
-  Ignores case!
-
-  Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'"
-    (interactive "p\ncJump to char: ")
-    (setq eriks-find-char-last-command (list ARG c))
-    (let ((start (point))
-          (finished nil))
-      (while (and
-              (not (or
-                    (and (> ARG 0) (eobp))
-                    (and (< ARG 0) (bobp))))
-              (not finished))
-        (forward-char ARG)
-        (if (= (downcase c) (downcase (following-char)))
-            (setq finished t)))
-      (if (not finished)
-          (progn
-            (goto-char start)
-            (message "Couldn't find '%c' :(" c)))))
-
-  (defun eriks-find-char-backward (ARG c)
-    "Exactly the same bahaviour as `eriks-find-char' except this goes backwards by negating ARG"
-    (interactive "p\ncJump to char backwards: ")
-    (eriks-find-char (- 0 ARG) c))
-
-  (defun eriks-find-char-repeat ()
-    "Repeats the last call to `eriks-find-char' or `eriks-find-char-backward'"
-    (interactive)
-    (let ((l eriks-find-char-last-command))
-      (if (boundp 'eriks-find-char-last-command)
-          (let ((arg (nth 0 l))
-                (c (nth 1 l)))
-            (message "Searching for '%c' with ARG=%d" c arg)
-            (eriks-find-char arg c))
-        (message "You havent even called eriks-find-char even once :("))))
-
-  ;; (defun eriks-find-char-cur (ARG)
-  ;;   "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
-  ;;   (interactive "p")
-  ;;   (eriks-find-char ARG (following-char)))
-
-  (defun eriks-repeat ()
-    "If the last command was `eriks-find-char' or `eriks-find-char-backward' then use `eriks-find-char-repeat' to properly repeat them.
-  Else do a normal `repeat'"
-    (interactive)
-    (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
-    (setq real-this-command last-repeatable-command)
-    (cond ((or
-            (eq last-repeatable-command 'eriks-find-char)
-            (eq last-repeatable-command 'eriks-find-char-backward))
-           (eriks-find-char-repeat))
-          (t (call-interactively 'repeat))))
-
-  (defun eriks-insert-char (ARG c)
-    (interactive "p\ncInsert: ")
-    (dotimes (i ARG)
-      (insert c)))
-
-  (defun eriks-skip-space (ARG)
-    "Move point forward or backward until it doesnt encounter whitespace anymore."
-    (interactive "p")
-    (if (< ARG 0)
-        (while (is-boundary (preceding-char))
-          (left-char))
-      (while (is-boundary (following-char))
-        (right-char))))
-
-  (defun eriks-beginning-of-line (ARG)
-    "Just as `beginning-of-line' except if prefixed with C-u it skips over whitespace at the beginning of the line."
-    (interactive "P")
-    (beginning-of-line)
-    (if (equal ARG '(4))
-        (eriks-skip-space 1)))
-
-  (define-key my-keys-map (kbd "C-a") 'eriks-beginning-of-line)
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes

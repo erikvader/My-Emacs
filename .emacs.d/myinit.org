@@ -138,6 +138,11 @@ reflected in the local value.
   (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
   (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
   (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
+
+  (defun eriks-pop-kill-ring ()
+    (interactive)
+    (setq kill-ring (cdr kill-ring)))
+
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -236,29 +241,29 @@ reflected in the local value.
 #+end_src
 ** erik-funktioner
 #+begin_src emacs-lisp :tangle yes
-  (defun eriks-delete-stuff (dir symbol arg)
-    (if (equal arg '(4))
-        (eriks-hungry-delete-whitespace dir)
-      (let ((p (* dir (prefix-numeric-value arg))))
-        (if symbol
-            (sp-delete-symbol p)
-          (sp-delete-word p)))))
+  ;; (defun eriks-kill-stuff (dir symbol arg)
+  ;;   (if (equal arg '(4))
+  ;;       (eriks-hungry-delete-whitespace dir)
+  ;;     (let ((p (* dir (prefix-numeric-value arg))))
+  ;;       (if symbol
+  ;;           (sp-kill-symbol p)
+  ;;         (sp-kill-word p)))))
 
-  (defun eriks-delete-backward (ARG)
-    (interactive "P")
-    (eriks-delete-stuff -1 nil ARG))
+  ;; (defun eriks-kill-backward (ARG)
+  ;;   (interactive "P")
+  ;;   (eriks-kill-stuff -1 nil ARG))
 
-  (defun eriks-delete-forward (ARG)
-    (interactive "P")
-    (eriks-delete-stuff 1 nil ARG))
+  ;; (defun eriks-kill-forward (ARG)
+  ;;   (interactive "P")
+  ;;   (eriks-kill-stuff 1 nil ARG))
 
-  (defun eriks-delete-forward-symbol (ARG)
-    (interactive "P")
-    (eriks-delete-stuff 1 t ARG))
+  ;; (defun eriks-kill-forward-symbol (ARG)
+  ;;   (interactive "P")
+  ;;   (eriks-kill-stuff 1 t ARG))
 
-  (defun eriks-delete-backward-symbol (ARG)
-    (interactive "P")
-    (eriks-delete-stuff -1 t ARG))
+  ;; (defun eriks-kill-backward-symbol (ARG)
+  ;;   (interactive "P")
+  ;;   (eriks-kill-stuff -1 t ARG))
 
   (defun eriks-hungry-delete-whitespace (ARG)
     (interactive "p")
@@ -268,8 +273,12 @@ reflected in the local value.
       (while (is-boundary (following-char))
         (delete-char 1))))
 
-  (define-key my-keys-map (kbd "C-<backspace>") 'eriks-delete-backward)
-  (define-key my-keys-map (kbd "C-<delete>") 'eriks-delete-forward)
+  (defun eriks-hungry-delete-whitespace-backward (ARG)
+    (interactive "p")
+    (eriks-hungry-delete-whitespace (- 0 ARG)))
+
+  ;; (define-key my-keys-map (kbd "C-<backspace>") 'eriks-delete-backward)
+  ;; (define-key my-keys-map (kbd "C-<delete>") 'eriks-delete-forward)
 
   (defun eriks-duplicate-line ()
     (interactive)
@@ -990,7 +999,6 @@ All default keybindings have been commented out in the source file 'auto-complet
 
 
   ;;   )
-  ;; ;;(setq kill-ring (cdr kill-ring)) ;;pop kill-ring
 
   ;; (move-rect 0 -1)
 
@@ -1116,16 +1124,40 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map "F" 'forward-symbol)
   (define-key modalka-mode-map "B" 'backward-symbol)
 
-  (modalka-define-kbd               "d d" "C-k")
-  (modalka-define-kbd               "d D" "C-M-k")
-  (modalka-define-kbd               "d f" "C-<delete>")
-  (modalka-define-kbd               "d b" "C-<backspace>")
-  (define-key modalka-mode-map (kbd "d F") 'eriks-delete-forward-symbol)
-  (define-key modalka-mode-map (kbd "d B") 'eriks-delete-backward-symbol)
-  (define-key modalka-mode-map (kbd "d l") 'eriks-kill-line)
-  (define-key modalka-mode-map (kbd "d r") 'delete-region)
+  (defun modalka-kill-to-delete (key)
+    "Binds 'd key' to execute 'D key' and popping the kill ring. 
+  This results in a kill function that doesn't save what it killed in the kill-ring."
+    (define-key modalka-mode-map (kbd (format "d %s" key))
+      (defalias (make-symbol "modalka-kill-delete")
+        `(lambda ()
+           (interactive)
+           (call-interactively (key-binding (kbd (format "D %s" ,key))))
+           (eriks-pop-kill-ring))
+        `(format "This command executes 'D %s' and removes what it killed from the kill-ring." ,key))))
 
+  ;;killing delete functions
+  (modalka-define-kbd               "D e"    "C-k")
+  (modalka-define-kbd               "D E"    "C-M-k")
+  (define-key modalka-mode-map (kbd "D f")   'sp-kill-word)
+  (define-key modalka-mode-map (kbd "D b")   'sp-backward-kill-word)
+  (define-key modalka-mode-map (kbd "D F")   'sp-kill-symbol)
+  (define-key modalka-mode-map (kbd "D B")   'sp-backward-kill-symbol)
+  (define-key modalka-mode-map (kbd "D d")   'kill-whole-line)
+  (define-key modalka-mode-map (kbd "D r")   'kill-region)
+  (define-key modalka-mode-map (kbd "D w f") 'eriks-hungry-delete-whitespace)
+  (define-key modalka-mode-map (kbd "D w b") 'eriks-hungry-delete-whitespace-backward)
 
+  ;;non-killing delete functions
+  (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
+  (define-key modalka-mode-map (kbd "d w b") 'eriks-hungry-delete-whitespace-backward)
+  (modalka-kill-to-delete "e")
+  (modalka-kill-to-delete "E")
+  (modalka-kill-to-delete "f")
+  (modalka-kill-to-delete "b")
+  (modalka-kill-to-delete "F")
+  (modalka-kill-to-delete "B")
+  (modalka-kill-to-delete "d")
+  (modalka-kill-to-delete "r")
 
   (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)

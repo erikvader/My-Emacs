@@ -343,12 +343,26 @@ reflected in the local value.
             (eq last-repeatable-command 'eriks-find-char)
             (eq last-repeatable-command 'eriks-find-char-backward))
            (eriks-find-char-repeat))
+          ((eq last-repeatable-command 'eriks-insert-char)
+           (eriks-insert-char-repeat))
           (t (call-interactively 'repeat))))
 
   (defun eriks-insert-char (ARG c)
     (interactive "p\ncInsert: ")
+    (setq eriks-insert-char-last-command (list ARG c))
     (dotimes (i ARG)
       (insert c)))
+
+  (defun eriks-insert-char-repeat ()
+    "Repeats the last call to `eriks-insert-char'"
+    (interactive)
+    (let ((l eriks-insert-char-last-command))
+      (if (boundp 'eriks-insert-char-last-command)
+          (let ((arg (nth 0 l))
+                (c (nth 1 l)))
+            (message "Searching for '%c' with ARG=%d" c arg)
+            (eriks-insert-char arg c))
+        (message "You havent even called eriks-insert-char even once :("))))
 
   (defun eriks-skip-space (ARG)
     "Move point forward or backward until it doesnt encounter whitespace anymore."

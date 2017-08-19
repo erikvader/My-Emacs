@@ -1181,12 +1181,12 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "X" "DEL")
 
   ;;avy
-  (define-key modalka-mode-map (kbd "g g") 'avy-goto-char)
-  (define-key modalka-mode-map (kbd "g l") 'avy-goto-line)
-  (define-key modalka-mode-map (kbd "g w") 'avy-goto-word-0)
-  (define-key modalka-mode-map (kbd "g n") 'goto-line)
-  (define-key modalka-mode-map (kbd "g a") 'beginning-of-buffer)
-  (define-key modalka-mode-map (kbd "g e") 'end-of-buffer)
+  (define-key modalka-mode-map (kbd "g") 'avy-goto-char)
+  (define-key modalka-mode-map (kbd "G l") 'avy-goto-line)
+  (define-key modalka-mode-map (kbd "G w") 'avy-goto-word-0)
+  (define-key modalka-mode-map (kbd "G n") 'goto-line)
+  (define-key modalka-mode-map (kbd "G a") 'beginning-of-buffer)
+  (define-key modalka-mode-map (kbd "G e") 'end-of-buffer)
 
   (modalka-define-kbd "q" "C-q")
 

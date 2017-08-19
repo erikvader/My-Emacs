@@ -1131,8 +1131,11 @@ All default keybindings have been commented out in the source file 'auto-complet
       (defalias (make-symbol "modalka-kill-delete")
         `(lambda ()
            (interactive)
-           (call-interactively (key-binding (kbd (format "D %s" ,key))))
-           (eriks-pop-kill-ring))
+           (let ((len (length kill-ring)))
+             (call-interactively (key-binding (kbd (format "D %s" ,key))))
+             (let ((ite (- (length kill-ring) len)))
+               (dotimes (i ite)
+                 (eriks-pop-kill-ring)))))
         `(format "This command executes 'D %s' and removes what it killed from the kill-ring." ,key))))
 
   ;;killing delete functions

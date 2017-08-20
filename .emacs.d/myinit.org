@@ -99,14 +99,15 @@ reflected in the local value.
 
   (winner-mode 1)
 
-  (global-disable-mouse-mode)
+  ;;(global-disable-mouse-mode)
 
   (define-key my-keys-map (kbd "C-+") 'er/expand-region)
   (global-set-key (kbd "M-s r") 'isearch-query-replace-regexp)
   (global-set-key (kbd "M-s s") 'isearch-forward-regexp)
   (global-set-key (kbd "M-s S") 'isearch-backward-regexp)
 
-  (global-auto-revert-mode t)
+  ;;magit fixar detta redan med ett egen global mode
+  ;;(global-auto-revert-mode t)
 
   (define-key input-decode-map [?\C-i] [C-i])
   ;;(global-set-key (kbd "<C-i>") 'indent-region)
@@ -707,6 +708,13 @@ All default keybindings have been commented out in the source file 'auto-complet
                           (bookmarks . 5)
                           (projects . 5)))
 #+end_src
+** outshine
+#+begin_src emacs-lisp :tangle yes
+  (require 'outshine)
+  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  (defvar outline-minor-mode-prefix "\M-#")
+
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes
@@ -1246,6 +1254,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'auto-complete-mode)
   (diminish 'yas-minor-mode)
   (diminish 'global-disable-mouse-mode)
+  (diminish 'auto-revert-mode)
 
   ;;rm-text-properties, ta bort sakerna som smart-mode-line lägger till (face och sml/global(?)).
   (diminish 'modalka-mode (format " %s" (propertize (all-the-icons-fileicon "emacs")
@@ -1257,6 +1266,8 @@ All default keybindings have been commented out in the source file 'auto-complet
                                                           'face `(:family ,(all-the-icons-faicon-family) :height 0.9)
                                                           'display '(raise 0.0)
                                                           )))
+
+  (diminish 'outline-minor-mode (propertize " O" 'face '(:foreground "green")))
 
   (diminish 'smartparens-mode)
 

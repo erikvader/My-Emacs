@@ -1254,7 +1254,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'auto-complete-mode)
   (diminish 'yas-minor-mode)
   (diminish 'global-disable-mouse-mode)
-  (diminish 'auto-revert-mode)
+  ;;(diminish 'auto-revert-mode)
 
   ;;rm-text-properties, ta bort sakerna som smart-mode-line lägger till (face och sml/global(?)).
   (diminish 'modalka-mode (format " %s" (propertize (all-the-icons-fileicon "emacs")

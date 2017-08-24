@@ -153,6 +153,9 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-SPC") 'eriks-map)
   (define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
 
+  (define-key eriks-map (kbd "f r") 'fill-region)
+  (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
+
   (defun eriks-kill-line ()
     "Kills (cuts) the whole current line"
     (interactive)

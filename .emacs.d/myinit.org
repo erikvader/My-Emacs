@@ -142,7 +142,8 @@ reflected in the local value.
 
   (defun eriks-pop-kill-ring ()
     (interactive)
-    (setq kill-ring (cdr kill-ring)))
+    (setq kill-ring (cdr kill-ring))
+    (setq kill-ring-yank-pointer kill-ring))
 
 #+end_src
 * Eriks map / prefix key

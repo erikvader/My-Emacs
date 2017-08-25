@@ -715,8 +715,8 @@ All default keybindings have been commented out in the source file 'auto-complet
 ** outshine
 #+begin_src emacs-lisp :tangle yes
   (require 'outshine)
-  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
-  (defvar outline-minor-mode-prefix "\M-#")
+  ;; (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  ;; (defvar outline-minor-mode-prefix "\M-#")
 
 #+end_src
 * prog-mode-hook
@@ -733,31 +733,84 @@ All default keybindings have been commented out in the source file 'auto-complet
               (rainbow-delimiters-mode t)
               (modalka-mode 1)))
 #+end_src
-** C-mode hook
+** C-like modes
+*** common
 #+begin_src emacs-lisp :tangle yes
   (add-hook 'c-mode-common-hook
+              (lambda ()
+                (run-hooks 'abbrev-mode-hook) ;;för att den inte verkar göra det själv
+                (setq-local comment-start "//")
+                (setq-local comment-end "")
+
+                ;;hs-minor-mode (hideShow)
+
+                ;;(add-to-list 'ac-sources 'ac-source-c-headers)
+                ;;(add-to-list 'ac-sources 'ac-source-c-header-symbols t)
+                ;; (define-key c-mode-base-map (kbd "<C-S-return>")
+                ;;   (lambda ()
+                ;;     (interactive)
+                ;;     (newline-without-break-up t)))
+
+                ;; (define-key c-mode-base-map (kbd "<C-return>")
+                ;;   (lambda ()
+                ;;     (interactive)
+                ;;     (newline-without-break-down t)))
+
+                ;;(electric-pair-mode 1)
+                ;;(make-local-variable 'newline-without-break-tab)
+                ;;(setq newline-without-break-tab t)
+                ;;(autopair-mode)
+                ;;(setq show-trailing-whitespace t)
+                ))
+
+#+end_src
+*** c
+#+begin_src emacs-lisp :tangle yes
+  (add-hook c-mode-hook
             (lambda ()
               (flycheck-mode 1)
-              (run-hooks 'abbrev-mode-hook) ;;för att den inte verkar göra det själv
-
-              ;;(add-to-list 'ac-sources 'ac-source-c-headers)
-              ;;(add-to-list 'ac-sources 'ac-source-c-header-symbols t)
-              ;; (define-key c-mode-base-map (kbd "<C-S-return>")
-              ;;   (lambda ()
-              ;;     (interactive)
-              ;;     (newline-without-break-up t)))
-
-              ;; (define-key c-mode-base-map (kbd "<C-return>")
-              ;;   (lambda ()
-              ;;     (interactive)
-              ;;     (newline-without-break-down t)))
-
-              ;;(electric-pair-mode 1)
-              ;;(make-local-variable 'newline-without-break-tab)
-              ;;(setq newline-without-break-tab t)
-              ;;(autopair-mode)
-              ;;(setq show-trailing-whitespace t)
               ))
+#+end_src
+*** java
+#+begin_src emacs-lisp :tangle yes
+  (require 'eclim)
+  (setq eclimd-autostart nil)
+
+  (custom-set-variables
+   '(eclim-eclipse-dirs '("~/bin/eclipse-neon"))
+   '(eclim-executable "~/bin/eclipse-neon/eclim"))
+
+  ;;(setq help-at-pt-display-when-idle t)
+  ;;(setq help-at-pt-timer-delay 0.1)
+  ;;(help-at-pt-set-timer)
+
+  (add-hook 'eclim-mode-hook
+            (lambda ()
+              (define-key eclim-mode-map (kbd "C-c C-e C-b") 'eclim-project-build)
+              (define-key eclim-mode-map (kbd "C-c C-e d") nil)
+              (define-key eclim-mode-map (kbd "C-c C-e d d") 'eclim-java-show-documentation-for-current-element)
+              (define-key eclim-mode-map (kbd "C-c C-e d f") 'eclim-java-browse-documentation-at-point)
+              (define-key eclim-mode-map (kbd "C-c C-e d s") 'eclim-java-doc-comment)
+              ))
+
+  (add-hook 'java-mode-hook
+            (lambda ()
+              (start-eclim-if-inside-eclipse-workspace)))
+
+  (defun eclim-java-start ()
+    (interactive)
+    (eclim-mode t)
+    (require 'ac-emacs-eclim)
+    ;;(ac-emacs-eclim-config)
+    (ac-emacs-eclim-java-setup)
+    )
+
+  (defun start-eclim-if-inside-eclipse-workspace ()
+    (if (null (search "workspace" (buffer-file-name)))
+        ()
+      (eclim-java-start)))
+
+
 #+end_src
 ** lisp hook
 #+begin_src emacs-lisp :tangle yes
@@ -787,53 +840,6 @@ All default keybindings have been commented out in the source file 'auto-complet
 
               ;; (electric-pair-mode 1)
               ))
-#+end_src
-** java hook
-*** eclim
-#+begin_src emacs-lisp :tangle yes
-  (require 'eclim)
-  (setq eclimd-autostart nil)
-
-  (custom-set-variables
-   '(eclim-eclipse-dirs '("~/bin/eclipse-neon"))
-   '(eclim-executable "~/bin/eclipse-neon/eclim"))
-
-  ;;(setq help-at-pt-display-when-idle t)
-  ;;(setq help-at-pt-timer-delay 0.1)
-  ;;(help-at-pt-set-timer)
-
-  (add-hook 'eclim-mode-hook
-            (lambda ()
-              (define-key eclim-mode-map (kbd "C-c C-e C-b") 'eclim-project-build)
-              (define-key eclim-mode-map (kbd "C-c C-e d") nil)
-              (define-key eclim-mode-map (kbd "C-c C-e d d") 'eclim-java-show-documentation-for-current-element)
-              (define-key eclim-mode-map (kbd "C-c C-e d f") 'eclim-java-browse-documentation-at-point)
-              (define-key eclim-mode-map (kbd "C-c C-e d s") 'eclim-java-doc-comment)
-              ))
-
-  (add-hook 'java-mode-hook
-            (lambda ()
-              (flycheck-mode -1)
-              (start-eclim-if-inside-eclipse-workspace)))
-
-  (defun eclim-java-start ()
-    (interactive)
-    (eclim-mode t)
-    (require 'ac-emacs-eclim)
-    ;;(ac-emacs-eclim-config)
-    (ac-emacs-eclim-java-setup)
-    )
-
-  (defun start-eclim-if-inside-eclipse-workspace ()
-    (if (null (search "workspace" (buffer-file-name)))
-        ()
-      (eclim-java-start)))
-
-
-#+end_src
-*** non-eclim
-#+begin_src emacs-lisp :tangle yes
-
 #+end_src
 * Hydra
 ** various hydras

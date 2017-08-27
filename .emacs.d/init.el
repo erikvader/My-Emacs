@@ -17,6 +17,8 @@
 
 (server-start)
 
+(require 'cc-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -59,6 +61,8 @@
  '(global-linum-mode t)
  '(indent-tabs-mode nil)
  '(js-indent-level 3)
+ '(linum-relative-current-symbol "")
+ '(linum-relative-lighter "")
  '(menu-bar-mode nil)
  '(modalka-excluded-modes (quote (dired-mode)))
  '(my-keys-minor-mode t)

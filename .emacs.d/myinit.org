@@ -398,6 +398,17 @@ reflected in the local value.
         (eriks-skip-space 1)))
 
   (define-key my-keys-map (kbd "C-a") 'eriks-beginning-of-line)
+
+  (defun eriks-kill-paragraph ()
+    "Kills the current paragraph point is in."
+    (interactive)
+    (mark-paragraph)
+    (kill-region (point) (mark)))
+
+  (defun eriks-backward-kill-line ()
+    (interactive)
+    (kill-line 0))
+
 #+end_src
 ** o and O from VIM
 #+begin_src emacs-lisp :tangle yes
@@ -946,6 +957,19 @@ All default keybindings have been commented out in the source file 'auto-complet
     (transpose-words -1)
     (backward-word))
 
+  (defun eriks-transpose-paragraph-forward ()
+    (interactive)
+    (transpose-paragraphs 1))
+
+  (defun eriks-transpose-paragraph-backward ()
+    (interactive)
+    (transpose-paragraphs -1)
+    (backward-paragraph))
+
+  (defun eriks-exchange-paragraphs ()
+    (interactive)
+    (transpose-paragraphs 0))
+
   (defhydra hydra-transpose ()
     "Transpose: "
     ("k" move-line-up "line up")
@@ -954,6 +978,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("l" eriks-transpose-char-forward "char forward")
     ("f" eriks-transpose-word-forward "word forward")
     ("b" eriks-transpose-word-backward "word backward")
+    ("n" eriks-transpose-paragraph-forward "paragraph forward")
+    ("p" eriks-transpose-paragraph-backward "paragraph backward")
+    ("e" eriks-exchange-paragraphs "paragraph exhange")
     ("q" nil "quit"))
 
 
@@ -1141,6 +1168,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "J" "C-M-d")
   (modalka-define-kbd "L" "C-M-f")
 
+  (modalka-define-kbd "C-j" "M-}")
+  (modalka-define-kbd "C-k" "M-{")
+
   (modalka-define-kbd "f" "M-f")
   (modalka-define-kbd "b" "M-b")
   (define-key modalka-mode-map "F" 'forward-symbol)
@@ -1163,6 +1193,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;killing delete functions
   (modalka-define-kbd               "D e"    "C-k")
   (modalka-define-kbd               "D E"    "C-M-k")
+  (define-key modalka-mode-map (kbd "D a")   'eriks-backward-kill-line)
   (define-key modalka-mode-map (kbd "D f")   'sp-kill-word)
   (define-key modalka-mode-map (kbd "D b")   'sp-backward-kill-word)
   (define-key modalka-mode-map (kbd "D F")   'sp-kill-symbol)
@@ -1171,6 +1202,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "D r")   'kill-region)
   (define-key modalka-mode-map (kbd "D w f") 'eriks-hungry-delete-whitespace)
   (define-key modalka-mode-map (kbd "D w b") 'eriks-hungry-delete-whitespace-backward)
+  (define-key modalka-mode-map (kbd "D p")   'eriks-kill-paragraph)
 
   ;;non-killing delete functions
   (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
@@ -1183,6 +1215,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-kill-to-delete "B")
   (modalka-kill-to-delete "d")
   (modalka-kill-to-delete "r")
+  (modalka-kill-to-delete "p")
+  (modalka-kill-to-delete "a")
 
   (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)

@@ -1168,8 +1168,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "J" "C-M-d")
   (modalka-define-kbd "L" "C-M-f")
 
-  (modalka-define-kbd "C-j" "M-}")
-  (modalka-define-kbd "C-k" "M-{")
+  (define-key modalka-mode-map (kbd "C-k") 'backward-paragraph)
+  (define-key modalka-mode-map (kbd "C-j") 'forward-paragraph)
 
   (modalka-define-kbd "f" "M-f")
   (modalka-define-kbd "b" "M-b")
@@ -1191,8 +1191,8 @@ All default keybindings have been commented out in the source file 'auto-complet
         `(format "This command executes 'D %s' and removes what it killed from the kill-ring." ,key))))
 
   ;;killing delete functions
-  (modalka-define-kbd               "D e"    "C-k")
-  (modalka-define-kbd               "D E"    "C-M-k")
+  (define-key modalka-mode-map (kbd "D e")   'kill-line)
+  ;;(modalka-define-kbd               "D E"    "C-M-k")
   (define-key modalka-mode-map (kbd "D a")   'eriks-backward-kill-line)
   (define-key modalka-mode-map (kbd "D f")   'sp-kill-word)
   (define-key modalka-mode-map (kbd "D b")   'sp-backward-kill-word)

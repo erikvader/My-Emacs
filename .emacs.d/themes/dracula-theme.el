@@ -32,6 +32,7 @@
       (builtin "#ffb86c")
       (keyword "#ff79c6")
       (const   "#8be9fd")
+      (const2  "cyan")
       (comment "#6272a4")
       (func    "#50fa7b")
       (str     "#f1fa8c")
@@ -218,6 +219,7 @@
    `(js3-warning-face ((,class (:underline ,keyword))))
    ;; magit
    `(magit-branch ((,class (:foreground ,const :weight bold))))
+   `(magit-branch-local ((,class (:foreground ,const2 :weight bold))))
    `(magit-diff-context-highlight ((,class (:background ,bg3 :foreground ,fg3))))
    `(magit-diff-file-header ((,class (:foreground ,fg2 :background ,bg3))))
    `(magit-diffstat-added   ((,class (:foreground ,type))))

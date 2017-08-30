@@ -732,6 +732,41 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;; (defvar outline-minor-mode-prefix "\M-#")
 
 #+end_src
+** ibuffer
+#+begin_src emacs-lisp :tangle yes
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("dired" (mode . dired-mode))
+                 ;;("perl" (mode . cperl-mode))
+                 ;;("erc" (mode . erc-mode))
+                 ;; ("planner" (or
+                 ;;             (name . "^\\*Calendar\\*$")
+                 ;;             (name . "^diary$")
+                 ;;             (mode . muse-mode)))
+                 ("emacs" (or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$")
+                           (name . "^\\*dashboard\\*$")
+                           (mode . help-mode)
+                           (name . "^\\*Customize.*")))
+                 ("magit" (name . "^\\*magit:.*"))
+                 ;; ("gnus" (or
+                 ;;          (mode . message-mode)
+                 ;;          (mode . bbdb-mode)
+                 ;;          (mode . mail-mode)
+                 ;;          (mode . gnus-group-mode)
+                 ;;          (mode . gnus-summary-mode)
+                 ;;          (mode . gnus-article-mode)
+                 ;;          (name . "^\\.bbdb$")
+                 ;;          (name . "^\\.newsrc-dribble")))
+                 ))))
+
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-switch-to-saved-filter-groups "default")))
+
+  (define-key my-keys-map (kbd "C-x C-b") 'ibuffer)
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes

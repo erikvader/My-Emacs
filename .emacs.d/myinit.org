@@ -145,6 +145,7 @@ reflected in the local value.
     (setq kill-ring (cdr kill-ring))
     (setq kill-ring-yank-pointer kill-ring))
 
+  (setq line-move-visual nil)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -158,6 +159,12 @@ reflected in the local value.
   (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
 
   (define-key eriks-map (kbd "r") 'linum-relative-toggle)
+
+  (define-key eriks-map (kbd "l") 'eriks-toggle-visual-line)
+
+  (defun eriks-toggle-visual-line ()
+    (interactive)
+    (setq line-move-visual (not line-move-visual)))
 
   (defun eriks-kill-line ()
     "Kills (cuts) the whole current line"
@@ -314,14 +321,17 @@ reflected in the local value.
   Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'"
     (interactive "p\ncJump to char: ")
     (setq eriks-find-char-last-command (list ARG c))
-    (let ((start (point))
+    (let ((dir (if (>= ARG 0)
+                   1
+                 -1))
+          (start (point))
           (finished nil))
       (while (and
               (not (or
-                    (and (> ARG 0) (eobp))
-                    (and (< ARG 0) (bobp))))
+                    (and (> dir 0) (eobp))
+                    (and (< dir 0) (bobp))))
               (not finished))
-        (forward-char ARG)
+        (forward-char dir)
         (if (= (downcase c) (downcase (following-char)))
             (setq finished t)))
       (if (not finished)
@@ -330,7 +340,7 @@ reflected in the local value.
             (message "Couldn't find '%c' :(" c)))))
 
   (defun eriks-find-char-backward (ARG c)
-    "Exactly the same bahaviour as `eriks-find-char' except this goes backwards by negating ARG"
+    "Exactly the same behaviour as `eriks-find-char' except this goes backwards by negating ARG"
     (interactive "p\ncJump to char backwards: ")
     (eriks-find-char (- 0 ARG) c))
 
@@ -409,6 +419,11 @@ reflected in the local value.
     (interactive)
     (kill-line 0))
 
+  (defun eriks-mark-line ()
+    (interactive)
+    (beginning-of-line)
+    (push-mark (point) nil t)
+    (end-of-line))
 #+end_src
 ** o and O from VIM
 #+begin_src emacs-lisp :tangle yes
@@ -1184,7 +1199,11 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "Y" "M-y")
   ;;(modalka-define-kbd "m" "<C-m>")
   (define-key modalka-mode-map (kbd "m") 'set-mark-command)
-  (modalka-define-kbd "M" "C-M-SPC")
+  (modalka-define-kbd "M s" "C-M-SPC")
+  (modalka-define-kbd "M a" "C-x h")
+  (modalka-define-kbd "M w" "M-@")
+  (modalka-define-kbd "M p" "M-h")
+  (define-key modalka-mode-map (kbd "M l") 'eriks-mark-line)
 
   (modalka-define-kbd "u" "C-u")
 
@@ -1194,8 +1213,8 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   ;;vim
   (modalka-define-kbd "h" "C-b")
-  (modalka-define-kbd "k" "C-p")
-  (modalka-define-kbd "j" "C-n")
+  (define-key modalka-mode-map (kbd "j") 'next-line)
+  (define-key modalka-mode-map (kbd "k") 'previous-line)
   (modalka-define-kbd "l" "C-f")
 
   (modalka-define-kbd "H" "C-M-b")
@@ -1284,7 +1303,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (modalka-define-kbd "q" "C-q")
 
-  ;; (define-key modalka-mode-map (kbd "ö") 'hydra-windows/body)
+  (define-key modalka-mode-map (kbd "C-n") 'eriks-skip-space)
 
   (modalka-define-kbd "<left>" "")
   (modalka-define-kbd "<right>" "")

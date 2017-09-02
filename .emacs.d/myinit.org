@@ -146,6 +146,9 @@ reflected in the local value.
     (setq kill-ring-yank-pointer kill-ring))
 
   (setq line-move-visual nil)
+
+  ;;to fix bug with expand-region (issue 220 on github)
+  (setq shift-select-mode nil)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -157,6 +160,7 @@ reflected in the local value.
 
   (define-key eriks-map (kbd "f r") 'fill-region)
   (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
+  (define-key eriks-map (kbd "f f") 'fill-paragraph)
 
   (define-key eriks-map (kbd "r") 'linum-relative-toggle)
 
@@ -1203,6 +1207,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "M a" "C-x h")
   (modalka-define-kbd "M w" "M-@")
   (modalka-define-kbd "M p" "M-h")
+  (modalka-define-kbd "M d" "C-M-h")
   (define-key modalka-mode-map (kbd "M l") 'eriks-mark-line)
 
   (modalka-define-kbd "u" "C-u")

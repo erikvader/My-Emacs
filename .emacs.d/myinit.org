@@ -1,5 +1,15 @@
 #+STARTUP: overview
 #+STARTUP: indent
+* utils
+#+begin_src emacs-lisp :tangle yes
+  (defun or-list (l)
+    "returns t if something in l is t, nil otherwise"
+    (if (eq l '())
+        nil
+      (or (car l) (or-list (cdr l)))))
+
+
+#+end_src
 * Eriks keys minor mode
 [[https://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs/5340797][Source from stackoverflow]]
 #+begin_src emacs-lisp :tangle yes
@@ -322,7 +332,9 @@ reflected in the local value.
 
   Ignores case!
 
-  Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'"
+  Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'
+
+  returns t if successful, nil otherwise"
     (interactive "p\ncJump to char: ")
     (setq eriks-find-char-last-command (list ARG c))
     (let ((dir (if (>= ARG 0)
@@ -341,7 +353,9 @@ reflected in the local value.
       (if (not finished)
           (progn
             (goto-char start)
-            (message "Couldn't find '%c' :(" c)))))
+            (message "Couldn't find '%c' :(" c)
+            nil)
+        t)))
 
   (defun eriks-find-char-backward (ARG c)
     "Exactly the same behaviour as `eriks-find-char' except this goes backwards by negating ARG"
@@ -366,6 +380,7 @@ reflected in the local value.
 
   (defun eriks-repeat ()
     "If the last command was `eriks-find-char' or `eriks-find-char-backward' then use `eriks-find-char-repeat' to properly repeat them.
+  REPEATS MORE THAN THESE!
   Else do a normal `repeat'"
     (interactive)
     (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
@@ -376,6 +391,12 @@ reflected in the local value.
            (eriks-find-char-repeat))
           ((eq last-repeatable-command 'eriks-insert-char)
            (eriks-insert-char-repeat))
+          ((or
+            (eq last-repeatable-command 'eriks-zap-to-char)
+            (eq last-repeatable-command 'eriks-zap-to-char-backwards)
+            (eq last-repeatable-command 'eriks-zap-up-to-char)
+            (eq last-repeatable-command 'eriks-zap-up-to-char-backwards))
+           (eriks-zap-char-repeat))
           (t (call-interactively 'repeat))))
 
   (defun eriks-insert-char (ARG c)
@@ -454,6 +475,7 @@ reflected in the local value.
 
 #+end_src
 ** move lines from internet
+
 #+begin_src emacs-lisp :tangle yes
   ;; (defun move-line (n)
   ;;   "Move the current line up or down by N lines. Buggar for second last line i buffern"
@@ -501,6 +523,55 @@ reflected in the local value.
 
   ;; (define-key my-keys-map (kbd "M-<up>") 'move-line-up)
   ;; (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
+
+#+end_src
+** zap
+kills text up to a given char c. If c is not found then nothing happens.
+zap up to: not including c
+zap to   :     including c
+Stuff for repeating is saved in the variable 'eriks-zap-last-command'
+#+begin_src emacs-lisp :tangle yes
+  (defun eriks-zap-up-to-char (c)
+    "Documentation somewhere inside myinit.org"
+    (interactive "cZap up to: ")
+    (setq eriks-zap-last-command `(eriks-zap-up-to-char ,c))
+    (let ((start (point)))
+      (if (eriks-find-char 1 c)
+          (kill-region start (point)))))
+
+  (defun eriks-zap-to-char (c)
+    "Documentation somewhere inside myinit.org"
+    (interactive "cZap to: ")
+    (setq eriks-zap-last-command `(eriks-zap-to-char ,c))
+    (let ((start (point)))
+      (if (eriks-find-char 1 c)
+          (kill-region start (+ 1 (point))))))
+
+  (defun eriks-zap-up-to-char-backwards (c)
+    "Documentation somewhere inside myinit.org"
+    (interactive "cZap up to backwards: ")
+    (setq eriks-zap-last-command `(eriks-zap-up-to-char-backwards ,c))
+    (let ((start (point)))
+      (if (eriks-find-char -1 c)
+          (progn
+            (forward-char)
+            (kill-region start (point))))))
+
+  (defun eriks-zap-to-char-backwards (c)
+    "Documentation somewhere inside myinit.org"
+    (interactive "cZap to backwards: ")
+    (setq eriks-zap-last-command `(eriks-zap-to-char-backwards ,c))
+    (let ((start (point)))
+      (if (eriks-find-char -1 c)
+          (kill-region start (point)))))
+
+  (defun eriks-zap-char-repeat ()
+    "Documentation somewhere inside myinit.org"
+    (interactive)
+    (if (boundp 'eriks-zap-last-command)
+        (funcall (car eriks-zap-last-command) (nth 1 eriks-zap-last-command))))
+
+
 
 #+end_src
 * packages
@@ -1262,6 +1333,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "D w f") 'eriks-hungry-delete-whitespace)
   (define-key modalka-mode-map (kbd "D w b") 'eriks-hungry-delete-whitespace-backward)
   (define-key modalka-mode-map (kbd "D p")   'eriks-kill-paragraph)
+  (define-key modalka-mode-map (kbd "D n")   'eriks-zap-to-char)
+  (define-key modalka-mode-map (kbd "D N")   'eriks-zap-to-char-backwards)
+  (define-key modalka-mode-map (kbd "D u")   'eriks-zap-up-to-char)
+  (define-key modalka-mode-map (kbd "D U")   'eriks-zap-up-to-char-backwards)
 
   ;;non-killing delete functions
   (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
@@ -1276,6 +1351,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-kill-to-delete "r")
   (modalka-kill-to-delete "p")
   (modalka-kill-to-delete "a")
+  (modalka-kill-to-delete "n")
+  (modalka-kill-to-delete "N")
+  (modalka-kill-to-delete "u")
+  (modalka-kill-to-delete "U")
 
   (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)

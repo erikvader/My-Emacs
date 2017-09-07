@@ -12,67 +12,7 @@
 (or (file-exists-p package-user-dir)
     (package-refresh-contents))
 
-(setq package-list
-      '(ac-emacs-eclim
-        all-the-icons
-        all-the-icons-dired
-        async
-        auto-complete
-        autopair
-        avy
-        browse-kill-ring
-        buffer-move
-        charmap
-        counsel
-        counsel-projectile
-        dash
-        dashboard
-        diminish
-        disable-mouse
-        dumb-jump
-        eclim
-        epl
-        expand-region
-        f
-        flycheck
-        font-lock+
-        fontawesome
-        git-commit
-        golden-ratio-scroll-screen
-        hungry-delete
-        hydra
-        ivy
-        latex-preview-pane
-        let-alist
-        linum-relative
-        magit
-        magit-popup
-        markdown-mode
-        memoize
-        modalka
-        multiple-cursors
-        neotree
-        org-bullets
-        outorg
-        outshine
-        packed
-        page-break-lines
-        pkg-info
-        popup
-        projectile
-        rainbow-delimiters
-        rainbow-mode
-        rich-minority
-        s
-        seq
-        smart-mode-line
-        smartparens
-        swiper
-        tabbar
-        undo-tree
-        which-key
-        with-editor
-        yasnippet))
+(load-file "~/.emacs.d/my-package-list.el")
 
 ; install the missing packages
 (dolist (package package-list)

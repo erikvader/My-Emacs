@@ -15,7 +15,7 @@
 (setq package-list
       '(ac-emacs-eclim
         all-the-icons
-        all-the-icons-d...
+        all-the-icons-dired
         async
         auto-complete
         autopair
@@ -38,7 +38,7 @@
         font-lock+
         fontawesome
         git-commit
-        golden-ratio-sc...
+        golden-ratio-scroll-screen
         hungry-delete
         hydra
         ivy

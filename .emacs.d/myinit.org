@@ -1,12 +1,8 @@
 #+STARTUP: overview
 #+STARTUP: indent
-* utils
+* require
 #+begin_src emacs-lisp :tangle yes
-  (defun or-list (l)
-    "returns t if something in l is t, nil otherwise"
-    (if (eq l '())
-        nil
-      (or (car l) (or-list (cdr l)))))
+  (require 'cc-mode)
 
 
 #+end_src

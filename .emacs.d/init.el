@@ -6,7 +6,78 @@
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+
 (package-initialize)
+
+(or (file-exists-p package-user-dir)
+    (package-refresh-contents))
+
+(setq package-list
+      '(ac-emacs-eclim
+        all-the-icons
+        all-the-icons-d...
+        async
+        auto-complete
+        autopair
+        avy
+        browse-kill-ring
+        buffer-move
+        charmap
+        counsel
+        counsel-projectile
+        dash
+        dashboard
+        diminish
+        disable-mouse
+        dumb-jump
+        eclim
+        epl
+        expand-region
+        f
+        flycheck
+        font-lock+
+        fontawesome
+        git-commit
+        golden-ratio-sc...
+        hungry-delete
+        hydra
+        ivy
+        latex-preview-pane
+        let-alist
+        linum-relative
+        magit
+        magit-popup
+        markdown-mode
+        memoize
+        modalka
+        multiple-cursors
+        neotree
+        org-bullets
+        outorg
+        outshine
+        packed
+        page-break-lines
+        pkg-info
+        popup
+        projectile
+        rainbow-delimiters
+        rainbow-mode
+        rich-minority
+        s
+        seq
+        smart-mode-line
+        smartparens
+        swiper
+        tabbar
+        undo-tree
+        which-key
+        with-editor
+        yasnippet))
+
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'load-path "~/.emacs.d/themes/")
@@ -16,8 +87,6 @@
 ;;(add-to-list 'load-path "~/.emacs.d/small-libs")
 
 (server-start)
-
-(require 'cc-mode)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

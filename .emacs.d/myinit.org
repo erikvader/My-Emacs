@@ -425,6 +425,10 @@ reflected in the local value.
       (while (is-boundary (following-char))
         (right-char))))
 
+  (defun eriks-skip-space-backwards ()
+    (interactive)
+    (eriks-skip-space -1))
+
   (defun eriks-beginning-of-line (ARG)
     "Just as `beginning-of-line' except if prefixed with C-u it skips over whitespace at the beginning of the line."
     (interactive "P")
@@ -437,8 +441,7 @@ reflected in the local value.
   (defun eriks-kill-paragraph ()
     "Kills the current paragraph point is in."
     (interactive)
-    (mark-paragraph)
-    (kill-region (point) (mark)))
+    (eriks-kill-thing-at-point 'paragraph))
 
   (defun eriks-backward-kill-line ()
     (interactive)
@@ -571,6 +574,50 @@ Stuff for repeating is saved in the variable 'eriks-zap-last-command'
     (if (boundp 'eriks-zap-last-command)
         (funcall (car eriks-zap-last-command) (nth 1 eriks-zap-last-command))))
 
+
+
+#+end_src
+** inside word
+från stackoverflow
+#+begin_src emacs-lisp :tangle yes
+  (defun eriks-kill-thing-at-point (thing)
+    "Kill the `thing-at-point' for the specified kind of THING."
+    (let ((bounds (bounds-of-thing-at-point thing)))
+      (if bounds
+          (kill-region (car bounds) (cdr bounds))
+        (error "No %s at point" thing))))
+
+  (defun eriks-kill-word-at-point ()
+    "Kill the word at point."
+    (interactive)
+    (eriks-kill-thing-at-point 'word))
+
+  (defun eriks-kill-symbol-at-point ()
+    "Kill the symbol at point."
+    (interactive)
+    (eriks-kill-thing-at-point 'symbol))
+#+end_src
+** swiper
+#+begin_src emacs-lisp :tangle yes
+
+  (defun swiper-thing-at-point (thing)
+    (let ((bounds (bounds-of-thing-at-point thing)))
+      (if bounds
+          (swiper-selection (car bounds) (cdr bounds))
+        (error "No %s at point" thing))))
+
+  (defun swiper-selection (beg end)
+    (interactive "r")
+    (deactivate-mark)
+    (swiper (buffer-substring beg end)))
+
+  (defun swiper-word-at-point ()
+    (interactive)
+    (swiper-thing-at-point 'word))
+
+  (defun swiper-symbol-at-point ()
+    (interactive)
+    (swiper-thing-at-point 'symbol))
 
 
 #+end_src
@@ -1273,9 +1320,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "y" "C-y")
   (modalka-define-kbd "Y" "M-y")
   ;;(modalka-define-kbd "m" "<C-m>")
+
   (define-key modalka-mode-map (kbd "m") 'set-mark-command)
   (modalka-define-kbd "M s" "C-M-SPC")
-  (modalka-define-kbd "M a" "C-x h")
+  (modalka-define-kbd "M b" "C-x h")
   (modalka-define-kbd "M w" "M-@")
   (modalka-define-kbd "M p" "M-h")
   (modalka-define-kbd "M d" "C-M-h")
@@ -1320,6 +1368,12 @@ All default keybindings have been commented out in the source file 'auto-complet
                  (eriks-pop-kill-ring)))))
         `(format "This command executes 'D %s' and removes what it killed from the kill-ring." ,key))))
 
+  ;; (defun generic-kill (keys)
+  ;;   (interactive "k")
+  ;;   ;;(message "%s" keys)
+  ;;   (message "%s" current-prefix-arg)
+  ;;   (call-interactively (key-binding keys)))
+
   ;;killing delete functions
   (define-key modalka-mode-map (kbd "D e")   'kill-line)
   ;;(modalka-define-kbd               "D E"    "C-M-k")
@@ -1337,6 +1391,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "D N")   'eriks-zap-to-char-backwards)
   (define-key modalka-mode-map (kbd "D u")   'eriks-zap-up-to-char)
   (define-key modalka-mode-map (kbd "D U")   'eriks-zap-up-to-char-backwards)
+  (define-key modalka-mode-map (kbd "D i w") 'eriks-kill-word-at-point)
+  (define-key modalka-mode-map (kbd "D i W") 'eriks-kill-symbol-at-point)
 
   ;;non-killing delete functions
   (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
@@ -1355,6 +1411,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-kill-to-delete "N")
   (modalka-kill-to-delete "u")
   (modalka-kill-to-delete "U")
+  (modalka-kill-to-delete "i w")
+  (modalka-kill-to-delete "i W")
 
   (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
@@ -1368,7 +1426,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "p") 'hydra-smartparens/body)
 
   (modalka-define-kbd "s" "C-s")
-  (define-key modalka-mode-map (kbd "S") 'swiper-selection)
+  (define-key modalka-mode-map (kbd "S r") 'swiper-selection)
+  (define-key modalka-mode-map (kbd "S w") 'swiper-word-at-point)
+  (define-key modalka-mode-map (kbd "S W") 'swiper-symbol-at-point)
 
   (modalka-define-kbd "v" "C-v")
   (modalka-define-kbd "V" "M-v")
@@ -1385,9 +1445,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "G a") 'beginning-of-buffer)
   (define-key modalka-mode-map (kbd "G e") 'end-of-buffer)
 
-  (modalka-define-kbd "q" "C-q")
+  ;;(modalka-define-kbd "q" "C-q")
 
   (define-key modalka-mode-map (kbd "C-n") 'eriks-skip-space)
+  (define-key modalka-mode-map (kbd "C-S-n") 'eriks-skip-space-backwards)
 
   (modalka-define-kbd "<left>" "")
   (modalka-define-kbd "<right>" "")
@@ -1399,11 +1460,6 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (modalka-define-kbd "-" "M--")
   (define-key modalka-mode-map (kbd ",") 'repeat-complex-command)
-
-  (defun swiper-selection ()
-    (interactive)
-    (deactivate-mark)
-    (swiper (buffer-substring (point) (mark))))
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)

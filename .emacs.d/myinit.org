@@ -328,11 +328,11 @@ reflected in the local value.
 
   Ignores case!
 
-  Saves info for repetition with `eriks-find-char-repeat' in global variable `eriks-find-char-last-command'
+  uses `eriks-repeat'
 
   returns t if successful, nil otherwise"
     (interactive "p\ncJump to char: ")
-    (setq eriks-find-char-last-command (list ARG c))
+    (setq eriks-repeat-last-command (cons 'eriks-find-char (list ARG c)))
     (let ((dir (if (>= ARG 0)
                    1
                  -1))
@@ -356,61 +356,51 @@ reflected in the local value.
   (defun eriks-find-char-backward (ARG c)
     "Exactly the same behaviour as `eriks-find-char' except this goes backwards by negating ARG"
     (interactive "p\ncJump to char backwards: ")
-    (eriks-find-char (- 0 ARG) c))
-
-  (defun eriks-find-char-repeat ()
-    "Repeats the last call to `eriks-find-char' or `eriks-find-char-backward'"
-    (interactive)
-    (let ((l eriks-find-char-last-command))
-      (if (boundp 'eriks-find-char-last-command)
-          (let ((arg (nth 0 l))
-                (c (nth 1 l)))
-            (message "Searching for '%c' with ARG=%d" c arg)
-            (eriks-find-char arg c))
-        (message "You havent even called eriks-find-char even once :("))))
-
-  ;; (defun eriks-find-char-cur (ARG)
-  ;;   "Exactly the same as eriks-find-char, except this uses the current char under point instead of prompting for one."
-  ;;   (interactive "p")
-  ;;   (eriks-find-char ARG (following-char)))
+    (eriks-find-char (- 0 ARG) c)
+    (setq eriks-repeat-last-command (cons 'eriks-find-char-backward (list ARG c))))
 
   (defun eriks-repeat ()
-    "If the last command was `eriks-find-char' or `eriks-find-char-backward' then use `eriks-find-char-repeat' to properly repeat them.
-  REPEATS MORE THAN THESE!
+    "If the last command is an erik-function, then repeat it using the infromation in the variable `eriks-repeat-last-command'
   Else do a normal `repeat'"
     (interactive)
     (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
     (setq real-this-command last-repeatable-command)
-    (cond ((or
-            (eq last-repeatable-command 'eriks-find-char)
-            (eq last-repeatable-command 'eriks-find-char-backward))
-           (eriks-find-char-repeat))
-          ((eq last-repeatable-command 'eriks-insert-char)
-           (eriks-insert-char-repeat))
-          ((or
-            (eq last-repeatable-command 'eriks-zap-to-char)
-            (eq last-repeatable-command 'eriks-zap-to-char-backwards)
-            (eq last-repeatable-command 'eriks-zap-up-to-char)
-            (eq last-repeatable-command 'eriks-zap-up-to-char-backwards))
-           (eriks-zap-char-repeat))
-          (t (call-interactively 'repeat))))
+    (if (and
+         (boundp 'eriks-repeat-last-command)
+         (eq last-repeatable-command (car eriks-repeat-last-command)))
+        (apply (car eriks-repeat-last-command) (cdr eriks-repeat-last-command))
+      (call-interactively 'repeat))
+    ;; (cond ((or
+    ;;         (eq last-repeatable-command 'eriks-find-char)
+    ;;         (eq last-repeatable-command 'eriks-find-char-backward))
+    ;;        (eriks-find-char-repeat))
+    ;;       ((eq last-repeatable-command 'eriks-insert-char)
+    ;;        (eriks-insert-char-repeat))
+    ;;       ((or
+    ;;         (eq last-repeatable-command 'eriks-zap-to-char)
+    ;;         (eq last-repeatable-command 'eriks-zap-to-char-backwards)
+    ;;         (eq last-repeatable-command 'eriks-zap-up-to-char)
+    ;;         (eq last-repeatable-command 'eriks-zap-up-to-char-backwards))
+    ;;        (eriks-zap-char-repeat))
+    ;;       (t (call-interactively 'repeat)))
+    )
 
   (defun eriks-insert-char (ARG c)
     (interactive "p\ncInsert: ")
-    (setq eriks-insert-char-last-command (list ARG c))
+    (setq eriks-repeat-last-command (cons 'eriks-insert-char (list ARG c)))
     (dotimes (i ARG)
       (insert c)))
 
-  (defun eriks-insert-char-repeat ()
-    "Repeats the last call to `eriks-insert-char'"
-    (interactive)
-    (let ((l eriks-insert-char-last-command))
-      (if (boundp 'eriks-insert-char-last-command)
-          (let ((arg (nth 0 l))
-                (c (nth 1 l)))
-            (message "Searching for '%c' with ARG=%d" c arg)
-            (eriks-insert-char arg c))
-        (message "You havent even called eriks-insert-char even once :("))))
+  ;; (defun eriks-insert-char-repeat ()
+  ;;   "Repeats the last call to `eriks-insert-char'"
+  ;;   (interactive)
+  ;;   (let ((l eriks-insert-char-last-command))
+  ;;     (if (boundp 'eriks-insert-char-last-command)
+  ;;         (let ((arg (nth 0 l))
+  ;;               (c (nth 1 l)))
+  ;;           (message "Searching for '%c' with ARG=%d" c arg)
+  ;;           (eriks-insert-char arg c))
+  ;;       (message "You havent even called eriks-insert-char even once :("))))
 
   (defun eriks-skip-space (ARG)
     "Move point forward or backward until it doesnt encounter whitespace anymore."

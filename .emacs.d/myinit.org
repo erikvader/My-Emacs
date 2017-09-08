@@ -514,99 +514,6 @@ reflected in the local value.
   ;; (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
 
 #+end_src
-** zap
-kills text up to a given char c. If c is not found then nothing happens.
-zap up to: not including c
-zap to   :     including c
-Stuff for repeating is saved in the variable 'eriks-zap-last-command'
-#+begin_src emacs-lisp :tangle yes
-  (defun eriks-zap-up-to-char (c)
-    "Documentation somewhere inside myinit.org"
-    (interactive "cZap up to: ")
-    (setq eriks-zap-last-command `(eriks-zap-up-to-char ,c))
-    (let ((start (point)))
-      (if (eriks-find-char 1 c)
-          (kill-region start (point)))))
-
-  (defun eriks-zap-to-char (c)
-    "Documentation somewhere inside myinit.org"
-    (interactive "cZap to: ")
-    (setq eriks-zap-last-command `(eriks-zap-to-char ,c))
-    (let ((start (point)))
-      (if (eriks-find-char 1 c)
-          (kill-region start (+ 1 (point))))))
-
-  (defun eriks-zap-up-to-char-backwards (c)
-    "Documentation somewhere inside myinit.org"
-    (interactive "cZap up to backwards: ")
-    (setq eriks-zap-last-command `(eriks-zap-up-to-char-backwards ,c))
-    (let ((start (point)))
-      (if (eriks-find-char -1 c)
-          (progn
-            (forward-char)
-            (kill-region start (point))))))
-
-  (defun eriks-zap-to-char-backwards (c)
-    "Documentation somewhere inside myinit.org"
-    (interactive "cZap to backwards: ")
-    (setq eriks-zap-last-command `(eriks-zap-to-char-backwards ,c))
-    (let ((start (point)))
-      (if (eriks-find-char -1 c)
-          (kill-region start (point)))))
-
-  (defun eriks-zap-char-repeat ()
-    "Documentation somewhere inside myinit.org"
-    (interactive)
-    (if (boundp 'eriks-zap-last-command)
-        (funcall (car eriks-zap-last-command) (nth 1 eriks-zap-last-command))))
-
-
-
-#+end_src
-** inside word
-från stackoverflow
-#+begin_src emacs-lisp :tangle yes
-  (defun eriks-kill-thing-at-point (thing)
-    "Kill the `thing-at-point' for the specified kind of THING."
-    (let ((bounds (bounds-of-thing-at-point thing)))
-      (if bounds
-          (kill-region (car bounds) (cdr bounds))
-        (error "No %s at point" thing))))
-
-  (defun eriks-kill-word-at-point ()
-    "Kill the word at point."
-    (interactive)
-    (eriks-kill-thing-at-point 'word))
-
-  (defun eriks-kill-symbol-at-point ()
-    "Kill the symbol at point."
-    (interactive)
-    (eriks-kill-thing-at-point 'symbol))
-#+end_src
-** swiper
-#+begin_src emacs-lisp :tangle yes
-
-  (defun swiper-thing-at-point (thing)
-    (let ((bounds (bounds-of-thing-at-point thing)))
-      (if bounds
-          (swiper-selection (car bounds) (cdr bounds))
-        (error "No %s at point" thing))))
-
-  (defun swiper-selection (beg end)
-    (interactive "r")
-    (deactivate-mark)
-    (swiper (buffer-substring beg end)))
-
-  (defun swiper-word-at-point ()
-    (interactive)
-    (swiper-thing-at-point 'word))
-
-  (defun swiper-symbol-at-point ()
-    (interactive)
-    (swiper-thing-at-point 'symbol))
-
-
-#+end_src
 * packages
 ** yasnippet
 #+begin_src emacs-lisp :tangle yes
@@ -1298,7 +1205,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key modalka-mode-map (kbd "t") 'hydra-transpose/body)
 
-  (modalka-define-kbd "w" "C-w")
+  ;;(modalka-define-kbd "w" "C-w")
   (modalka-define-kbd "W" "M-w")
   (modalka-define-kbd "a" "C-a")
   (modalka-define-kbd "e" "C-e")
@@ -1308,12 +1215,12 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;(modalka-define-kbd "m" "<C-m>")
 
   (define-key modalka-mode-map (kbd "m") 'set-mark-command)
-  (modalka-define-kbd "M s" "C-M-SPC")
-  (modalka-define-kbd "M b" "C-x h")
-  (modalka-define-kbd "M w" "M-@")
-  (modalka-define-kbd "M p" "M-h")
-  (modalka-define-kbd "M d" "C-M-h")
-  (define-key modalka-mode-map (kbd "M l") 'eriks-mark-line)
+  ;; (modalka-define-kbd "M s" "C-M-SPC")
+  ;; (modalka-define-kbd "M b" "C-x h")
+  ;; (modalka-define-kbd "M w" "M-@")
+  ;; (modalka-define-kbd "M p" "M-h")
+  ;; (modalka-define-kbd "M d" "C-M-h")
+  ;; (define-key modalka-mode-map (kbd "M l") 'eriks-mark-line)
 
   (modalka-define-kbd "u" "C-u")
 
@@ -1340,65 +1247,146 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map "F" 'forward-symbol)
   (define-key modalka-mode-map "B" 'backward-symbol)
 
-  (defun modalka-kill-to-delete (key)
-    "Binds 'd key' to execute 'D key' and popping the kill ring. 
-  This results in a kill function that doesn't save what it killed in the kill-ring."
-    (define-key modalka-mode-map (kbd (format "d %s" key))
-      (defalias (make-symbol "modalka-kill-delete")
-        `(lambda ()
-           (interactive)
-           (let ((len (length kill-ring)))
-             (call-interactively (key-binding (kbd (format "D %s" ,key))))
-             (let ((ite (- (length kill-ring) len)))
-               (dotimes (i ite)
-                 (eriks-pop-kill-ring)))))
-        `(format "This command executes 'D %s' and removes what it killed from the kill-ring." ,key))))
+  (setq modalka-action-region-special-map (make-sparse-keymap))
 
-  ;; (defun generic-kill (keys)
-  ;;   (interactive "k")
-  ;;   ;;(message "%s" keys)
-  ;;   (message "%s" current-prefix-arg)
-  ;;   (call-interactively (key-binding keys)))
+  (defun eriks-bind-bounds-thing (keys thing)
+    (define-key modalka-action-region-special-map (kbd keys)
+       `(lambda ()
+         (interactive)
+         (bounds-of-thing-at-point ',thing))))
+
+  (eriks-bind-bounds-thing "i w" 'word)
+  (eriks-bind-bounds-thing "i W" 'symbol)
+  (eriks-bind-bounds-thing "i l" 'line)
+  (eriks-bind-bounds-thing "i p" 'paragraph)
+  (eriks-bind-bounds-thing "i d" 'defun)
+
+  (defun eriks-buffer-bounds ()
+    (interactive)
+    (end-of-buffer)
+    (cons 1 (point)))
+
+  (define-key modalka-action-region-special-map (kbd "i b") 'eriks-buffer-bounds)
+  (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-inclusive)
+  (define-key modalka-action-region-special-map (kbd "u") 'eriks-find-char)
+  (define-key modalka-action-region-special-map (kbd "N") 'eriks-find-char-backward)
+  (define-key modalka-action-region-special-map (kbd "U") 'eriks-find-inclusive-backward)
+
+  (defun eriks-find-inclusive ()
+    (interactive)
+    (if (call-interactively 'eriks-find-char)
+        (forward-char)))
+
+  (defun eriks-find-inclusive-backward ()
+    (interactive)
+    (if (call-interactively 'eriks-find-char-backward)
+        (forward-char)))
+
+
+  (defun is-bounds (b)
+    "True if b is of the form (a . b) where a and b are integers"
+    (and
+     (consp b)
+     (integerp (car b))
+     (integerp (cdr b))))
+
+  (defun modalka-action-region (prompt)
+    (if (region-active-p)
+        (cons (region-beginning) (region-end))
+      (unwind-protect
+          (let ((keys nil)
+                (return nil)
+                (start (point))
+                (end nil))
+            (setq overriding-terminal-local-map modalka-action-region-special-map)
+            (setq keys (read-key-sequence prompt))
+            (setq return (call-interactively (key-binding keys)))
+            (message "")
+            (if (is-bounds return)
+                return
+              (progn
+                (setq end (point))
+                (if (= start end)
+                    nil
+                  (cons start end)))))
+        (setq overriding-terminal-local-map nil))))
+
+  (defun modalka-kill ()
+    (interactive)
+    (let ((region (modalka-action-region "Kill: ")))
+      (if region
+          (kill-region (car region) (cdr region))
+        (message "no region"))))
+
+  (defun modalka-delete ()
+    (interactive)
+    (let ((region (modalka-action-region "Delete: ")))
+      (if region
+          (delete-region (car region) (cdr region))
+        (message "no region"))))
+
+  (defun modalka-select ()
+    (interactive)
+    (let ((region (modalka-action-region "Select: ")))
+      (if region
+          (progn
+            (goto-char (car region))
+            (set-mark-command nil)
+            (goto-char (cdr region)))
+        (message "no region"))))
+
+  (defun modalka-swiper ()
+    (interactive)
+    (let ((region (modalka-action-region "Swiper: ")))
+      (if region
+          (swiper-selection (car region) (cdr region))
+        (message "no region"))))
+
+
+  (define-key modalka-mode-map (kbd "D") 'modalka-kill)
+  (define-key modalka-mode-map (kbd "d") 'modalka-delete)
+  (define-key modalka-mode-map (kbd "M") 'modalka-select)
+  (define-key modalka-mode-map (kbd "S") 'modalka-swiper)
 
   ;;killing delete functions
-  (define-key modalka-mode-map (kbd "D e")   'kill-line)
+  ;;(define-key modalka-mode-map (kbd "D e")   'kill-line)
   ;;(modalka-define-kbd               "D E"    "C-M-k")
-  (define-key modalka-mode-map (kbd "D a")   'eriks-backward-kill-line)
-  (define-key modalka-mode-map (kbd "D f")   'sp-kill-word)
-  (define-key modalka-mode-map (kbd "D b")   'sp-backward-kill-word)
-  (define-key modalka-mode-map (kbd "D F")   'sp-kill-symbol)
-  (define-key modalka-mode-map (kbd "D B")   'sp-backward-kill-symbol)
-  (define-key modalka-mode-map (kbd "D d")   'kill-whole-line)
-  (define-key modalka-mode-map (kbd "D r")   'kill-region)
-  (define-key modalka-mode-map (kbd "D w f") 'eriks-hungry-delete-whitespace)
-  (define-key modalka-mode-map (kbd "D w b") 'eriks-hungry-delete-whitespace-backward)
-  (define-key modalka-mode-map (kbd "D p")   'eriks-kill-paragraph)
-  (define-key modalka-mode-map (kbd "D n")   'eriks-zap-to-char)
-  (define-key modalka-mode-map (kbd "D N")   'eriks-zap-to-char-backwards)
-  (define-key modalka-mode-map (kbd "D u")   'eriks-zap-up-to-char)
-  (define-key modalka-mode-map (kbd "D U")   'eriks-zap-up-to-char-backwards)
-  (define-key modalka-mode-map (kbd "D i w") 'eriks-kill-word-at-point)
-  (define-key modalka-mode-map (kbd "D i W") 'eriks-kill-symbol-at-point)
+  ;;(define-key modalka-mode-map (kbd "D a")   'eriks-backward-kill-line)
+  ;;(define-key modalka-mode-map (kbd "D f")   'sp-kill-word)
+  ;;(define-key modalka-mode-map (kbd "D b")   'sp-backward-kill-word)
+  ;;(define-key modalka-mode-map (kbd "D F")   'sp-kill-symbol)
+  ;;(define-key modalka-mode-map (kbd "D B")   'sp-backward-kill-symbol)
+  ;;(define-key modalka-mode-map (kbd "D d")   'kill-whole-line)
+  ;;(define-key modalka-mode-map (kbd "D r")   'kill-region)
+  ;;(define-key modalka-mode-map (kbd "D w f") 'eriks-hungry-delete-whitespace)
+  ;;(define-key modalka-mode-map (kbd "D w b") 'eriks-hungry-delete-whitespace-backward)
+  ;;(define-key modalka-mode-map (kbd "D i p")   'eriks-kill-paragraph)
+  ;; (define-key modalka-mode-map (kbd "D n")   'eriks-zap-to-char)
+  ;; (define-key modalka-mode-map (kbd "D N")   'eriks-zap-to-char-backwards)
+  ;; (define-key modalka-mode-map (kbd "D u")   'eriks-zap-up-to-char)
+  ;; (define-key modalka-mode-map (kbd "D U")   'eriks-zap-up-to-char-backwards)
+  ;;(define-key modalka-mode-map (kbd "D i w") 'eriks-kill-word-at-point)
+  ;;(define-key modalka-mode-map (kbd "D i W") 'eriks-kill-symbol-at-point)
 
   ;;non-killing delete functions
-  (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
-  (define-key modalka-mode-map (kbd "d w b") 'eriks-hungry-delete-whitespace-backward)
-  (modalka-kill-to-delete "e")
-  (modalka-kill-to-delete "E")
-  (modalka-kill-to-delete "f")
-  (modalka-kill-to-delete "b")
-  (modalka-kill-to-delete "F")
-  (modalka-kill-to-delete "B")
-  (modalka-kill-to-delete "d")
-  (modalka-kill-to-delete "r")
-  (modalka-kill-to-delete "p")
-  (modalka-kill-to-delete "a")
-  (modalka-kill-to-delete "n")
-  (modalka-kill-to-delete "N")
-  (modalka-kill-to-delete "u")
-  (modalka-kill-to-delete "U")
-  (modalka-kill-to-delete "i w")
-  (modalka-kill-to-delete "i W")
+  ;; (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
+  ;; (define-key modalka-mode-map (kbd "d w b") 'eriks-hungry-delete-whitespace-backward)
+  ;; (modalka-kill-to-delete "e")
+  ;; (modalka-kill-to-delete "E")
+  ;; (modalka-kill-to-delete "f")
+  ;; (modalka-kill-to-delete "b")
+  ;; (modalka-kill-to-delete "F")
+  ;; (modalka-kill-to-delete "B")
+  ;; (modalka-kill-to-delete "d")
+  ;; (modalka-kill-to-delete "r")
+  ;; (modalka-kill-to-delete "p")
+  ;; (modalka-kill-to-delete "a")
+  ;; (modalka-kill-to-delete "n")
+  ;; (modalka-kill-to-delete "N")
+  ;; (modalka-kill-to-delete "u")
+  ;; (modalka-kill-to-delete "U")
+  ;; (modalka-kill-to-delete "i w")
+  ;; (modalka-kill-to-delete "i W")
 
   (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
@@ -1412,9 +1400,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "p") 'hydra-smartparens/body)
 
   (modalka-define-kbd "s" "C-s")
-  (define-key modalka-mode-map (kbd "S r") 'swiper-selection)
-  (define-key modalka-mode-map (kbd "S w") 'swiper-word-at-point)
-  (define-key modalka-mode-map (kbd "S W") 'swiper-symbol-at-point)
+  ;; (define-key modalka-mode-map (kbd "S r") 'swiper-selection)
+  ;; (define-key modalka-mode-map (kbd "S w") 'swiper-word-at-point)
+  ;; (define-key modalka-mode-map (kbd "S W") 'swiper-symbol-at-point)
 
   (modalka-define-kbd "v" "C-v")
   (modalka-define-kbd "V" "M-v")
@@ -1433,8 +1421,8 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   ;;(modalka-define-kbd "q" "C-q")
 
-  (define-key modalka-mode-map (kbd "C-n") 'eriks-skip-space)
-  (define-key modalka-mode-map (kbd "C-S-n") 'eriks-skip-space-backwards)
+  (define-key modalka-mode-map (kbd "w f") 'eriks-skip-space)
+  (define-key modalka-mode-map (kbd "w b") 'eriks-skip-space-backwards)
 
   (modalka-define-kbd "<left>" "")
   (modalka-define-kbd "<right>" "")

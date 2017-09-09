@@ -332,7 +332,7 @@ reflected in the local value.
 
   returns t if successful, nil otherwise"
     (interactive "p\ncJump to char: ")
-    (setq eriks-repeat-last-command (cons 'eriks-find-char (list ARG c)))
+    (eriks-repeat-prepare-last 'eriks-find-char (list ARG c))
     (let ((dir (if (>= ARG 0)
                    1
                  -1))
@@ -357,7 +357,27 @@ reflected in the local value.
     "Exactly the same behaviour as `eriks-find-char' except this goes backwards by negating ARG"
     (interactive "p\ncJump to char backwards: ")
     (eriks-find-char (- 0 ARG) c)
-    (setq eriks-repeat-last-command (cons 'eriks-find-char-backward (list ARG c))))
+    (eriks-repeat-prepare-last 'eriks-find-char-backward (list ARG c)))
+
+  (defun eriks-find-char-alt ()
+    (interactive)
+    (if (call-interactively 'eriks-find-char)
+        (forward-char)))
+
+  (defun eriks-find-char-alt-backward ()
+    (interactive)
+    (if (call-interactively 'eriks-find-char-backward)
+        (forward-char)))
+
+  (defun eriks-repeat-prepare-last (func arglist)
+    "Prepare 'func' to be repeated with args 'arglist'.
+  If the `last-repeatable-command' is 'func', then run 'func' with 'arglist'"
+    (setq eriks-repeat-last-command (cons func arglist)))
+
+  (defun eriks-repeat-set-last (func arglist)
+    "sets `eriks-repeat-prepare-last' and `last-repeatable-command'"
+    (eriks-repeat-prepare-last func arglist)
+    (setq last-repeatable-command func))
 
   (defun eriks-repeat ()
     "If the last command is an erik-function, then repeat it using the infromation in the variable `eriks-repeat-last-command'
@@ -365,6 +385,7 @@ reflected in the local value.
     (interactive)
     (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
     (setq real-this-command last-repeatable-command)
+    (message "last: %s, eriks-last: %s" last-repeatable-command (car eriks-repeat-last-command))
     (if (and
          (boundp 'eriks-repeat-last-command)
          (eq last-repeatable-command (car eriks-repeat-last-command)))
@@ -378,7 +399,7 @@ reflected in the local value.
     ;;        (eriks-insert-char-repeat))
     ;;       ((or
     ;;         (eq last-repeatable-command 'eriks-zap-to-char)
-    ;;         (eq last-repeatable-command 'eriks-zap-to-char-backwards)
+    ;;         (eq -repeatable-command 'eriks-zap-to-char-backwards)
     ;;         (eq last-repeatable-command 'eriks-zap-up-to-char)
     ;;         (eq last-repeatable-command 'eriks-zap-up-to-char-backwards))
     ;;        (eriks-zap-char-repeat))
@@ -1267,21 +1288,10 @@ All default keybindings have been commented out in the source file 'auto-complet
     (cons 1 (point)))
 
   (define-key modalka-action-region-special-map (kbd "i b") 'eriks-buffer-bounds)
-  (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-inclusive)
+  (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-char-alt)
   (define-key modalka-action-region-special-map (kbd "u") 'eriks-find-char)
   (define-key modalka-action-region-special-map (kbd "N") 'eriks-find-char-backward)
-  (define-key modalka-action-region-special-map (kbd "U") 'eriks-find-inclusive-backward)
-
-  (defun eriks-find-inclusive ()
-    (interactive)
-    (if (call-interactively 'eriks-find-char)
-        (forward-char)))
-
-  (defun eriks-find-inclusive-backward ()
-    (interactive)
-    (if (call-interactively 'eriks-find-char-backward)
-        (forward-char)))
-
+  (define-key modalka-action-region-special-map (kbd "U") 'eriks-find-char-alt-backward)
 
   (defun is-bounds (b)
     "True if b is of the form (a . b) where a and b are integers"
@@ -1290,16 +1300,19 @@ All default keybindings have been commented out in the source file 'auto-complet
      (integerp (car b))
      (integerp (cdr b))))
 
-  (defun modalka-action-region (prompt)
+  (setq modalka-action-region-last-keys nil)
+  (defun modalka-action-region (prompt &optional KEYS)
     (if (region-active-p)
         (cons (region-beginning) (region-end))
       (unwind-protect
-          (let ((keys nil)
+          (let ((keys KEYS)
                 (return nil)
                 (start (point))
                 (end nil))
             (setq overriding-terminal-local-map modalka-action-region-special-map)
-            (setq keys (read-key-sequence prompt))
+            (if (null keys)
+                (setq keys (read-key-sequence prompt)))
+            (setq modalka-action-region-last-keys keys)
             (setq return (call-interactively (key-binding keys)))
             (message "")
             (if (is-bounds return)
@@ -1332,14 +1345,15 @@ All default keybindings have been commented out in the source file 'auto-complet
           (progn
             (goto-char (car region))
             (set-mark-command nil)
-            (goto-char (cdr region)))
+            (goto-char (cdr region))
+            (setq real-this-command (key-binding modalka-action-region-last-keys)))
         (message "no region"))))
 
   (defun modalka-swiper ()
     (interactive)
     (let ((region (modalka-action-region "Swiper: ")))
       (if region
-          (swiper-selection (car region) (cdr region))
+          (swiper (buffer-substring (car region) (cdr region)))
         (message "no region"))))
 
 

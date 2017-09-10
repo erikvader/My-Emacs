@@ -385,7 +385,7 @@ reflected in the local value.
     (interactive)
     (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
     (setq real-this-command last-repeatable-command)
-    (message "last: %s, eriks-last: %s" last-repeatable-command (car eriks-repeat-last-command))
+    ;; (message "last: %s, eriks-last: %s" last-repeatable-command (car eriks-repeat-last-command))
     (if (and
          (boundp 'eriks-repeat-last-command)
          (eq last-repeatable-command (car eriks-repeat-last-command)))
@@ -700,6 +700,10 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+begin_src emacs-lisp :tangle yes
   (require 'smartparens-config)
 
+  (add-hook 'smartparens-strict-mode-hook (lambda ()
+                                            (define-key smartparens-strict-mode-map [remap modalka-kill] 'modalka-sp-kill)
+                                            (define-key smartparens-strict-mode-map [remap modalka-delete] 'modalka-sp-delete)))
+
   (defun start-smartparens ()
     (smartparens-mode t)
 
@@ -713,12 +717,12 @@ All default keybindings have been commented out in the source file 'auto-complet
 
     (define-key smartparens-mode-map (kbd "C-M-f") 'sp-forward-sexp)
     (define-key smartparens-mode-map (kbd "C-M-b") 'sp-backward-sexp)
-    
+
     (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
 
     ;;(define-key smartparens-mode-map (kbd "M-f") 'sp-forward-symbol)
     ;;(define-key smartparens-mode-map (kbd "M-b") 'sp-backward-symbol)
-    
+
     )
 
   (defun start-hydra-smartparens-if-activated ()
@@ -1268,6 +1272,50 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map "F" 'forward-symbol)
   (define-key modalka-mode-map "B" 'backward-symbol)
 
+  (defun char-is (classs dir)
+    "t if current char is in any character class in the list classs.
+  If dir < 0, do the same check on previous character instead"
+    (let ((found nil))
+      (dolist (cla classs)
+        (setq found (or
+                     found
+                     (= (char-syntax
+                         (if (>= dir 0)
+                             (following-char)
+                           (preceding-char)))
+                        cla))))
+      found))
+
+  (defun eriks-next-class (classs dir)
+    "Moves point in 'dir' until it encounters something in the character class the list 'classs'"
+    (let ((running t)
+          (old_onclass (char-is classs dir))
+          (onclass nil))
+      (while running
+        (setq onclass (char-is classs dir))
+        (if (and
+             (null old_onclass)
+             onclass)
+            (setq running nil)
+          (progn
+            (forward-char dir)
+            (setq old_onclass onclass))))))
+
+  (defun eriks-next-word (dir)
+    "Moves point to the beginning of next word
+  or end of previous word if dir < 0"
+    (interactive "p")
+    (eriks-next-class '(?w) dir))
+
+  (defun eriks-next-symbol (dir)
+    "Moves point to the beginning of next symbol
+  or end of previous symbol if dir < 0"
+    (interactive "p")
+    (eriks-next-class '(?_ ?w) dir))
+
+  (define-key modalka-mode-map (kbd "q") 'eriks-next-word)
+  (define-key modalka-mode-map (kbd "Q") 'eriks-next-symbol)
+
   (setq modalka-action-region-special-map (make-sparse-keymap))
 
   (defun eriks-bind-bounds-thing (keys thing)
@@ -1281,6 +1329,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (eriks-bind-bounds-thing "i l" 'line)
   (eriks-bind-bounds-thing "i p" 'paragraph)
   (eriks-bind-bounds-thing "i d" 'defun)
+  (eriks-bind-bounds-thing "i s" 'whitespace)
 
   (defun eriks-buffer-bounds ()
     (interactive)
@@ -1324,19 +1373,27 @@ All default keybindings have been commented out in the source file 'auto-complet
                   (cons start end)))))
         (setq overriding-terminal-local-map nil))))
 
+  (defun modalka-kill-delete-region (name func)
+    (let ((region (modalka-action-region name)))
+      (if region
+          (funcall func (car region) (cdr region))
+        (message "no region"))))
+
   (defun modalka-kill ()
     (interactive)
-    (let ((region (modalka-action-region "Kill: ")))
-      (if region
-          (kill-region (car region) (cdr region))
-        (message "no region"))))
+    (modalka-kill-delete-region "Kill: " 'kill-region))
 
   (defun modalka-delete ()
     (interactive)
-    (let ((region (modalka-action-region "Delete: ")))
-      (if region
-          (delete-region (car region) (cdr region))
-        (message "no region"))))
+    (modalka-kill-delete-region "Delete: " 'delete-region))
+
+  (defun modalka-sp-delete ()
+    (interactive)
+    (modalka-kill-delete-region "sp-delete: " 'sp-delete-region))
+
+  (defun modalka-sp-kill ()
+    (interactive)
+    (modalka-kill-delete-region "sp-kill: " 'sp-kill-region))
 
   (defun modalka-select ()
     (interactive)
@@ -1346,7 +1403,7 @@ All default keybindings have been commented out in the source file 'auto-complet
             (goto-char (car region))
             (set-mark-command nil)
             (goto-char (cdr region))
-            (setq real-this-command (key-binding modalka-action-region-last-keys)))
+            (setq real-this-command (key-binding modalka-action-region-last-keys))) ;;funkar inte med u U
         (message "no region"))))
 
   (defun modalka-swiper ()

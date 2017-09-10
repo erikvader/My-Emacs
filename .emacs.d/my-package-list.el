@@ -1,5 +1,6 @@
 (setq package-list
-      '(ac-emacs-eclim
+      '(counsel-gtags
+        ac-emacs-eclim
         all-the-icons
         all-the-icons-dired
         async

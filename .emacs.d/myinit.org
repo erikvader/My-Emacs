@@ -168,6 +168,8 @@ reflected in the local value.
   (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
   (define-key eriks-map (kbd "f f") 'fill-paragraph)
 
+  (define-key eriks-map (kbd "C-f") 'ff-find-other-file)
+
   (define-key eriks-map (kbd "r") 'linum-relative-toggle)
 
   (define-key eriks-map (kbd "l") 'eriks-toggle-visual-line)
@@ -1178,9 +1180,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (defun create-tags (dir-name)
     "Create tags file."
     (interactive "DDirectory: ")
-    (message
-     (format "%s -f TAGS -e -R \"%s\"" path-to-ctags (directory-file-name dir-name)))
-    )
+    (shell-command (format "%s -f TAGS -e -R \"%s\"" path-to-ctags (directory-file-name dir-name))))
 
   (defhydra hydra-tags (:color blue :hint nil)
     "
@@ -1202,7 +1202,28 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("P" projectile-find-tag nil)
     ("q" nil nil :color blue))
 
-  (define-key eriks-map (kbd "t") 'hydra-tags/body)
+  (defhydra hydra-gtags (:color blue :hint nil)
+    "
+  ^Counsel^
+  ------------------------------------------
+  _d_ find definition    _n_ go forward   
+  _r_ find reference     _f_ find dwim
+  _s_ find symbol        _u_ update gtags
+  _F_ find file          _c_ create gtags
+  _b_ go back
+  "
+    ("d" counsel-gtags-find-definition nil)
+    ("r" counsel-gtags-find-reference nil)
+    ("s" counsel-gtags-find-reference nil)
+    ("F" counsel-gtags-find-file nil)
+    ("b" counsel-gtags-go-backward nil)
+    ("n" counsel-gtags-go-forward nil)
+    ("f" counsel-gtags-dwim)
+    ("c" counsel-gtags-create-tags nil)
+    ("u" counsel-gtags-update-tags)
+    ("q" nil nil :color blue))
+
+  (define-key eriks-map (kbd "t") 'hydra-gtags/body)
 #+end_src
 * modalka
 #+begin_src emacs-lisp :tangle yes
@@ -1568,3 +1589,27 @@ All default keybindings have been commented out in the source file 'auto-complet
             (lambda ()
               (diminish 'abbrev-mode)))
 #+end_src
+* eriks repeat test
+
+(execute-kbd-macro (kbd "C-a"))
+
+(vectorp (recent-keys))
+
+(defun eriks-repeat-fetch (curc)
+  (let ((list nil)
+        (cur nil)
+        (keys (recent-keys)))
+    (catch 'break
+      (dotimes (i 300)
+        (setq cur (aref keys (- 299 i)))
+        (setq list (cons cur list))
+        (if (equal cur curc)
+            (throw 'break))))
+    (vconcat list)))
+
+(defun test ()
+  (interactive)
+  (message "%s" (eriks-repeat-fetch (kbd "C-S-o C-x"))))
+
+(global-set-key (kbd "C-S-o") 'test)
+

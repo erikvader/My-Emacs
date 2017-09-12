@@ -330,11 +330,8 @@ reflected in the local value.
 
   Ignores case!
 
-  uses `eriks-repeat'
-
   returns t if successful, nil otherwise"
     (interactive "p\ncJump to char: ")
-    (eriks-repeat-prepare-last 'eriks-find-char (list ARG c))
     (let ((dir (if (>= ARG 0)
                    1
                  -1))
@@ -358,8 +355,7 @@ reflected in the local value.
   (defun eriks-find-char-backward (ARG c)
     "Exactly the same behaviour as `eriks-find-char' except this goes backwards by negating ARG"
     (interactive "p\ncJump to char backwards: ")
-    (eriks-find-char (- 0 ARG) c)
-    (eriks-repeat-prepare-last 'eriks-find-char-backward (list ARG c)))
+    (eriks-find-char (- 0 ARG) c))
 
   (defun eriks-find-char-alt ()
     (interactive)
@@ -371,46 +367,50 @@ reflected in the local value.
     (if (call-interactively 'eriks-find-char-backward)
         (forward-char)))
 
-  (defun eriks-repeat-prepare-last (func arglist)
-    "Prepare 'func' to be repeated with args 'arglist'.
-  If the `last-repeatable-command' is 'func', then run 'func' with 'arglist'"
-    (setq eriks-repeat-last-command (cons func arglist)))
+   ;;keys som det senaste kommandor hade
+  (setq eriks-repeat-cur-macro nil)
 
-  (defun eriks-repeat-set-last (func arglist)
-    "sets `eriks-repeat-prepare-last' and `last-repeatable-command'"
-    (eriks-repeat-prepare-last func arglist)
-    (setq last-repeatable-command func))
+  ;;om man kör `read-key-sequence' eller liknande i sin funktion kommer
+  ;;den att skriva över `this-command-keys'. Så för att bevara sin
+  ;;key-sequence för att kunna repetera sätter man denna variabel
+  (setq prev-command-keys nil)
+
+   ;;key-sequence som senast ändrade på buffern. Denna som
+   ;;`eriks-repeat' kommer att köra
+  (setq eriks-repeat-cur-change-macro nil)
+
+  ;;interna grejer :)
+  (setq eriks-repeat-before-change-ran nil)
+
+  (defun eriks-repeat-post-command ()
+    (if (not (or
+              (eq real-this-command 'eriks-repeat)
+              (eq real-this-command 'undo-tree-undo)))
+        (progn
+          (setq eriks-repeat-cur-macro (vconcat prev-command-keys (this-command-keys-vector)))
+          (setq prev-command-keys nil)
+          (if eriks-repeat-before-change-ran
+              (progn
+                (setq eriks-repeat-cur-change-macro eriks-repeat-cur-macro)
+                (setq eriks-repeat-before-change-ran nil))))))
+
+  (defun eriks-repeat-before-change (a b c)
+    (setq eriks-repeat-before-change-ran t))
+
+  (setq inhibit-modification-hooks nil)
+  (add-hook 'post-command-hook 'eriks-repeat-post-command)
+  (add-hook 'before-change-functions 'eriks-repeat-before-change)
 
   (defun eriks-repeat ()
-    "If the last command is an erik-function, then repeat it using the infromation in the variable `eriks-repeat-last-command'
-  Else do a normal `repeat'"
+    "Repeatar senaste key-sequencen som gjorde en ändring i buffern."
     (interactive)
     (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
     (setq real-this-command last-repeatable-command)
-    ;; (message "last: %s, eriks-last: %s" last-repeatable-command (car eriks-repeat-last-command))
-    (if (and
-         (boundp 'eriks-repeat-last-command)
-         (eq last-repeatable-command (car eriks-repeat-last-command)))
-        (apply (car eriks-repeat-last-command) (cdr eriks-repeat-last-command))
-      (call-interactively 'repeat))
-    ;; (cond ((or
-    ;;         (eq last-repeatable-command 'eriks-find-char)
-    ;;         (eq last-repeatable-command 'eriks-find-char-backward))
-    ;;        (eriks-find-char-repeat))
-    ;;       ((eq last-repeatable-command 'eriks-insert-char)
-    ;;        (eriks-insert-char-repeat))
-    ;;       ((or
-    ;;         (eq last-repeatable-command 'eriks-zap-to-char)
-    ;;         (eq -repeatable-command 'eriks-zap-to-char-backwards)
-    ;;         (eq last-repeatable-command 'eriks-zap-up-to-char)
-    ;;         (eq last-repeatable-command 'eriks-zap-up-to-char-backwards))
-    ;;        (eriks-zap-char-repeat))
-    ;;       (t (call-interactively 'repeat)))
-    )
+    (message "repeating %s" eriks-repeat-cur-change-macro)
+    (execute-kbd-macro eriks-repeat-cur-change-macro))
 
   (defun eriks-insert-char (ARG c)
     (interactive "p\ncInsert: ")
-    (setq eriks-repeat-last-command (cons 'eriks-insert-char (list ARG c)))
     (dotimes (i ARG)
       (insert c)))
 
@@ -1370,7 +1370,6 @@ All default keybindings have been commented out in the source file 'auto-complet
      (integerp (car b))
      (integerp (cdr b))))
 
-  (setq modalka-action-region-last-keys nil)
   (defun modalka-action-region (prompt &optional KEYS)
     (if (region-active-p)
         (cons (region-beginning) (region-end))
@@ -1380,9 +1379,9 @@ All default keybindings have been commented out in the source file 'auto-complet
                 (start (point))
                 (end nil))
             (setq overriding-terminal-local-map modalka-action-region-special-map)
+            (setq prev-command-keys (this-command-keys-vector))
             (if (null keys)
-                (setq keys (read-key-sequence prompt)))
-            (setq modalka-action-region-last-keys keys)
+                (setq keys (read-key-sequence-vector prompt)))
             (setq return (call-interactively (key-binding keys)))
             (message "")
             (if (is-bounds return)
@@ -1394,6 +1393,7 @@ All default keybindings have been commented out in the source file 'auto-complet
                   (cons start end)))))
         (setq overriding-terminal-local-map nil))))
 
+  ;;TODO prefix arg!! typ C-e gillar inte att den får 0
   (defun modalka-kill-delete-region (name func)
     (let ((region (modalka-action-region name)))
       (if region
@@ -1589,27 +1589,4 @@ All default keybindings have been commented out in the source file 'auto-complet
             (lambda ()
               (diminish 'abbrev-mode)))
 #+end_src
-* eriks repeat test
-
-(execute-kbd-macro (kbd "C-a"))
-
-(vectorp (recent-keys))
-
-(defun eriks-repeat-fetch (curc)
-  (let ((list nil)
-        (cur nil)
-        (keys (recent-keys)))
-    (catch 'break
-      (dotimes (i 300)
-        (setq cur (aref keys (- 299 i)))
-        (setq list (cons cur list))
-        (if (equal cur curc)
-            (throw 'break))))
-    (vconcat list)))
-
-(defun test ()
-  (interactive)
-  (message "%s" (eriks-repeat-fetch (kbd "C-S-o C-x"))))
-
-(global-set-key (kbd "C-S-o") 'test)
 

@@ -242,7 +242,19 @@ reflected in the local value.
   (define-key eriks-map (kbd "U") 'counsel-unicode-char)
   ;;(define-key eriks-map (kbd "M") 'counsel-mark-ring)
 
+  (defun sign (a)
+    "The sign of a typ
+  a >= 0 ->  1
+  a <  0 -> -1"
+    (if (>= a 0)
+        1
+      -1))
 
+  (defun abs (a)
+    "abs av a"
+    (if (< a 0)
+        (- 0 a)
+      a))
 #+end_src
 ** lxor & is-boundary
 #+begin_src emacs-lisp :tangle yes
@@ -332,9 +344,7 @@ reflected in the local value.
 
   returns t if successful, nil otherwise"
     (interactive "p\ncJump to char: ")
-    (let ((dir (if (>= ARG 0)
-                   1
-                 -1))
+    (let ((dir (sign ARG))
           (start (point))
           (finished nil))
       (while (and
@@ -519,13 +529,15 @@ reflected in the local value.
     "Moves point to the beginning of next word
   or end of previous word if dir < 0"
     (interactive "p")
-    (eriks-next-class '(?w) dir))
+    (dotimes (i (abs dir))
+      (eriks-next-class '(?w) (sign dir))))
 
   (defun eriks-next-symbol (dir)
     "Moves point to the beginning of next symbol
   or end of previous symbol if dir < 0"
     (interactive "p")
-    (eriks-next-class '(?_ ?w) dir))
+    (dotimes (i (abs dir))
+      (eriks-next-class '(?_ ?w) (sign dir))))
 #+end_src
 * packages
 ** yasnippet
@@ -1432,32 +1444,78 @@ All default keybindings have been commented out in the source file 'auto-complet
      (integerp (car b))
      (integerp (cdr b))))
 
+  (defun read-keys-with-prefix (prefix prompt)
+    (let ((keys (read-key-sequence-vector prompt)))
+      (if (seq-contains modalka-repeat-prefix-keys (car (listify-key-sequence keys)))
+          (read-keys-with-prefix (cons (aref keys 0) prefix) (format "%s -%s" prompt (key-description keys)))
+        (cons (reverse-list prefix) keys))))
+
+  (defun reverse-list (l &optional temp)
+    (if (null l)
+        temp
+      (reverse-list (cdr l) (cons (car l) temp))))
+
+  ;;(parse-prefix (car (read-keys-with-prefix nil "hej:")))
+  (defun parse-prefix (prefix)
+    (if (null prefix)
+        nil
+      (let ((uni 0)
+            (neg nil)
+            (num 0)
+            (pre prefix)
+            (cur nil))
+        (while (not (null pre))
+          (setq cur (car pre))
+          (setq pre (cdr pre))
+          (cond
+           ((= cur 117)
+            (setq uni (+ uni 1)))
+           ((= cur 45)
+            (setq neg t))
+           (t
+            (setq num (+ (* 10 num) (- cur 48))))))
+        (cond
+         ((> uni 0)
+          (list (expt 4 uni)))
+         ((and neg (= num 0))
+          '-)
+         (neg
+          (- 0 num))
+         (t
+          num)))))
+
+  (read-keys-with-prefix nil "test:")
+
   (defun modalka-action-region (prompt &optional ignore-active-region)
     (if (and
          (region-active-p)
          (not ignore-active-region))
         (cons (region-beginning) (region-end))
-      (unwind-protect
-          (let ((keys nil)
-                (return nil)
-                (start (point))
-                (end nil))
-            (setq overriding-terminal-local-map modalka-action-region-special-map)
-            (setq prev-command-keys (this-command-keys-vector))
-            (if (null keys)
-                (setq keys (read-key-sequence-vector prompt)))
-            (setq return (call-interactively (key-binding keys)))
-            ;;(message "")
-            (if (is-bounds return)
-                return
-              (progn
-                (setq end (point))
-                (if (= start end)
-                    nil
-                  (cons start end)))))
-        (setq overriding-terminal-local-map nil))))
+      (let ((old-prefix current-prefix-arg))
+        (unwind-protect
+            (let ((keys nil)
+                  (return nil)
+                  (start (point))
+                  (end nil))
+              (setq current-prefix-arg nil)
+              (setq overriding-terminal-local-map modalka-action-region-special-map)
+              (setq prev-command-keys (this-command-keys-vector))
+              (setq keys (read-keys-with-prefix nil prompt))
+              (setq prev-command-keys (vconcat prev-command-keys (car keys)))
+              (setq current-prefix-arg (parse-prefix (car keys)))
+              (setq return (call-interactively (key-binding (cdr keys))))
+              ;;(message "")
+              (if (is-bounds return)
+                  return
+                (progn
+                  (setq end (point))
+                  (if (= start end)
+                      nil
+                    (cons start end)))))
+          (progn
+            (setq overriding-terminal-local-map nil)
+            (setq current-prefix-arg old-prefix))))))
 
-  ;;TODO prefix arg!! typ C-e gillar inte att den får 0
   (defun modalka-kill-delete-region (name func)
     (let ((region (modalka-action-region name)))
       (if region

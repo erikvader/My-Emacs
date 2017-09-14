@@ -367,64 +367,6 @@ reflected in the local value.
     (if (call-interactively 'eriks-find-char-backward)
         (forward-char)))
 
-   ;;keys som det senaste kommandor hade
-  (setq eriks-repeat-cur-macro nil)
-
-  ;;om man kör `read-key-sequence' eller liknande i sin funktion kommer
-  ;;den att skriva över `this-command-keys'. Så för att bevara sin
-  ;;key-sequence för att kunna repetera sätter man denna variabel
-  (setq prev-command-keys nil)
-
-   ;;key-sequence som senast ändrade på buffern. Denna som
-   ;;`eriks-repeat' kommer att köra
-  (setq eriks-repeat-cur-change-macro nil)
-
-  ;;interna grejer :)
-  (setq eriks-repeat-before-change-ran nil)
-
-  (defun eriks-repeat-post-command ()
-    (if (not (or
-              (eq real-this-command 'eriks-repeat)
-              (eq real-this-command 'undo-tree-undo)))
-        (progn
-          (setq eriks-repeat-cur-macro (vconcat prev-command-keys (this-command-keys-vector)))
-          (setq prev-command-keys nil)
-          (if eriks-repeat-before-change-ran
-              (progn
-                (setq eriks-repeat-cur-change-macro eriks-repeat-cur-macro)
-                (setq eriks-repeat-before-change-ran nil))))))
-
-  (defun eriks-repeat-before-change (a b c)
-    (setq eriks-repeat-before-change-ran t))
-
-  (setq inhibit-modification-hooks nil)
-  (add-hook 'post-command-hook 'eriks-repeat-post-command)
-  (add-hook 'before-change-functions 'eriks-repeat-before-change)
-
-  (defun eriks-repeat ()
-    "Repeatar senaste key-sequencen som gjorde en ändring i buffern."
-    (interactive)
-    (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
-    (setq real-this-command last-repeatable-command)
-    (message "repeating %s" eriks-repeat-cur-change-macro)
-    (execute-kbd-macro eriks-repeat-cur-change-macro))
-
-  (defun eriks-insert-char (ARG c)
-    (interactive "p\ncInsert: ")
-    (dotimes (i ARG)
-      (insert c)))
-
-  ;; (defun eriks-insert-char-repeat ()
-  ;;   "Repeats the last call to `eriks-insert-char'"
-  ;;   (interactive)
-  ;;   (let ((l eriks-insert-char-last-command))
-  ;;     (if (boundp 'eriks-insert-char-last-command)
-  ;;         (let ((arg (nth 0 l))
-  ;;               (c (nth 1 l)))
-  ;;           (message "Searching for '%c' with ARG=%d" c arg)
-  ;;           (eriks-insert-char arg c))
-  ;;       (message "You havent even called eriks-insert-char even once :("))))
-
   (defun eriks-skip-space (ARG)
     "Move point forward or backward until it doesnt encounter whitespace anymore."
     (interactive "p")
@@ -461,6 +403,11 @@ reflected in the local value.
     (beginning-of-line)
     (push-mark (point) nil t)
     (end-of-line))
+
+  (defun eriks-insert-char (ARG c)
+    (interactive "p\ncInsert: ")
+    (dotimes (i ARG)
+      (insert c)))
 #+end_src
 ** o and O from VIM
 #+begin_src emacs-lisp :tangle yes
@@ -536,6 +483,49 @@ reflected in the local value.
   ;; (define-key my-keys-map (kbd "M-<up>") 'move-line-up)
   ;; (define-key my-keys-map (kbd "M-<down>") 'move-line-down)
 
+#+end_src
+** vims w
+#+begin_src emacs-lisp :tangle yes
+  (defun char-is (classs dir)
+    "t if current char is in any character class in the list classs.
+  If dir < 0, do the same check on previous character instead"
+    (let ((found nil))
+      (dolist (cla classs)
+        (setq found (or
+                     found
+                     (= (char-syntax
+                         (if (>= dir 0)
+                             (following-char)
+                           (preceding-char)))
+                        cla))))
+      found))
+
+  (defun eriks-next-class (classs dir)
+    "Moves point in 'dir' until it encounters something in the character class the list 'classs'"
+    (let ((running t)
+          (old_onclass (char-is classs dir))
+          (onclass nil))
+      (while running
+        (setq onclass (char-is classs dir))
+        (if (and
+             (null old_onclass)
+             onclass)
+            (setq running nil)
+          (progn
+            (forward-char dir)
+            (setq old_onclass onclass))))))
+
+  (defun eriks-next-word (dir)
+    "Moves point to the beginning of next word
+  or end of previous word if dir < 0"
+    (interactive "p")
+    (eriks-next-class '(?w) dir))
+
+  (defun eriks-next-symbol (dir)
+    "Moves point to the beginning of next symbol
+  or end of previous symbol if dir < 0"
+    (interactive "p")
+    (eriks-next-class '(?_ ?w) dir))
 #+end_src
 * packages
 ** yasnippet
@@ -1226,6 +1216,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key eriks-map (kbd "t") 'hydra-gtags/body)
 #+end_src
 * modalka
+** general
 #+begin_src emacs-lisp :tangle yes
   (require 'modalka)
 
@@ -1293,147 +1284,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map "F" 'forward-symbol)
   (define-key modalka-mode-map "B" 'backward-symbol)
 
-  (defun char-is (classs dir)
-    "t if current char is in any character class in the list classs.
-  If dir < 0, do the same check on previous character instead"
-    (let ((found nil))
-      (dolist (cla classs)
-        (setq found (or
-                     found
-                     (= (char-syntax
-                         (if (>= dir 0)
-                             (following-char)
-                           (preceding-char)))
-                        cla))))
-      found))
-
-  (defun eriks-next-class (classs dir)
-    "Moves point in 'dir' until it encounters something in the character class the list 'classs'"
-    (let ((running t)
-          (old_onclass (char-is classs dir))
-          (onclass nil))
-      (while running
-        (setq onclass (char-is classs dir))
-        (if (and
-             (null old_onclass)
-             onclass)
-            (setq running nil)
-          (progn
-            (forward-char dir)
-            (setq old_onclass onclass))))))
-
-  (defun eriks-next-word (dir)
-    "Moves point to the beginning of next word
-  or end of previous word if dir < 0"
-    (interactive "p")
-    (eriks-next-class '(?w) dir))
-
-  (defun eriks-next-symbol (dir)
-    "Moves point to the beginning of next symbol
-  or end of previous symbol if dir < 0"
-    (interactive "p")
-    (eriks-next-class '(?_ ?w) dir))
-
   (define-key modalka-mode-map (kbd "q") 'eriks-next-word)
   (define-key modalka-mode-map (kbd "Q") 'eriks-next-symbol)
-
-  (setq modalka-action-region-special-map (make-sparse-keymap))
-
-  (defun eriks-bind-bounds-thing (keys thing)
-    (define-key modalka-action-region-special-map (kbd keys)
-       `(lambda ()
-         (interactive)
-         (bounds-of-thing-at-point ',thing))))
-
-  (eriks-bind-bounds-thing "i w" 'word)
-  (eriks-bind-bounds-thing "i W" 'symbol)
-  (eriks-bind-bounds-thing "i l" 'line)
-  (eriks-bind-bounds-thing "i p" 'paragraph)
-  (eriks-bind-bounds-thing "i d" 'defun)
-  (eriks-bind-bounds-thing "i s" 'whitespace)
-
-  (defun eriks-buffer-bounds ()
-    (interactive)
-    (end-of-buffer)
-    (cons 1 (point)))
-
-  (define-key modalka-action-region-special-map (kbd "i b") 'eriks-buffer-bounds)
-  (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-char-alt)
-  (define-key modalka-action-region-special-map (kbd "u") 'eriks-find-char)
-  (define-key modalka-action-region-special-map (kbd "N") 'eriks-find-char-backward)
-  (define-key modalka-action-region-special-map (kbd "U") 'eriks-find-char-alt-backward)
-
-  (defun is-bounds (b)
-    "True if b is of the form (a . b) where a and b are integers"
-    (and
-     (consp b)
-     (integerp (car b))
-     (integerp (cdr b))))
-
-  (defun modalka-action-region (prompt &optional KEYS)
-    (if (region-active-p)
-        (cons (region-beginning) (region-end))
-      (unwind-protect
-          (let ((keys KEYS)
-                (return nil)
-                (start (point))
-                (end nil))
-            (setq overriding-terminal-local-map modalka-action-region-special-map)
-            (setq prev-command-keys (this-command-keys-vector))
-            (if (null keys)
-                (setq keys (read-key-sequence-vector prompt)))
-            (setq return (call-interactively (key-binding keys)))
-            (message "")
-            (if (is-bounds return)
-                return
-              (progn
-                (setq end (point))
-                (if (= start end)
-                    nil
-                  (cons start end)))))
-        (setq overriding-terminal-local-map nil))))
-
-  ;;TODO prefix arg!! typ C-e gillar inte att den får 0
-  (defun modalka-kill-delete-region (name func)
-    (let ((region (modalka-action-region name)))
-      (if region
-          (funcall func (car region) (cdr region))
-        (message "no region"))))
-
-  (defun modalka-kill ()
-    (interactive)
-    (modalka-kill-delete-region "Kill: " 'kill-region))
-
-  (defun modalka-delete ()
-    (interactive)
-    (modalka-kill-delete-region "Delete: " 'delete-region))
-
-  (defun modalka-sp-delete ()
-    (interactive)
-    (modalka-kill-delete-region "sp-delete: " 'sp-delete-region))
-
-  (defun modalka-sp-kill ()
-    (interactive)
-    (modalka-kill-delete-region "sp-kill: " 'sp-kill-region))
-
-  (defun modalka-select ()
-    (interactive)
-    (let ((region (modalka-action-region "Select: ")))
-      (if region
-          (progn
-            (goto-char (car region))
-            (set-mark-command nil)
-            (goto-char (cdr region))
-            (setq real-this-command (key-binding modalka-action-region-last-keys))) ;;funkar inte med u U
-        (message "no region"))))
-
-  (defun modalka-swiper ()
-    (interactive)
-    (let ((region (modalka-action-region "Swiper: ")))
-      (if region
-          (swiper (buffer-substring (car region) (cdr region)))
-        (message "no region"))))
-
 
   (define-key modalka-mode-map (kbd "D") 'modalka-kill)
   (define-key modalka-mode-map (kbd "d") 'modalka-delete)
@@ -1480,7 +1332,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;; (modalka-kill-to-delete "i w")
   ;; (modalka-kill-to-delete "i W")
 
-  (define-key modalka-mode-map (kbd ".") 'eriks-repeat)
+  (define-key modalka-mode-map (kbd ".") 'modalka-repeat)
+  (define-key modalka-mode-map (kbd ",") 'repeat)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
   (define-key modalka-mode-map (kbd "SPC") 'self-insert-command)
   (define-key modalka-mode-map (kbd "i") 'toggle-modalka)
@@ -1525,7 +1378,6 @@ All default keybindings have been commented out in the source file 'auto-complet
     (modalka-define-kbd (format "%d" i) (format "M-%d" i)))
 
   (modalka-define-kbd "-" "M--")
-  (define-key modalka-mode-map (kbd ",") 'repeat-complex-command)
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
@@ -1544,6 +1396,178 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;     (interactive)
   ;;     (insert-char 91) ;;[]
   ;;     (run-hooks 'post-self-insert-hook)))
+#+end_src
+** action region
+#+begin_src emacs-lisp :tangle yes
+  (setq modalka-action-region-special-map (make-sparse-keymap))
+
+  (defun eriks-bind-bounds-thing (keys thing)
+    (define-key modalka-action-region-special-map (kbd keys)
+       `(lambda ()
+         (interactive)
+         (bounds-of-thing-at-point ',thing))))
+
+  (eriks-bind-bounds-thing "i w" 'word)
+  (eriks-bind-bounds-thing "i W" 'symbol)
+  (eriks-bind-bounds-thing "i l" 'line)
+  (eriks-bind-bounds-thing "i p" 'paragraph)
+  (eriks-bind-bounds-thing "i d" 'defun)
+  (eriks-bind-bounds-thing "i s" 'whitespace)
+
+  (defun eriks-buffer-bounds ()
+    (interactive)
+    (end-of-buffer)
+    (cons 1 (point)))
+
+  (define-key modalka-action-region-special-map (kbd "i b") 'eriks-buffer-bounds)
+  (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-char-alt)
+  (define-key modalka-action-region-special-map (kbd "u") 'eriks-find-char)
+  (define-key modalka-action-region-special-map (kbd "N") 'eriks-find-char-backward)
+  (define-key modalka-action-region-special-map (kbd "U") 'eriks-find-char-alt-backward)
+
+  (defun is-bounds (b)
+    "True if b is of the form (a . b) where a and b are integers"
+    (and
+     (consp b)
+     (integerp (car b))
+     (integerp (cdr b))))
+
+  (defun modalka-action-region (prompt &optional ignore-active-region)
+    (if (and
+         (region-active-p)
+         (not ignore-active-region))
+        (cons (region-beginning) (region-end))
+      (unwind-protect
+          (let ((keys nil)
+                (return nil)
+                (start (point))
+                (end nil))
+            (setq overriding-terminal-local-map modalka-action-region-special-map)
+            (setq prev-command-keys (this-command-keys-vector))
+            (if (null keys)
+                (setq keys (read-key-sequence-vector prompt)))
+            (setq return (call-interactively (key-binding keys)))
+            ;;(message "")
+            (if (is-bounds return)
+                return
+              (progn
+                (setq end (point))
+                (if (= start end)
+                    nil
+                  (cons start end)))))
+        (setq overriding-terminal-local-map nil))))
+
+  ;;TODO prefix arg!! typ C-e gillar inte att den får 0
+  (defun modalka-kill-delete-region (name func)
+    (let ((region (modalka-action-region name)))
+      (if region
+          (funcall func (car region) (cdr region))
+        (message "no region"))))
+
+  (defun modalka-kill ()
+    (interactive)
+    (modalka-kill-delete-region "Kill: " 'kill-region))
+
+  (defun modalka-delete ()
+    (interactive)
+    (modalka-kill-delete-region "Delete: " 'delete-region))
+
+  (defun modalka-sp-delete ()
+    (interactive)
+    (modalka-kill-delete-region "sp-delete: " 'sp-delete-region))
+
+  (defun modalka-sp-kill ()
+    (interactive)
+    (modalka-kill-delete-region "sp-kill: " 'sp-kill-region))
+
+  (defun modalka-select ()
+    (interactive)
+    (let* ((ra (region-active-p))
+          (region (modalka-action-region "Select: " ra)))
+      (if (and (not ra) region)
+          (progn
+            (goto-char (car region))
+            (set-mark-command nil)
+            (goto-char (cdr region))
+            ;; (setq real-this-command (key-binding modalka-action-region-last-keys))
+            )
+        (message "no region"))))
+
+  (defun modalka-swiper ()
+    (interactive)
+    (let ((region (modalka-action-region "Swiper: ")))
+      (if region
+          (swiper (buffer-substring (car region) (cdr region)))
+        (message "no region"))))
+#+end_src
+** repeat
+#+begin_src emacs-lisp :tangle yes
+  ;;keys som det senaste kommandot hade
+  (setq modalka-repeat-cur-macro nil)
+
+  ;;om man kör `read-key-sequence' eller liknande i sin funktion kommer
+  ;;den att skriva över `this-command-keys'. Så för att bevara sin
+  ;;key-sequence för att kunna repetera sätter man denna variabel
+  (setq prev-command-keys nil)
+
+  ;; saker i modalka som inte ska repeatas
+  (setq modalka-repeat-whitelist
+        (mapcar
+         (lambda (a)
+           (listify-key-sequence (kbd a)))
+         '("M" "D" "d" "n" "N" "I" "r" "x" "X" "c")))
+
+  ;; funktioner som inte ska repeatas
+  (setq modalka-repeat-blacklist-function '(modalka-repeat undo-tree-undo modalka-mode toggle-modalka))
+
+  ;; vilka knappar som är för prefix-argument
+  (setq modalka-repeat-prefix-keys (listify-key-sequence (kbd "0 1 2 3 4 5 6 7 8 9 u -")))
+
+  ;;keys listified
+  (defun modalka-repeat-remove-prefix (keys)
+    (if (seq-contains modalka-repeat-prefix-keys (car keys))
+        (modalka-repeat-remove-prefix (cdr keys))
+      keys))
+
+  ;;removes common prefix from a and b
+  (defun list-prefix (a b)
+    (if (and
+         (equal (car a) (car b))
+         (not (null a))
+         (not (null b)))
+        (list-prefix (cdr a) (cdr b))
+      (cons a b)))
+
+  ;;checks whether a is a prefix of b
+  ;;(is-prefix-of '(1 2 3) '(1 2 3 4 5)) == t
+  (defun is-prefix-of (a b)
+    (null (car (list-prefix a b))))
+
+  (defun modalka-repeat-post-command ()
+    (let* ((keys (vconcat prev-command-keys (this-command-keys-vector)))
+           (non-prefix-keys (modalka-repeat-remove-prefix (listify-key-sequence keys))))
+      (if (and
+           (bound-and-true-p modalka-mode)
+           (not (null non-prefix-keys))
+           (seq-contains
+            modalka-repeat-whitelist
+            non-prefix-keys
+            (lambda (elt e)
+              (is-prefix-of e elt)))
+           (not (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)))
+          (setq modalka-repeat-cur-macro keys))
+      (setq prev-command-keys nil)))
+
+  (add-hook 'post-command-hook 'modalka-repeat-post-command)
+
+  (defun modalka-repeat ()
+    (interactive)
+    ;; (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
+    ;; (setq real-this-command last-repeatable-command)
+    (message "repeating %s" (key-description modalka-repeat-cur-macro))
+    (execute-kbd-macro modalka-repeat-cur-macro))
+
+
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

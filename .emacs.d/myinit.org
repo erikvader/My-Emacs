@@ -3,7 +3,7 @@
 * require
 #+begin_src emacs-lisp :tangle yes
   (require 'cc-mode)
-
+  (require 'seq)
 
 #+end_src
 * Eriks keys minor mode
@@ -1483,8 +1483,6 @@ All default keybindings have been commented out in the source file 'auto-complet
           (- 0 num))
          (t
           num)))))
-
-  (read-keys-with-prefix nil "test:")
 
   (defun modalka-action-region (prompt &optional ignore-active-region)
     (if (and

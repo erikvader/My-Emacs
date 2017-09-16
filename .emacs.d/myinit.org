@@ -1233,18 +1233,6 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+begin_src emacs-lisp :tangle yes
   (require 'modalka)
 
-  ;;(defvar-local mode-line-cookie nil)
-
-  ;; (add-hook 'modalka-mode-hook
-  ;;           (lambda ()
-  ;;             (if (bound-and-true-p modalka-mode)
-  ;;                 (setq-local mode-line-cookie
-  ;;                             (face-remap-add-relative
-  ;;                              'mode-line '((:background "#d2691e") mode-line)))
-  ;;               (face-remap-remove-relative mode-line-cookie))
-  ;;             ;;(powerline-reset)
-  ;;             ))
-
   (defun toggle-modalka ()
     (interactive)
     (modalka-mode 'toggle)
@@ -1253,26 +1241,15 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key my-keys-map (kbd "§") 'toggle-modalka)
 
-  ;; (modalka-global-mode)
-
   (define-key modalka-mode-map (kbd "t") 'hydra-transpose/body)
 
-  ;;(modalka-define-kbd "w" "C-w")
   (modalka-define-kbd "W" "M-w")
   (modalka-define-kbd "a" "C-a")
   (modalka-define-kbd "e" "C-e")
-  ;;(modalka-define-kbd "g" "C-g")
   (modalka-define-kbd "y" "C-y")
   (modalka-define-kbd "Y" "M-y")
-  ;;(modalka-define-kbd "m" "<C-m>")
 
   (define-key modalka-mode-map (kbd "m") 'set-mark-command)
-  ;; (modalka-define-kbd "M s" "C-M-SPC")
-  ;; (modalka-define-kbd "M b" "C-x h")
-  ;; (modalka-define-kbd "M w" "M-@")
-  ;; (modalka-define-kbd "M p" "M-h")
-  ;; (modalka-define-kbd "M d" "C-M-h")
-  ;; (define-key modalka-mode-map (kbd "M l") 'eriks-mark-line)
 
   (modalka-define-kbd "u" "C-u")
 
@@ -1307,46 +1284,6 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "M") 'modalka-select)
   (define-key modalka-mode-map (kbd "S") 'modalka-swiper)
 
-  ;;killing delete functions
-  ;;(define-key modalka-mode-map (kbd "D e")   'kill-line)
-  ;;(modalka-define-kbd               "D E"    "C-M-k")
-  ;;(define-key modalka-mode-map (kbd "D a")   'eriks-backward-kill-line)
-  ;;(define-key modalka-mode-map (kbd "D f")   'sp-kill-word)
-  ;;(define-key modalka-mode-map (kbd "D b")   'sp-backward-kill-word)
-  ;;(define-key modalka-mode-map (kbd "D F")   'sp-kill-symbol)
-  ;;(define-key modalka-mode-map (kbd "D B")   'sp-backward-kill-symbol)
-  ;;(define-key modalka-mode-map (kbd "D d")   'kill-whole-line)
-  ;;(define-key modalka-mode-map (kbd "D r")   'kill-region)
-  ;;(define-key modalka-mode-map (kbd "D w f") 'eriks-hungry-delete-whitespace)
-  ;;(define-key modalka-mode-map (kbd "D w b") 'eriks-hungry-delete-whitespace-backward)
-  ;;(define-key modalka-mode-map (kbd "D i p")   'eriks-kill-paragraph)
-  ;; (define-key modalka-mode-map (kbd "D n")   'eriks-zap-to-char)
-  ;; (define-key modalka-mode-map (kbd "D N")   'eriks-zap-to-char-backwards)
-  ;; (define-key modalka-mode-map (kbd "D u")   'eriks-zap-up-to-char)
-  ;; (define-key modalka-mode-map (kbd "D U")   'eriks-zap-up-to-char-backwards)
-  ;;(define-key modalka-mode-map (kbd "D i w") 'eriks-kill-word-at-point)
-  ;;(define-key modalka-mode-map (kbd "D i W") 'eriks-kill-symbol-at-point)
-
-  ;;non-killing delete functions
-  ;; (define-key modalka-mode-map (kbd "d w f") 'eriks-hungry-delete-whitespace)
-  ;; (define-key modalka-mode-map (kbd "d w b") 'eriks-hungry-delete-whitespace-backward)
-  ;; (modalka-kill-to-delete "e")
-  ;; (modalka-kill-to-delete "E")
-  ;; (modalka-kill-to-delete "f")
-  ;; (modalka-kill-to-delete "b")
-  ;; (modalka-kill-to-delete "F")
-  ;; (modalka-kill-to-delete "B")
-  ;; (modalka-kill-to-delete "d")
-  ;; (modalka-kill-to-delete "r")
-  ;; (modalka-kill-to-delete "p")
-  ;; (modalka-kill-to-delete "a")
-  ;; (modalka-kill-to-delete "n")
-  ;; (modalka-kill-to-delete "N")
-  ;; (modalka-kill-to-delete "u")
-  ;; (modalka-kill-to-delete "U")
-  ;; (modalka-kill-to-delete "i w")
-  ;; (modalka-kill-to-delete "i W")
-
   (define-key modalka-mode-map (kbd ".") 'modalka-repeat)
   (define-key modalka-mode-map (kbd ",") 'repeat)
   (define-key modalka-mode-map (kbd ":") 'modalka-repeat-lock)
@@ -1363,9 +1300,6 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "p") 'hydra-smartparens/body)
 
   (modalka-define-kbd "s" "C-s")
-  ;; (define-key modalka-mode-map (kbd "S r") 'swiper-selection)
-  ;; (define-key modalka-mode-map (kbd "S w") 'swiper-word-at-point)
-  ;; (define-key modalka-mode-map (kbd "S W") 'swiper-symbol-at-point)
 
   (modalka-define-kbd "v" "C-v")
   (modalka-define-kbd "V" "M-v")
@@ -1382,8 +1316,6 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "G a") 'beginning-of-buffer)
   (define-key modalka-mode-map (kbd "G e") 'end-of-buffer)
 
-  ;;(modalka-define-kbd "q" "C-q")
-
   (define-key modalka-mode-map (kbd "w f") 'eriks-skip-space)
   (define-key modalka-mode-map (kbd "w b") 'eriks-skip-space-backwards)
 
@@ -1399,21 +1331,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
-  ;;(define-key modalka-mode-map (kbd ":") 'eriks-find-char-repeat)
 
-
-  ;;altgr
-  ;; (define-key modalka-mode-map (kbd "7")
-  ;;   (lambda ()
-  ;;     (interactive)
-  ;;     (insert-char 123) ;;{}
-  ;;     (run-hooks 'post-self-insert-hook)))
-
-  ;; (define-key modalka-mode-map (kbd "8")
-  ;;   (lambda ()
-  ;;     (interactive)
-  ;;     (insert-char 91) ;;[]
-  ;;     (run-hooks 'post-self-insert-hook)))
 #+end_src
 ** action region
 #+begin_src emacs-lisp :tangle yes
@@ -1693,6 +1611,8 @@ All default keybindings have been commented out in the source file 'auto-complet
         (setq modalka-insert-text t)
         (setq modalka-insert-text-first t)
         (toggle-modalka))))
+
+
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

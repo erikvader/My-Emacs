@@ -171,6 +171,7 @@ reflected in the local value.
   (define-key eriks-map (kbd "C-f") 'ff-find-other-file)
 
   (define-key eriks-map (kbd "r") 'linum-relative-toggle)
+  (linum-relative-toggle)
 
   (define-key eriks-map (kbd "l") 'eriks-toggle-visual-line)
 
@@ -1246,7 +1247,9 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (defun toggle-modalka ()
     (interactive)
-    (modalka-mode 'toggle))
+    (modalka-mode 'toggle)
+    (if (bound-and-true-p modalka-mode)
+        (setq modalka-insert-text nil)))
 
   (define-key my-keys-map (kbd "§") 'toggle-modalka)
 
@@ -1346,10 +1349,13 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key modalka-mode-map (kbd ".") 'modalka-repeat)
   (define-key modalka-mode-map (kbd ",") 'repeat)
+  (define-key modalka-mode-map (kbd ":") 'modalka-repeat-lock)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
   (define-key modalka-mode-map (kbd "SPC") 'self-insert-command)
   (define-key modalka-mode-map (kbd "i") 'toggle-modalka)
-  (define-key modalka-mode-map (kbd "I") 'eriks-insert-char)
+
+  (define-key modalka-mode-map (kbd "å") 'eriks-insert-char)
+  (define-key modalka-mode-map (kbd "I") 'modalka-insert-text)
 
   (modalka-define-kbd "o" "C-<return>")
   (modalka-define-kbd "O" "C-S-<return>")
@@ -1558,6 +1564,10 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 ** repeat o lighter
 #+begin_src emacs-lisp :tangle yes
+  (setq modalka-repeat-lock nil)
+  (setq modalka-insert-text nil)
+  (setq modalka-insert-text-first nil)
+
   ;;keys som det senaste kommandot hade
   (setq modalka-repeat-cur-macro nil)
 
@@ -1571,7 +1581,7 @@ All default keybindings have been commented out in the source file 'auto-complet
         (mapcar
          (lambda (a)
            (listify-key-sequence (kbd a)))
-         '("M" "D" "d" "n" "N" "I" "r" "x" "X" "c")))
+         '("M" "D" "d" "n" "N" "I" "r" "x" "X" "c" "å")))
 
   ;; funktioner som inte ska repeatas
   (setq modalka-repeat-blacklist-function '(modalka-repeat undo-tree-undo modalka-mode toggle-modalka))
@@ -1599,42 +1609,90 @@ All default keybindings have been commented out in the source file 'auto-complet
   (defun is-prefix-of (a b)
     (null (car (list-prefix a b))))
 
+  ;; assumes `modalka-repeat-cur-macro' ends with § or whatever character toggles modalka
+  (defun modalka-insert-text-append (a)
+    (setq modalka-repeat-cur-macro (vconcat
+                                    (seq-subseq modalka-repeat-cur-macro 0 -1)
+                                    a
+                                    (listify-key-sequence (kbd "§")))))
+
   (defun modalka-repeat-post-command ()
     (let* ((keys (vconcat prev-command-keys (this-command-keys-vector)))
            (non-prefix-keys (modalka-repeat-remove-prefix (listify-key-sequence keys))))
-      (if (and
-           (bound-and-true-p modalka-mode)
-           (not (null non-prefix-keys))
-           (seq-contains
-            modalka-repeat-whitelist
-            non-prefix-keys
-            (lambda (elt e)
-              (is-prefix-of e elt)))
-           (not (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)))
-          (setq modalka-repeat-cur-macro keys))
+      (cond
+       ((or
+         modalka-repeat-lock
+         (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)) nil)
+       (modalka-insert-text
+        (if modalka-insert-text-first
+            (progn
+              (setq modalka-insert-text-first nil)
+              (setq modalka-repeat-cur-macro (vconcat keys (listify-key-sequence (kbd "§")))))
+          (modalka-insert-text-append keys)))
+       (t
+        (if (and
+             (bound-and-true-p modalka-mode)
+             (not (null non-prefix-keys))
+             (seq-contains
+              modalka-repeat-whitelist
+              non-prefix-keys
+              (lambda (elt e)
+                (is-prefix-of e elt))))
+            (setq modalka-repeat-cur-macro keys))))
       (setq prev-command-keys nil)
       (modalka-set-lighter)))
 
+  (defun get-color-string (s c)
+    (propertize s 'face `(:foreground ,c)))
+
+  (defun modalka-status-color ()
+    (cond
+     ((and modalka-mode modalka-repeat-lock)
+      "red")
+     (modalka-mode
+      "cyan")
+     (modalka-insert-text
+      "green")
+     (t
+      "gray")))
+
   (defun modalka-set-lighter ()
-    (diminish 'modalka-mode (format " %s%s%s"
-                                    (propertize "(" 'face '(:foreground "cyan"))
-                                    (concat (seq-remove
-                                             'is-boundary
-                                             (key-description modalka-repeat-cur-macro)))
-                                    (propertize ")" 'face '(:foreground "cyan")))))
+    (diminish 'modalka-status-mode (format " %s%s%s"
+                                           (get-color-string "(" (modalka-status-color))
+                                           (concat (seq-remove
+                                                    'is-boundary
+                                                    (key-description modalka-repeat-cur-macro)))
+                                           (get-color-string ")" (modalka-status-color)))))
 
   (add-hook 'post-command-hook 'modalka-repeat-post-command)
 
-  (defun modalka-repeat ()
+  (defun modalka-repeat-lock ()
     (interactive)
+    (setq modalka-repeat-lock (not modalka-repeat-lock)))
+
+  (defun modalka-repeat (ARG)
+    (interactive "p")
     ;; (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
     ;; (setq real-this-command last-repeatable-command)
     (message "repeating %s" (key-description modalka-repeat-cur-macro))
-    (execute-kbd-macro modalka-repeat-cur-macro))
+    (execute-kbd-macro modalka-repeat-cur-macro ARG))
 
-  ;; (define-minor-mode modalka-repeat-mode
-  ;;   "Displays the next/current command to be repeated by `modalka-repeat' in the modeline"
-  ;;   :lighter " (:( )")
+  (define-minor-mode modalka-status-mode
+    "Displays the next/current command to be repeated by `modalka-repeat' in the modeline"
+    :lighter " (nil)"
+    :global t
+    :init-value t)
+
+  (modalka-status-mode 1)
+
+  (defun modalka-insert-text ()
+    (interactive)
+    (if modalka-repeat-lock
+        (message "Modalka is locked! aborting...")
+      (progn
+        (setq modalka-insert-text t)
+        (setq modalka-insert-text-first t)
+        (toggle-modalka))))
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes
@@ -1653,6 +1711,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'global-disable-mouse-mode)
   (diminish 'auto-revert-mode)
 
+  (diminish 'modalka-mode)
   ;;rm-text-properties, ta bort sakerna som smart-mode-line lägger till (face och sml/global(?)).
   ;; (diminish 'modalka-mode (format " %s" (propertize (all-the-icons-fileicon "emacs")
   ;;                                                   'face `(:family ,(all-the-icons-fileicon-family) :height 0.8 :foreground "cyan")

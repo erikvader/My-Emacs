@@ -1556,7 +1556,7 @@ All default keybindings have been commented out in the source file 'auto-complet
           (swiper (buffer-substring (car region) (cdr region)))
         (message "no region"))))
 #+end_src
-** repeat
+** repeat o lighter
 #+begin_src emacs-lisp :tangle yes
   ;;keys som det senaste kommandot hade
   (setq modalka-repeat-cur-macro nil)
@@ -1612,7 +1612,16 @@ All default keybindings have been commented out in the source file 'auto-complet
               (is-prefix-of e elt)))
            (not (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)))
           (setq modalka-repeat-cur-macro keys))
-      (setq prev-command-keys nil)))
+      (setq prev-command-keys nil)
+      (modalka-set-lighter)))
+
+  (defun modalka-set-lighter ()
+    (diminish 'modalka-mode (format " %s%s%s"
+                                    (propertize "(" 'face '(:foreground "cyan"))
+                                    (concat (seq-remove
+                                             'is-boundary
+                                             (key-description modalka-repeat-cur-macro)))
+                                    (propertize ")" 'face '(:foreground "cyan")))))
 
   (add-hook 'post-command-hook 'modalka-repeat-post-command)
 
@@ -1623,7 +1632,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     (message "repeating %s" (key-description modalka-repeat-cur-macro))
     (execute-kbd-macro modalka-repeat-cur-macro))
 
-
+  ;; (define-minor-mode modalka-repeat-mode
+  ;;   "Displays the next/current command to be repeated by `modalka-repeat' in the modeline"
+  ;;   :lighter " (:( )")
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes
@@ -1640,13 +1651,13 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'auto-complete-mode)
   (diminish 'yas-minor-mode)
   (diminish 'global-disable-mouse-mode)
-  ;;(diminish 'auto-revert-mode)
+  (diminish 'auto-revert-mode)
 
   ;;rm-text-properties, ta bort sakerna som smart-mode-line lägger till (face och sml/global(?)).
-  (diminish 'modalka-mode (format " %s" (propertize (all-the-icons-fileicon "emacs")
-                                                    'face `(:family ,(all-the-icons-fileicon-family) :height 0.8 :foreground "cyan")
-                                                    'display '(raise -0.1)
-                                                    )))
+  ;; (diminish 'modalka-mode (format " %s" (propertize (all-the-icons-fileicon "emacs")
+  ;;                                                   'face `(:family ,(all-the-icons-fileicon-family) :height 0.8 :foreground "cyan")
+  ;;                                                   'display '(raise -0.1)
+  ;;                                                   )))
 
   (diminish 'my-keys-minor-mode (format " %s" (propertize (all-the-icons-faicon "keyboard-o")
                                                           'face `(:family ,(all-the-icons-faicon-family) :height 0.9)

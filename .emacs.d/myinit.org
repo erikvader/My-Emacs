@@ -1359,9 +1359,9 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key modalka-action-region-special-map (kbd "i b") 'eriks-buffer-bounds)
   (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-char-alt)
-  (define-key modalka-action-region-special-map (kbd "u") 'eriks-find-char)
+  (define-key modalka-action-region-special-map (kbd "t") 'eriks-find-char)
   (define-key modalka-action-region-special-map (kbd "N") 'eriks-find-char-backward)
-  (define-key modalka-action-region-special-map (kbd "U") 'eriks-find-char-alt-backward)
+  (define-key modalka-action-region-special-map (kbd "T") 'eriks-find-char-alt-backward)
 
   (defun is-bounds (b)
     "True if b is of the form (a . b) where a and b are integers"

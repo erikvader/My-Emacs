@@ -1287,6 +1287,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd ".") 'modalka-repeat)
   (define-key modalka-mode-map (kbd ",") 'repeat)
   (define-key modalka-mode-map (kbd ":") 'modalka-repeat-lock)
+  (define-key modalka-mode-map (kbd ">") 'modalka-chaining-toggle)
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
   (define-key modalka-mode-map (kbd "SPC") 'self-insert-command)
   (define-key modalka-mode-map (kbd "i") 'toggle-modalka)
@@ -1305,6 +1306,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "V" "M-v")
 
   (modalka-define-kbd "r" "C-r")
+  ;;(define-key modalka-mode-map (kbd "R") 'modalka-replace)
   (modalka-define-kbd "x" "<deletechar>")
   (modalka-define-kbd "X" "DEL")
 
@@ -1372,12 +1374,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     (let ((keys (read-key-sequence-vector prompt)))
       (if (seq-contains modalka-repeat-prefix-keys (car (listify-key-sequence keys)))
           (read-keys-with-prefix (cons (aref keys 0) prefix) (format "%s -%s" prompt (key-description keys)))
-        (cons (reverse-list prefix) keys))))
-
-  (defun reverse-list (l &optional temp)
-    (if (null l)
-        temp
-      (reverse-list (cdr l) (cons (car l) temp))))
+        (cons (reverse prefix) keys))))
 
   ;;(parse-prefix (car (read-keys-with-prefix nil "hej:")))
   (defun parse-prefix (prefix)
@@ -1479,22 +1476,48 @@ All default keybindings have been commented out in the source file 'auto-complet
       (if region
           (swiper (buffer-substring (car region) (cdr region)))
         (message "no region"))))
+
+  ;; (defun modalka-replace ()
+  ;;   (interactive)
+  ;;   (modalka-chaining-toggle 1)
+  ;;   (execute-kbd-macro "d")
+  ;;   (execute-kbd-macro "I")
+  ;;   (modalka-chaining-toggle -1))
 #+end_src
 ** repeat o lighter
 #+begin_src emacs-lisp :tangle yes
+  ;; locks `modalka-repeat-macro' so it cannot be changed
   (setq modalka-repeat-lock nil)
+
+  ;; t means that we are currently inserting a string, plz record it by
+  ;; appending to `modalka-repeat-macro'
   (setq modalka-insert-text nil)
+
+  ;; we have just started to insert text, set up `modalka-repeat-macro'
+  ;; for first time use instead of directly appending to it
   (setq modalka-insert-text-first nil)
 
-  ;;keys som det senaste kommandot hade
-  (setq modalka-repeat-cur-macro nil)
+  ;; don't replace `modalka-repeat-macro', instead add new commands to it
+  (setq modalka-chaining nil)
+
+  ;; we are currently repeating (`modalka-repeat'), don't run
+  ;; `modalka-repeat-post-command'
+  (setq modalka-is-repeating nil)
+
+  ;; a list of recent keypresses/commands to repeat.
+  ;; Every entry in the list is a separate command.
+  ;; The first thing is the most recent command
+  ;; ( "df" "Ihej§" "diw" )
+  ;; each command is stored as a vector of the keypresses
+  ;; (`this-command-keys-vector', `listify-key-sequence' with `kbd').
+  (setq modalka-repeat-macro nil)
 
   ;;om man kör `read-key-sequence' eller liknande i sin funktion kommer
   ;;den att skriva över `this-command-keys'. Så för att bevara sin
   ;;key-sequence för att kunna repetera sätter man denna variabel
   (setq prev-command-keys nil)
 
-  ;; saker i modalka som inte ska repeatas
+  ;; saker i modalka som skall repeatas
   (setq modalka-repeat-whitelist
         (mapcar
          (lambda (a)
@@ -1507,14 +1530,15 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;; vilka knappar som är för prefix-argument
   (setq modalka-repeat-prefix-keys (listify-key-sequence (kbd "0 1 2 3 4 5 6 7 8 9 u -")))
 
-  ;;keys listified
+  ;; pre: keys listified
+  ;; removes the keypresses responsible for the prefix argument in 'keys'
   (defun modalka-repeat-remove-prefix (keys)
     (if (seq-contains modalka-repeat-prefix-keys (car keys))
         (modalka-repeat-remove-prefix (cdr keys))
       keys))
 
-  ;;removes common prefix from a and b
   (defun list-prefix (a b)
+    "removes common prefix from a and b"
     (if (and
          (equal (car a) (car b))
          (not (null a))
@@ -1522,81 +1546,110 @@ All default keybindings have been commented out in the source file 'auto-complet
         (list-prefix (cdr a) (cdr b))
       (cons a b)))
 
-  ;;checks whether a is a prefix of b
-  ;;(is-prefix-of '(1 2 3) '(1 2 3 4 5)) == t
   (defun is-prefix-of (a b)
+    "checks whether a is a prefix of b
+
+  (is-prefix-of '(1 2 3) '(1 2 3 4 5)) == t"
     (null (car (list-prefix a b))))
 
-  ;; assumes `modalka-repeat-cur-macro' ends with § or whatever character toggles modalka
+  ;; assumes `modalka-repeat-macro' latest entry ends with § or whatever character toggles modalka
   (defun modalka-insert-text-append (a)
-    (setq modalka-repeat-cur-macro (vconcat
-                                    (seq-subseq modalka-repeat-cur-macro 0 -1)
-                                    a
-                                    (listify-key-sequence (kbd "§")))))
+    (let ((top (modalka-macro-recent-get)))
+      (modalka-macro-recent-set (vconcat
+                                 (seq-subseq top 0 -1)
+                                 a
+                                 (listify-key-sequence (kbd "§"))))))
 
+  ;; function to run after every command is run.
+  ;; This is the command that saves all keypresses.
+  ;; It is the heart of modalka-repeat
   (defun modalka-repeat-post-command ()
-    (let* ((keys (vconcat prev-command-keys (this-command-keys-vector)))
-           (non-prefix-keys (modalka-repeat-remove-prefix (listify-key-sequence keys))))
-      (cond
-       ((or
-         modalka-repeat-lock
-         (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)) nil)
-       (modalka-insert-text
-        (if modalka-insert-text-first
-            (progn
-              (setq modalka-insert-text-first nil)
-              (setq modalka-repeat-cur-macro (vconcat keys (listify-key-sequence (kbd "§")))))
-          (modalka-insert-text-append keys)))
-       (t
-        (if (and
-             (bound-and-true-p modalka-mode)
-             (not (null non-prefix-keys))
-             (seq-contains
-              modalka-repeat-whitelist
-              non-prefix-keys
-              (lambda (elt e)
-                (is-prefix-of e elt))))
-            (setq modalka-repeat-cur-macro keys))))
-      (setq prev-command-keys nil)
-      (modalka-set-lighter)))
-
-  (defun get-color-string (s c)
-    (propertize s 'face `(:foreground ,c)))
-
-  (defun modalka-status-color ()
-    (cond
-     ((and modalka-mode modalka-repeat-lock)
-      "red")
-     (modalka-mode
-      "cyan")
-     (modalka-insert-text
-      "green")
-     (t
-      "gray")))
-
-  (defun modalka-set-lighter ()
-    (diminish 'modalka-status-mode (format " %s%s%s"
-                                           (get-color-string "(" (modalka-status-color))
-                                           (concat (seq-remove
-                                                    'is-boundary
-                                                    (key-description modalka-repeat-cur-macro)))
-                                           (get-color-string ")" (modalka-status-color)))))
+    (if (not (or
+              modalka-is-repeating
+              modalka-repeat-lock
+              (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)))
+        (let* ((keys (vconcat prev-command-keys (this-command-keys-vector)))
+               (non-prefix-keys (modalka-repeat-remove-prefix (listify-key-sequence keys))))
+          (cond
+           (modalka-insert-text
+            (if modalka-insert-text-first
+                (progn
+                  (setq modalka-insert-text-first nil)
+                  (modalka-macro-add (vconcat keys (listify-key-sequence (kbd "§")))))
+              (modalka-insert-text-append keys)))
+           (t
+            (if (and
+                 (bound-and-true-p modalka-mode)
+                 (not (null non-prefix-keys))
+                 (seq-contains
+                  modalka-repeat-whitelist
+                  non-prefix-keys
+                  (lambda (elt e)
+                    (is-prefix-of e elt))))
+                (modalka-macro-add keys))))))
+    (setq prev-command-keys nil)
+    (modalka-set-lighter))
 
   (add-hook 'post-command-hook 'modalka-repeat-post-command)
 
-  (defun modalka-repeat-lock ()
+  (defun get-color-string (s c)
+    "Returns s with the foreground color c"
+    (propertize s 'face `(:foreground ,c)))
+
+  ;; returns pairs of colors the modalka lighter should use.
+  ;; the colors depends on whatever state modalka is in right now
+  (defun modalka-status-color ()
+    (cond
+     ((and modalka-repeat-lock modalka-insert-text)
+      (cons "green" "red"))
+     ((and modalka-mode modalka-repeat-lock)
+      (cons "red" "red"))
+     (modalka-mode
+      (cons "cyan" "cyan"))
+     (modalka-insert-text
+      (cons "green" "green"))
+     (t
+      (cons "gray" "gray"))))
+
+  ;; set the modalka lighter with `diminish'
+  (defun modalka-set-lighter ()
+    (let ((pc (modalka-status-color)))
+      (diminish 'modalka-status-mode (format " %s%s%s%s"
+                                             (get-color-string "(" (car pc))
+                                             (modalka-macro-tostring (get-color-string " > " "orange"))
+                                             (if modalka-chaining
+                                                 (get-color-string ">>" "orange")
+                                               "")
+                                             (get-color-string ")" (cdr pc))))))
+
+  (defun modalka-repeat-lock (&optional set)
+    "toggles the locked state of modalka
+
+  set == 1 -> lock on
+  set == -1 -> lock off"
     (interactive)
-    (setq modalka-repeat-lock (not modalka-repeat-lock)))
+    (setq modalka-repeat-lock
+          (cond
+           ((and (numberp set) (= set 1))
+            t)
+           ((and (numberp set) (= set -1))
+            nil)
+           (t
+            (not modalka-repeat-lock)))))
 
   (defun modalka-repeat (ARG)
+    "Repeats the latest modalka command ARG times."
     (interactive "p")
     ;; (setq this-command last-command) ;;so 'repeat' won't repeat this function and get stuck in an infinite loop
     ;; (setq real-this-command last-repeatable-command)
-    (message "repeating %s" (key-description modalka-repeat-cur-macro))
-    (execute-kbd-macro modalka-repeat-cur-macro ARG))
+    (setq modalka-is-repeating t)
+    (message "repeating %s" (modalka-macro-tostring " > "))
+    (execute-kbd-macro (modalka-macro-to-vector) ARG)
+    (setq modalka-is-repeating nil))
 
   (define-minor-mode modalka-status-mode
-    "Displays the next/current command to be repeated by `modalka-repeat' in the modeline"
+    "Displays the next/current command to be repeated by `modalka-repeat' in the modeline,
+  and the current status."
     :lighter " (nil)"
     :global t
     :init-value t)
@@ -1604,15 +1657,62 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-status-mode 1)
 
   (defun modalka-insert-text ()
+    "Begin insert text and record it.
+  If `modalka-repeat-lock' is on, then nothing will be recorded."
     (interactive)
-    (if modalka-repeat-lock
-        (message "Modalka is locked! aborting...")
-      (progn
-        (setq modalka-insert-text t)
-        (setq modalka-insert-text-first t)
-        (toggle-modalka))))
+    (setq modalka-insert-text t)
+    (setq modalka-insert-text-first t)
+    (toggle-modalka))
 
+  (defun modalka-chaining-toggle (&optional set)
+    "toggles the chaining state of modalka.
+  If chaining is on, then append new commands to the old ones instead of
+  replacing them.
 
+  set == 1 -> chaining on
+  set == -1 -> chaining off"
+    (interactive)
+    (setq modalka-chaining
+          (cond
+           ((and (numberp set) (= set 1))
+            t)
+           ((and (numberp set) (= set -1))
+            nil)
+           (t
+            (not modalka-chaining)))))
+
+  ;; append keys if `modalka-chaining' is non-nil
+  ;; else replace the old macro
+  (defun modalka-macro-add (keys)
+    (setq modalka-repeat-macro
+          (if modalka-chaining
+              (cons keys modalka-repeat-macro)
+            (cons keys nil))))
+
+  ;; set the most recent command in `modalka-repeat-command' to a
+  (defun modalka-macro-recent-set (a)
+    (setq modalka-repeat-macro (cons a (cdr modalka-repeat-macro))))
+
+  ;; get the most recent command
+  (defun modalka-macro-recent-get ()
+    (car modalka-repeat-macro))
+
+  ;; convert `modalka-repeat-macro' to a vector that
+  ;; `execute-kbd-command' can actually use.
+  (defun modalka-macro-to-vector ()
+    (seq-reduce 'vconcat (reverse modalka-repeat-macro) nil))
+
+  ;; create a nice string of the current commands in
+  ;; `modalka-repeat-macro' with a delimiter 'del' separating each
+  ;; command
+  (defun modalka-macro-tostring (del)
+    (seq-reduce
+     (lambda (b e)
+       (if (null b)
+           (concat e)
+         (concat b del (seq-remove 'is-boundary (key-description e)))))
+     (reverse modalka-repeat-macro)
+     nil))
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

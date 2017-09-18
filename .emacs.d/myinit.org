@@ -105,7 +105,7 @@ reflected in the local value.
 
   (winner-mode 1)
 
-  ;;(global-disable-mouse-mode)
+  (global-disable-mouse-mode)
 
   (define-key my-keys-map (kbd "C-+") 'er/expand-region)
   (global-set-key (kbd "M-s r") 'isearch-query-replace-regexp)
@@ -155,6 +155,8 @@ reflected in the local value.
 
   ;;to fix bug with expand-region (issue 220 on github)
   (setq shift-select-mode nil)
+
+  (define-key my-keys-map (kbd "M-a") 'back-to-indentation)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -179,22 +181,22 @@ reflected in the local value.
     (interactive)
     (setq line-move-visual (not line-move-visual)))
 
-  (defun eriks-kill-line ()
-    "Kills (cuts) the whole current line"
-    (interactive)
-    (setq col (current-column))
-    (beginning-of-line)
-    (delete-horizontal-space)
-    (set-mark-command nil)
-    (end-of-line)
-    (if (not (eq (point) (mark)))
-        (kill-region (point) (mark)))
-    (deactivate-mark)
-    ;;(kill-line 1)
-    (delete-forward-char 1)
-    (move-to-column col))
+  ;; (defun eriks-kill-line ()
+  ;;   "Kills (cuts) the whole current line"
+  ;;   (interactive)
+  ;;   (setq col (current-column))
+  ;;   (beginning-of-line)
+  ;;   (delete-horizontal-space)
+  ;;   (set-mark-command nil)
+  ;;   (end-of-line)
+  ;;   (if (not (eq (point) (mark)))
+  ;;       (kill-region (point) (mark)))
+  ;;   (deactivate-mark)
+  ;;   ;;(kill-line 1)
+  ;;   (delete-forward-char 1)
+  ;;   (move-to-column col))
 
-  (define-key eriks-map (kbd "d") 'eriks-kill-line)
+  ;; (define-key eriks-map (kbd "d") 'eriks-kill-line)
 
   (defun eriks-add-semicolon ()
     "Goes to the end of the current line and adds an semicolon."
@@ -390,15 +392,6 @@ reflected in the local value.
   (defun eriks-skip-space-backwards ()
     (interactive)
     (eriks-skip-space -1))
-
-  (defun eriks-beginning-of-line (ARG)
-    "Just as `beginning-of-line' except if prefixed with C-u it skips over whitespace at the beginning of the line."
-    (interactive "P")
-    (beginning-of-line)
-    (if (equal ARG '(4))
-        (eriks-skip-space 1)))
-
-  (define-key my-keys-map (kbd "C-a") 'eriks-beginning-of-line)
 
   (defun eriks-kill-paragraph ()
     "Kills the current paragraph point is in."
@@ -695,10 +688,34 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 ** multiple cursors
 #+begin_src emacs-lisp :tangle yes
-  ;; (define-key 'eriks-map (kbd "m l") 'mc/edit-lines)
-  ;; (define-key 'eriks-map (kbd "m m") 'mc/mark-next-like-this)
-  ;; (define-key 'eriks-map (kbd "m n") 'mc/mark-previous-like-this)
-  ;; (define-key 'eriks-map (kbd "m b") 'mc/mark-all-like-this)
+  ;; (asd-key '-map (kbd "m l") 'mc/edit-lines)
+  ;; (asd-key '-map (kbd "m m") 'mc/mark-next-like-this)
+  ;; (asd-key '-map (kbd "m n") 'mc/mark-previous-like-this)
+  ;; (asd-key '-map (kbd "m b") 'mc/mark-all-like-this)
+  (define-key mc/keymap (kbd "<return>") nil)
+
+  (defhydra hydra-multiple-cursors ()
+    "
+       ^Up^            ^Down^        ^Other^
+  ----------------------------------------------------------
+  [_p_]   Next    [_n_]   Next    [_l_] Edit lines      [_R_] Region-anchor
+  [_P_]   Skip    [_N_]   Skip    [_a_] Mark all        [_m_] put cursor at mark
+  [_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
+  ^ ^             ^ ^             [_q_] Quit
+  "
+    ("l" mc/edit-lines nil :exit t)
+    ("a" mc/mark-all-like-this nil :exit t)
+    ("n" mc/mark-next-like-this nil)
+    ("N" mc/skip-to-next-like-this nil)
+    ("M-n" mc/unmark-next-like-this nil)
+    ("p" mc/mark-previous-like-this nil)
+    ("P" mc/skip-to-previous-like-this nil)
+    ("M-p" mc/unmark-previous-like-this nil)
+    ("r" mc/mark-all-in-region-regexp nil :exit t)
+    ("R" set-rectangular-region-anchor nil :color blue)
+    ("m" mc/mark-pop nil)
+    ("q" nil nil))
+  (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
 #+end_src
 ** smartparens
 *** standard config
@@ -1007,26 +1024,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("q" nil nil :color blue))
   (define-key 'eriks-map (kbd "w") 'hydra-windows/body)
 
-  (defhydra hydra-multiple-cursors ()
-    "
-       ^Up^            ^Down^        ^Other^
-  ----------------------------------------------
-  [_p_]   Next    [_n_]   Next    [_l_] Edit lines
-  [_P_]   Skip    [_N_]   Skip    [_a_] Mark all
-  [_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
-  ^ ^             ^ ^             [_q_] Quit
-  "
-    ("l" mc/edit-lines nil :exit t)
-    ("a" mc/mark-all-like-this nil :exit t)
-    ("n" mc/mark-next-like-this nil)
-    ("N" mc/skip-to-next-like-this nil)
-    ("M-n" mc/unmark-next-like-this nil)
-    ("p" mc/mark-previous-like-this nil)
-    ("P" mc/skip-to-previous-like-this nil)
-    ("M-p" mc/unmark-previous-like-this nil)
-    ("r" mc/mark-all-in-region-regexp nil :exit t)
-    ("q" nil nil))
-  (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
+
 
 
 #+end_src
@@ -1244,6 +1242,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "t") 'hydra-transpose/body)
 
   (modalka-define-kbd "W" "M-w")
+  (modalka-define-kbd "w" "C-w")
   (modalka-define-kbd "a" "C-a")
   (modalka-define-kbd "e" "C-e")
   (modalka-define-kbd "y" "C-y")
@@ -1307,19 +1306,21 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (modalka-define-kbd "r" "C-r")
   ;;(define-key modalka-mode-map (kbd "R") 'modalka-replace)
+
   (modalka-define-kbd "x" "<deletechar>")
   (modalka-define-kbd "X" "DEL")
 
   ;;avy
   (define-key modalka-mode-map (kbd "g") 'avy-goto-char)
+  (define-key modalka-mode-map (kbd "M-g") 'avy-goto-char-in-line)
   (define-key modalka-mode-map (kbd "G l") 'avy-goto-line)
   (define-key modalka-mode-map (kbd "G w") 'avy-goto-word-0)
-  (define-key modalka-mode-map (kbd "G n") 'goto-line)
+  (define-key modalka-mode-map (kbd "G g") 'goto-line)
   (define-key modalka-mode-map (kbd "G a") 'beginning-of-buffer)
   (define-key modalka-mode-map (kbd "G e") 'end-of-buffer)
 
-  (define-key modalka-mode-map (kbd "w f") 'eriks-skip-space)
-  (define-key modalka-mode-map (kbd "w b") 'eriks-skip-space-backwards)
+  (define-key modalka-mode-map (kbd "C-n") 'eriks-skip-space)
+  (define-key modalka-mode-map (kbd "C-S-n") 'eriks-skip-space-backwards)
 
   (modalka-define-kbd "<left>" "")
   (modalka-define-kbd "<right>" "")
@@ -1357,11 +1358,20 @@ All default keybindings have been commented out in the source file 'auto-complet
     (end-of-buffer)
     (cons 1 (point)))
 
+  (defun eriks-line-bounds ()
+    (interactive)
+    (save-excursion
+      (back-to-indentation)
+      (let ((a (point)))
+        (end-of-line)
+        (cons a (point)))))
+
   (define-key modalka-action-region-special-map (kbd "i b") 'eriks-buffer-bounds)
   (define-key modalka-action-region-special-map (kbd "n") 'eriks-find-char-alt)
   (define-key modalka-action-region-special-map (kbd "t") 'eriks-find-char)
   (define-key modalka-action-region-special-map (kbd "N") 'eriks-find-char-backward)
   (define-key modalka-action-region-special-map (kbd "T") 'eriks-find-char-alt-backward)
+  (define-key modalka-action-region-special-map (kbd "i c") 'eriks-line-bounds)
 
   (defun is-bounds (b)
     "True if b is of the form (a . b) where a and b are integers"
@@ -1729,7 +1739,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'auto-complete-mode)
   (diminish 'yas-minor-mode)
   (diminish 'global-disable-mouse-mode)
-  (diminish 'auto-revert-mode)
+  (add-hook 'auto-revert-mode-hook
+            (lambda ()
+              (diminish 'auto-revert-mode)))
 
   (diminish 'modalka-mode)
   ;;rm-text-properties, ta bort sakerna som smart-mode-line lägger till (face och sml/global(?)).

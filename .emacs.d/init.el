@@ -33,11 +33,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ac-auto-show-menu t)
- '(ac-auto-start t)
+ '(ac-auto-show-menu nil)
+ '(ac-auto-start nil)
  '(ac-candidate-menu-min 0)
+ '(ac-delay 0.001)
  '(ac-disable-inline t)
- '(ac-trigger-key nil)
  '(ac-use-menu-map nil)
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
@@ -131,7 +131,9 @@
      (320 . "goldenrod")
      (340 . "#e7c547")
      (360 . "DarkOliveGreen3"))))
- '(vc-annotate-very-old-color nil))
+ '(vc-annotate-very-old-color nil)
+ '(yas-also-auto-indent-first-line t)
+ '(yas-expand-only-for-last-commands (quote (self-insert-command org-self-insert-command))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

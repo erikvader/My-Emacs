@@ -163,7 +163,7 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   (define-prefix-command 'eriks-map)
   ;;(global-set-key (kbd "C-ö") 'eriks-map)
-  (define-key my-keys-map (kbd "C-SPC") 'eriks-map)
+  (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
   (define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
 
   (define-key eriks-map (kbd "f r") 'fill-region)
@@ -547,8 +547,8 @@ reflected in the local value.
   ;;        yas-no-prompt))
 
   ;;removes expanding with tab. Uses 'Auto-complete' instead
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  ;;(define-key yas-minor-mode-map (kbd "<tab>") nil)
+  ;;(define-key yas-minor-mode-map (kbd "TAB") nil)
 
 #+end_src
 ** Auto-complete
@@ -565,9 +565,9 @@ All default keybindings have been commented out in the source file 'auto-complet
               ;;(define-key ac-completing-map (kbd "up") nil)
               ;;(define-key ac-completing-map (kbd "down") nil)
               ;;(define-key ac-completing-map (kbd "TAB") 'ac-next)
-              (define-key ac-completing-map (kbd "<tab>") 'ac-expand)
-              (define-key ac-completing-map (kbd "<backtab>") 'ac-expand-previous)
-              (define-key ac-completing-map (kbd "C-o") 'ac-complete)
+              ;; (define-key ac-completing-map (kbd "<tab>") 'ac-expand)
+              ;; (define-key ac-completing-map (kbd "<backtab>") 'ac-expand-previous)
+              (define-key ac-completing-map (kbd "<tab>") 'ac-complete)
               ;;(define-key ac-menu-map (kbd "C-o") 'ac-complete)
               (define-key ac-completing-map (kbd "RET") 'ac-stop)
               (define-key ac-completing-map (kbd "C-n") 'ac-next)
@@ -581,19 +581,21 @@ All default keybindings have been commented out in the source file 'auto-complet
     (lambda ()
       (add-to-list 'ac-sources 'ac-source-yasnippet)))
 
+  (define-key my-keys-map (kbd "C-SPC") 'auto-complete)
+
   ;;makes a key bring up the popup menu again if auto-complete is enabled
   ;;otherwise, try to expand with yas
   ;;(define-key ac-mode-map)
-  (define-key my-keys-map (kbd "S-SPC")
-        (lambda ()
-          (interactive)
-          (if (bound-and-true-p auto-complete-mode)
-              (progn
-                (ac-trigger-key-command 1)
-                (message "auto-complete"))
-            (progn
-              (yas-expand)
-              (message "yasnippet")))))
+  ;; (define-key my-keys-map (kbd "S-SPC")
+  ;;       (lambda ()
+  ;;         (interactive)
+  ;;         (if (bound-and-true-p auto-complete-mode)
+  ;;             (progn
+  ;;               (ac-trigger-key-command 1)
+  ;;               (message "auto-complete"))
+  ;;           (progn
+  ;;             (yas-expand)
+  ;;             (message "yasnippet")))))
 
 
 #+end_src

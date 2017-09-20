@@ -2,7 +2,7 @@
 # name: new_header
 # key: header
 # --
-#ifndef ${1:name}
+#ifndef ${1:_`(upcase (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`_H_}
 #define $1
 
 $0

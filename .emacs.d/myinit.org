@@ -549,6 +549,65 @@ reflected in the local value.
     (dotimes (i (abs dir))
       (eriks-next-class '(?_ ?w) (sign dir))))
 #+end_src
+** slurp
+#+begin_src emacs-lisp :tangle yes
+  (defun eriks-slurp (b e)
+    "Flyttar parantesen i aktiva region till slutet av region och indentar all"
+    (interactive "r")
+    (let* ((paren (delete-and-extract-region b (+ b 1))))
+      (goto-char (- e 1))
+      (insert "\n")
+      (insert paren)
+      (indent-region b (+ e 1))))
+
+  (define-key eriks-map (kbd "s") 'eriks-slurp)
+
+  (defvar last-post-command-position 0
+    "Holds the cursor position from the last run of post-command-hooks.")
+
+  (make-variable-buffer-local 'last-post-command-position)
+
+  (defvar eriks-sticky-char nil)
+
+  (defun eriks-sticky-toggle ()
+    "Makes char under cursor to be 'sticky'.
+  The characters follows the cursor as long as this function is active.
+
+  ---Works most of the time---"
+    (interactive)
+    (setq eriks-sticky-char (not eriks-sticky-char))
+    (setq last-post-command-position (point)))
+
+  (define-key eriks-map (kbd "C-s") 'eriks-sticky-toggle)
+
+  (defun do-stuff-if-moved-post-command ()
+    (if eriks-sticky-char
+        (progn
+          (message "Sticky on...")
+          (unless (equal (point) last-post-command-position)
+            (let* ((new (point))
+                   (delta (- new last-post-command-position)))
+              (goto-char last-post-command-position)
+              (let ((c (following-char)))
+                (delete-char 1)
+                (forward-char delta)
+                (save-excursion
+                  (insert c)))))
+          (setq last-post-command-position (point)))
+        ;; (progn
+        ;;   (let ((new (point)))
+        ;;     (unless (equal new last-post-command-position)
+        ;;       (let ((m (delete-and-extract-region last-post-command-position (+ 1 last-post-command-position))))
+        ;;         (goto-char new)
+        ;;         (save-excursion
+        ;;           (insert m)))))
+        ;;   (setq last-post-command-position (point)))
+      ))
+
+  (add-hook 'post-command-hook 'do-stuff-if-moved-post-command)
+
+
+#+end_src
 * packages
 ** yasnippet
 #+begin_src emacs-lisp :tangle yes

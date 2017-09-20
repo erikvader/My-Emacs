@@ -4,6 +4,7 @@
 #+begin_src emacs-lisp :tangle yes
   (require 'cc-mode)
   (require 'seq)
+  (require 'multiple-cursors)
 
 #+end_src
 * Eriks keys minor mode
@@ -1735,11 +1736,13 @@ All default keybindings have been commented out in the source file 'auto-complet
   (defun modalka-macro-tostring (del)
     (seq-reduce
      (lambda (b e)
-       (if (null b)
-           (concat e)
-         (concat b del (seq-remove 'is-boundary (key-description e)))))
+       (let ((tail (seq-remove 'is-boundary (key-description e))))
+         (if (null b)
+             (concat tail)
+           (concat b del tail))))
      (reverse modalka-repeat-macro)
      nil))
+
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

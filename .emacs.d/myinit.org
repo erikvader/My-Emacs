@@ -926,6 +926,12 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key my-keys-map (kbd "C-x C-b") 'ibuffer)
 #+end_src
+** ggtags
+#+begin_src emacs-lisp :tangle yes
+  (add-hook 'ggtags-mode-hook
+            (lambda ()
+              (setq ggtags-mode-line-project-name nil)))
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes
@@ -976,6 +982,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (add-hook 'c-mode-hook
             (lambda ()
               (flycheck-mode 1)
+              (ggtags-mode 1)
               ))
 #+end_src
 *** java
@@ -1258,55 +1265,85 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 ** tags
 #+begin_src emacs-lisp :tangle yes
-  (setq path-to-ctags "/usr/bin/ctags")
+  ;; (setq path-to-ctags "/usr/bin/ctags")
 
-  (defun create-tags (dir-name)
-    "Create tags file."
-    (interactive "DDirectory: ")
-    (shell-command (format "%s -f TAGS -e -R \"%s\"" path-to-ctags (directory-file-name dir-name))))
+  ;; (defun create-tags (dir-name)
+  ;;   "Create tags file."
+  ;;   (interactive "DDirectory: ")
+  ;;   (shell-command (format "%s -f TAGS -e -R \"%s\"" path-to-ctags (directory-file-name dir-name))))
 
-  (defhydra hydra-tags (:color blue :hint nil)
+  ;; (defhydra hydra-tags (:color blue :hint nil)
+  ;;   "
+  ;;  ^Setup^                    ^Find^
+  ;; ^^^^----------------------------------------------------
+  ;;  _c_reate                   _f_ind (-=back, u=continue)
+  ;;  _v_isit-tags-table         _s_earch
+  ;;  _r_egenerate (projectile)  _p_op
+  ;;       ^^                    _l_oop-continue
+  ;;  _q_uit                     _P_rojectile find
+  ;; "
+  ;;   ("c" create-tags nil :color red)
+  ;;   ("v" visit-tags-table nil :color red)
+  ;;   ("r" projectile-regenerate-tags nil :color red)
+  ;;   ("f" find-tag nil)
+  ;;   ("s" tags-search nil)
+  ;;   ("p" pop-tag-mark nil)
+  ;;   ("l" tags-loop-continue nil)
+  ;;   ("P" projectile-find-tag nil)
+  ;;   ("q" nil nil :color blue))
+
+  ;; (defhydra hydra-gtags (:color blue :hint nil)
+  ;;   "
+  ;; ^Counsel^
+  ;; ------------------------------------------
+  ;; _d_ find definition    _n_ go forward
+  ;; _r_ find reference     _f_ find dwim
+  ;; _s_ find symbol        _u_ update gtags
+  ;; _F_ find file          _c_ create gtags
+  ;; _b_ go back
+  ;; "
+  ;;   ("d" counsel-gtags-find-definition nil)
+  ;;   ("r" counsel-gtags-find-reference nil)
+  ;;   ("s" counsel-gtags-find-reference nil)
+  ;;   ("F" counsel-gtags-find-file nil)
+  ;;   ("b" counsel-gtags-go-backward nil)
+  ;;   ("n" counsel-gtags-go-forward nil)
+  ;;   ("f" counsel-gtags-dwim)
+  ;;   ("c" counsel-gtags-create-tags nil)
+  ;;   ("u" counsel-gtags-update-tags)
+  ;;   ("q" nil nil :color blue))
+
+  (defhydra hydra-ggtags (:color blue :hint nil)
     "
-   ^Setup^                    ^Find^
-  ^^^^----------------------------------------------------
-   _c_reate                   _f_ind (-=back, u=continue)
-   _v_isit-tags-table         _s_earch
-   _r_egenerate (projectile)  _p_op
-        ^^                    _l_oop-continue
-   _q_uit                     _P_rojectile find
+               ggtags
+  -^find^----------^tag files^----^other^-----------
+
+   [_d_]efinition  [_u_]pdate     [_Q_]uery replace
+   [_r_]eference   [_c_]create    [_p_]revious mark
+   [_F_]ile        [_D_]elete     [_n_]ext mark
+   dwi[_m_]                     ^^[_e_]xplain
+   [_s_]ymbol
+   [_R_]egexp                   ^^[_q_]uit
+   [_S_]how definition
   "
-    ("c" create-tags nil :color red)
-    ("v" visit-tags-table nil :color red)
-    ("r" projectile-regenerate-tags nil :color red)
-    ("f" find-tag nil)
-    ("s" tags-search nil)
-    ("p" pop-tag-mark nil)
-    ("l" tags-loop-continue nil)
-    ("P" projectile-find-tag nil)
+    ("d" ggtags-find-definition nil)
+    ("S" ggtags-show-definition nil)
+    ("R" ggtags-find-tag-regexp nil)
+    ("Q" ggtags-query-replace nil)
+    ("s" ggtags-find-other-symbol nil)
+    ("r" ggtags-find-reference nil)
+    ("F" ggtags-find-file nil)
+    ("m" ggtags-find-tag-dwim nil)
+    ("c" ggtags-create-tags nil :color red)
+    ("u" ggtags-update-tags nil :color red)
+    ("D" ggtags-delete-tags nil)
+    ("e" ggtags-explain-tags nil)
+    ("p" ggtags-prev-mark nil :color red)
+    ("n" ggtags-next-mark nil :color red)
     ("q" nil nil :color blue))
 
-  (defhydra hydra-gtags (:color blue :hint nil)
-    "
-  ^Counsel^
-  ------------------------------------------
-  _d_ find definition    _n_ go forward   
-  _r_ find reference     _f_ find dwim
-  _s_ find symbol        _u_ update gtags
-  _F_ find file          _c_ create gtags
-  _b_ go back
-  "
-    ("d" counsel-gtags-find-definition nil)
-    ("r" counsel-gtags-find-reference nil)
-    ("s" counsel-gtags-find-reference nil)
-    ("F" counsel-gtags-find-file nil)
-    ("b" counsel-gtags-go-backward nil)
-    ("n" counsel-gtags-go-forward nil)
-    ("f" counsel-gtags-dwim)
-    ("c" counsel-gtags-create-tags nil)
-    ("u" counsel-gtags-update-tags)
-    ("q" nil nil :color blue))
+  (define-key eriks-map (kbd "t") 'hydra-ggtags/body)
 
-  (define-key eriks-map (kbd "t") 'hydra-gtags/body)
 #+end_src
 * modalka
 ** general

@@ -66,6 +66,7 @@
  '(expand-region-fast-keys-enabled t)
  '(fci-rule-color "#14151E")
  '(flycheck-global-modes nil)
+ '(ggtags-highlight-tag nil)
  '(global-hl-line-mode t)
  '(global-linum-mode t)
  '(indent-tabs-mode nil)

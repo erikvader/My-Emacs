@@ -1454,6 +1454,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
 
+  (define-key modalka-mode-map (kbd "<") 'modalka-uncond-add-next)
 #+end_src
 ** action region
 #+begin_src emacs-lisp :tangle yes
@@ -1617,6 +1618,8 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 ** repeat o lighter
 #+begin_src emacs-lisp :tangle yes
+  (setq modalka-uncond-add nil)
+
   ;; locks `modalka-repeat-macro' so it cannot be changed
   (setq modalka-repeat-lock nil)
 
@@ -1656,7 +1659,7 @@ All default keybindings have been commented out in the source file 'auto-complet
          '("M" "D" "d" "n" "N" "I" "r" "x" "X" "c" "å")))
 
   ;; funktioner som inte ska repeatas
-  (setq modalka-repeat-blacklist-function '(modalka-repeat undo-tree-undo modalka-mode toggle-modalka))
+  (setq modalka-repeat-blacklist-function '(modalka-repeat undo-tree-undo modalka-mode toggle-modalka modalka-uncond-add-next modalka-repeat-lock modalka-chaining-toggle))
 
   ;; vilka knappar som är för prefix-argument
   (setq modalka-repeat-prefix-keys (listify-key-sequence (kbd "0 1 2 3 4 5 6 7 8 9 u -")))
@@ -1712,12 +1715,15 @@ All default keybindings have been commented out in the source file 'auto-complet
             (if (and
                  (bound-and-true-p modalka-mode)
                  (not (null non-prefix-keys))
-                 (seq-contains
-                  modalka-repeat-whitelist
-                  non-prefix-keys
-                  (lambda (elt e)
-                    (is-prefix-of e elt))))
-                (modalka-macro-add keys))))))
+                 (or
+                  modalka-uncond-add
+                  (seq-contains
+                   modalka-repeat-whitelist
+                   non-prefix-keys
+                   (lambda (elt e)
+                     (is-prefix-of e elt)))))
+                (progn
+                  (modalka-macro-add keys)))))))
     (setq prev-command-keys nil)
     (modalka-set-lighter))
 
@@ -1731,27 +1737,35 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;; the colors depends on whatever state modalka is in right now
   (defun modalka-status-color ()
     (cond
-     ((and modalka-repeat-lock modalka-insert-text)
-      (cons "green" "red"))
-     ((and modalka-mode modalka-repeat-lock)
-      (cons "red" "red"))
-     (modalka-mode
-      (cons "cyan" "cyan"))
      (modalka-insert-text
-      (cons "green" "green"))
+      "green")
+     ((and modalka-uncond-add modalka-mode)
+      "hot pink")
+     (modalka-mode
+      "cyan")
      (t
-      (cons "gray" "gray"))))
+      "gray")))
+
+  (defun modalka-status-color-alt (other)
+    (cond
+     ((and modalka-repeat-lock modalka-insert-text)
+      "red")
+     ((and modalka-mode modalka-repeat-lock)
+      "red")
+     (t
+      other)))
 
   ;; set the modalka lighter with `diminish'
   (defun modalka-set-lighter ()
-    (let ((pc (modalka-status-color)))
+    (let* ((pc (modalka-status-color))
+           (lc (modalka-status-color-alt pc)))
       (diminish 'modalka-status-mode (format " %s%s%s%s"
-                                             (get-color-string "(" (car pc))
+                                             (get-color-string "(" pc)
                                              (modalka-macro-tostring (get-color-string " > " "orange"))
                                              (if modalka-chaining
                                                  (get-color-string ">>" "orange")
                                                "")
-                                             (get-color-string ")" (cdr pc))))))
+                                             (get-color-string ")" lc)))))
 
   (defun modalka-repeat-lock (&optional set)
     "toggles the locked state of modalka
@@ -1846,6 +1860,10 @@ All default keybindings have been commented out in the source file 'auto-complet
      (reverse modalka-repeat-macro)
      nil))
 
+  (defun modalka-uncond-add-next ()
+    "Unconditionally add the next keystroke to modalka repeat"
+    (interactive)
+    (setq modalka-uncond-add (not modalka-uncond-add)))
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

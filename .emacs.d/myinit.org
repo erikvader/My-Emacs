@@ -542,6 +542,11 @@ reflected in the local value.
     (dotimes (i (abs dir))
       (eriks-next-class '(?w) (sign dir))))
 
+  (defun eriks-prev-word (dir)
+    "`eriks-next-word' but dir always negated."
+    (interactive "p")
+    (eriks-next-word (- 0 dir)))
+
   (defun eriks-next-symbol (dir)
     "Moves point to the beginning of next symbol
   or end of previous symbol if dir < 0"
@@ -1334,10 +1339,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "c") 'eriks-duplicate-line)
 
   ;;vim
-  (modalka-define-kbd "h" "C-b")
   (define-key modalka-mode-map (kbd "j") 'next-line)
   (define-key modalka-mode-map (kbd "k") 'previous-line)
-  (modalka-define-kbd "l" "C-f")
+  (define-key modalka-mode-map (kbd "l") 'forward-char)
+  (define-key modalka-mode-map (kbd "h") 'backward-char)
 
   (modalka-define-kbd "H" "C-M-b")
   (modalka-define-kbd "K" "C-M-u")
@@ -1353,7 +1358,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map "B" 'backward-symbol)
 
   (define-key modalka-mode-map (kbd "q") 'eriks-next-word)
-  (define-key modalka-mode-map (kbd "Q") 'eriks-next-symbol)
+  (define-key modalka-mode-map (kbd "Q") 'eriks-prev-word)
 
   (define-key modalka-mode-map (kbd "D") 'modalka-kill)
   (define-key modalka-mode-map (kbd "d") 'modalka-delete)
@@ -1396,8 +1401,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "G a") 'beginning-of-buffer)
   (define-key modalka-mode-map (kbd "G e") 'end-of-buffer)
 
-  (define-key modalka-mode-map (kbd "C-n") 'eriks-skip-space)
-  (define-key modalka-mode-map (kbd "C-S-n") 'eriks-skip-space-backwards)
+  (define-key modalka-mode-map (kbd "C-f") 'eriks-skip-space)
+  (define-key modalka-mode-map (kbd "C-b") 'eriks-skip-space-backwards)
 
   (modalka-define-kbd "<left>" "")
   (modalka-define-kbd "<right>" "")
@@ -1561,7 +1566,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     (interactive)
     (let ((region (modalka-action-region "Swiper: ")))
       (if region
-          (swiper (buffer-substring (car region) (cdr region)))
+          (let ((r (buffer-substring (car region) (cdr region))))
+            (deactivate-mark)
+            (swiper r))
         (message "no region"))))
 
   ;; (defun modalka-replace ()

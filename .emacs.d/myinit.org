@@ -249,7 +249,7 @@ reflected in the local value.
 
   (define-key eriks-map (kbd "y") 'ansi-term)
 
-  (define-key eriks-map (kbd "c") 'whitespace-cleanup)
+  (define-key eriks-map (kbd "C-c") 'whitespace-cleanup)
 
   ;; (defun edit-myinit-org ()
   ;;   (interactive)
@@ -612,6 +612,36 @@ reflected in the local value.
   (add-hook 'post-command-hook 'do-stuff-if-moved-post-command)
 
 
+#+end_src
+** c extract header
+#+begin_src emacs-lisp :tangle yes
+  (setq extract-c-regexp "^\\([[:graph:]]+[[:blank:]]+[^[:space:]]+(.*)\\)\\s-*{?\\s-*$")
+
+  (defun extract-c-copy-next-declaration (&optional append)
+    "Copies the next function declaration in a c-file as a standalone declaration. 
+  If append, then append the copied value to the last one
+  Returns t if successfully found one, nil otherwise"
+    (interactive)
+    (if (re-search-forward extract-c-regexp nil t)
+        (let* ((decl (buffer-substring (match-beginning 1) (match-end 1)))
+               (semi (concat decl ";\n")))
+          (if append
+              (kill-append semi nil)
+            (kill-new semi))
+          t)
+      nil))
+
+  (defun extract-c-copy-all-declarations ()
+    "Copies all function declarations in a buffer to the kill-ring."
+    (interactive)
+    (save-excursion
+      (beginning-of-buffer)
+      (let ((first t))
+        (while (extract-c-copy-next-declaration (not first))
+          (setq first nil)))))
+
+  (define-key eriks-map (kbd "c a") 'extract-c-copy-all-declarations)
+  (define-key eriks-map (kbd "c n") 'extract-c-copy-next-declaration)
 #+end_src
 * packages
 ** yasnippet

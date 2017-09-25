@@ -1697,6 +1697,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;; funktioner som inte ska repeatas
   (setq modalka-repeat-blacklist-function '(modalka-repeat undo-tree-undo modalka-mode toggle-modalka modalka-uncond-add-next modalka-repeat-lock modalka-chaining-toggle))
 
+  (setq modalka-repeat-special-keys '((13 . return)))
+
   ;; vilka knappar som är för prefix-argument
   (setq modalka-repeat-prefix-keys (listify-key-sequence (kbd "0 1 2 3 4 5 6 7 8 9 u -")))
 
@@ -1706,6 +1708,26 @@ All default keybindings have been commented out in the source file 'auto-complet
     (if (seq-contains modalka-repeat-prefix-keys (car keys))
         (modalka-repeat-remove-prefix (cdr keys))
       keys))
+
+  ;; tar en sequence med saker i sig och en annan sequence med
+  ;; cons-celler (a . b) där alla a ska bytas ut med b i 'list' för alla
+  ;; celler. Returnar en vanlig list.
+  (defun replace-seq (list replac)
+    (seq-map
+     (lambda (le)
+       (let ((found (seq-find
+                     (lambda (re)
+                       (equal (car re) le))
+                     replac)))
+         (if (null found)
+             le
+           (cdr found))))
+     list))
+
+  ;; tar en vector keys och ersätter alla special-keys som i
+  ;; `modalka-repeat-prefix-keys'. Returnar en ny vector.
+  (defun modalka-parse-key-vector (keys)
+    (vconcat (replace-seq keys modalka-repeat-special-keys)))
 
   (defun list-prefix (a b)
     "removes common prefix from a and b"
@@ -1738,7 +1760,7 @@ All default keybindings have been commented out in the source file 'auto-complet
               modalka-is-repeating
               modalka-repeat-lock
               (seq-contains modalka-repeat-blacklist-function real-this-command 'eq)))
-        (let* ((keys (vconcat prev-command-keys (this-command-keys-vector)))
+        (let* ((keys (modalka-parse-key-vector (vconcat prev-command-keys (this-command-keys-vector))))
                (non-prefix-keys (modalka-repeat-remove-prefix (listify-key-sequence keys))))
           (cond
            (modalka-insert-text

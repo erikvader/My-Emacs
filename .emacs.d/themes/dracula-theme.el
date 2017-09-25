@@ -50,10 +50,11 @@
       (rainbow-9 "#ff5555")
       (eph-verbatim "#f1fa8c")
       (eph-code "#ff79c6")
-      (erik1 "#ff6600") ;;orange
+      (erik-region "HotPink3")
+      (erik-paren-match "gold3")
       (erik-trailing "#05003a") ;;dark-blue
-      (erik2 "#ff69b4") ;;hot-pink
-      (erik3 "#000000") ;;svart
+      (hot-pink "#ff69b4") ;;hot-pink
+      (darkest-black "#000000") ;;svart
       )
 
   (custom-theme-set-faces
@@ -74,8 +75,8 @@
    `(link ((,class (:foreground ,const :underline t))))
    `(linum ((,class (:slant italic :foreground ,bg4 :background ,bg1))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,keyword))))
-   `(region ((,class (:background ,erik1 :foreground ,bg1))))
-   `(show-paren-match-face ((,class (:background ,erik2 :foreground, erik3))))
+   `(region ((,class (:background ,erik-region :foreground ,bg1))))
+   `(show-paren-match-face ((,class (:background ,erik-paren-match :foreground, darkest-black))))
    `(trailing-whitespace ((,class :foreground nil :background ,erik-trailing)))
    `(vertical-border ((,class (:foreground ,bg2))))
    `(warning ((,class (:foreground ,warning))))
@@ -234,7 +235,7 @@
    `(magit-section-heading        ((,class (:foreground ,keyword :weight bold))))
    `(magit-section-highlight      ((,class (:background ,bg2))))
    ;; mode-line
-   `(mode-line ((,class (:foreground, erik3 :background ,erik2 :box nil))))
+   `(mode-line ((,class (:foreground, darkest-black :background ,hot-pink :box nil))))
    `(mode-line-inactive ((,class (:foreground ,fg1 :background ,bg3 :box nil))))
    ;; mu4e
    `(mu4e-cited-1-face ((,class (:foreground ,fg2))))

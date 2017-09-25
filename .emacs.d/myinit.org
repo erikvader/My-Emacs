@@ -1325,6 +1325,7 @@ All default keybindings have been commented out in the source file 'auto-complet
    [_s_]ymbol
    [_R_]egexp                   ^^[_q_]uit
    [_S_]how definition
+   [_g_]rep
   "
     ("d" ggtags-find-definition nil)
     ("S" ggtags-show-definition nil)
@@ -1340,6 +1341,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("e" ggtags-explain-tags nil)
     ("p" ggtags-prev-mark nil :color red)
     ("n" ggtags-next-mark nil :color red)
+    ("g" ggtags-grep nil)
     ("q" nil nil :color blue))
 
   (define-key eriks-map (kbd "t") 'hydra-ggtags/body)
@@ -1359,6 +1361,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key my-keys-map (kbd "§") 'toggle-modalka)
 
   (define-key modalka-mode-map (kbd "t") 'hydra-transpose/body)
+
+  (define-key modalka-mode-map (kbd "A") 'beginning-of-defun)
+  (define-key modalka-mode-map (kbd "E") 'end-of-defun)
+
 
   (modalka-define-kbd "W" "M-w")
   (modalka-define-kbd "w" "C-w")

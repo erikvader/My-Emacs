@@ -1442,6 +1442,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd ",") 'repeat)
   (define-key modalka-mode-map (kbd ":") 'modalka-repeat-lock)
   (define-key modalka-mode-map (kbd ">") 'modalka-chaining-toggle)
+  (define-key modalka-mode-map (kbd "<") 'modalka-uncond-add-next)
+
   ;;(define-key modalka-mode-map (kbd "SPC") 'eriks-map)
   (define-key modalka-mode-map (kbd "SPC") 'self-insert-command)
   (define-key modalka-mode-map (kbd "i") 'toggle-modalka)
@@ -1456,8 +1458,11 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (modalka-define-kbd "s" "C-s")
 
-  (modalka-define-kbd "v" "C-v")
-  (modalka-define-kbd "V" "M-v")
+  (define-key modalka-mode-map (kbd "v") 'scroll-up-command)
+  (define-key modalka-mode-map (kbd "V") 'scroll-down-command)
+  (define-key modalka-mode-map (kbd "C-v") 'scroll-up-line)
+  (define-key modalka-mode-map (kbd "M-v") 'scroll-down-line)
+  (define-key modalka-mode-map (kbd "C-S-v") 'scroll-down-line)
 
   (modalka-define-kbd "r" "C-r")
   ;;(define-key modalka-mode-map (kbd "R") 'modalka-replace)
@@ -1466,13 +1471,13 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "X" "DEL")
 
   ;;avy
-  (define-key modalka-mode-map (kbd "g") 'avy-goto-char)
-  (define-key modalka-mode-map (kbd "M-g") 'avy-goto-char-in-line)
-  (define-key modalka-mode-map (kbd "G l") 'avy-goto-line)
-  (define-key modalka-mode-map (kbd "G w") 'avy-goto-word-0)
-  (define-key modalka-mode-map (kbd "G g") 'goto-line)
-  (define-key modalka-mode-map (kbd "G a") 'beginning-of-buffer)
-  (define-key modalka-mode-map (kbd "G e") 'end-of-buffer)
+  (define-key modalka-mode-map (kbd "G") 'avy-goto-char)
+  (define-key modalka-mode-map (kbd "g") 'avy-goto-char-in-line)
+  (define-key modalka-mode-map (kbd "M-g l") 'avy-goto-line)
+  (define-key modalka-mode-map (kbd "M-g w") 'avy-goto-word-0)
+  (define-key modalka-mode-map (kbd "M-g g") 'goto-line)
+  (define-key modalka-mode-map (kbd "M-g a") 'beginning-of-buffer)
+  (define-key modalka-mode-map (kbd "M-g e") 'end-of-buffer)
 
   (define-key modalka-mode-map (kbd "C-f") 'eriks-skip-space)
   (define-key modalka-mode-map (kbd "C-b") 'eriks-skip-space-backwards)
@@ -1490,7 +1495,6 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
 
-  (define-key modalka-mode-map (kbd "<") 'modalka-uncond-add-next)
 #+end_src
 ** action region
 #+begin_src emacs-lisp :tangle yes
@@ -1507,7 +1511,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (eriks-bind-bounds-thing "i l" 'line)
   (eriks-bind-bounds-thing "i p" 'paragraph)
   (eriks-bind-bounds-thing "i d" 'defun)
-  (eriks-bind-bounds-thing "i s" 'whitespace)
+  (eriks-bind-bounds-thing "i SPC" 'whitespace)
+  ;;(eriks-bind-bounds-thing "i s" 'string)
 
   (defun eriks-buffer-bounds ()
     (interactive)

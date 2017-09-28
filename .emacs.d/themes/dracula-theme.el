@@ -423,6 +423,13 @@
    `(icicle-common-match-highlight-Completions ((,class (:foreground ,type))))
    `(icicle-candidate-part                     ((,class (:foreground ,var))))
    `(icicle-annotation                         ((,class (:foreground ,fg4))))
+   `(tabbar-button ((t (:inherit tabbar-default))))
+   `(tabbar-default ((t (:inherit variable-pitch :background "grey22" :foreground "white" :box (:line-width 2 :color "grey40" :style released-button) :height 0.8))))
+   `(tabbar-modified ((t (:inherit tabbar-unselected :slant oblique))))
+   `(tabbar-selected ((t (:inherit tabbar-default :background "black" :foreground "hot pink" :box (:line-width 2 :color "black") :weight bold))))
+   `(tabbar-selected-modified ((t (:inherit tabbar-selected :slant oblique))))
+   `(tabbar-separator ((t (:inherit tabbar-default :box nil))))
+   `(tabbar-unselected ((t (:inherit tabbar-default))))
   ))
 
 

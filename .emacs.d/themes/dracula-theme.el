@@ -51,7 +51,7 @@
       (eph-verbatim "#f1fa8c")
       (eph-code "#ff79c6")
       (erik-region "HotPink3")
-      (erik-paren-match "gold3")
+      (erik-paren-match "gold2")
       (erik-trailing "#05003a") ;;dark-blue
       (hot-pink "#ff69b4") ;;hot-pink
       (darkest-black "#000000") ;;svart

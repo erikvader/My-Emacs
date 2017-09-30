@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: e_c_doxy
+# group: doxygen
+# key: /cf
+# --
+/// ${1:brief}
+///
+/// ${2:detailed}${3:
+///
+/// \param 
+/// \returns }$0

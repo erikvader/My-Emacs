@@ -682,6 +682,7 @@ All default keybindings have been commented out in the source file 'auto-complet
               (define-key ac-completing-map (kbd "RET") 'ac-stop)
               (define-key ac-completing-map (kbd "C-n") 'ac-next)
               (define-key ac-completing-map (kbd "C-p") 'ac-previous)
+              (define-key ac-completing-map (kbd "C-s") 'ac-isearch)
               ))
 
   ;;adds yasnippet snippets to menu

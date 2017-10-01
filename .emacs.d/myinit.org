@@ -438,7 +438,7 @@ reflected in the local value.
     (interactive)
     (end-of-line)
     (newline)
-    (if newline-without-break-tab (indent-for-tab-command)))
+    (if newline-without-break-tab (indent-according-to-mode)))
 
   (defun newline-without-break-up ()
     "Add new line above and go to it. tab if an argument is given"
@@ -446,7 +446,7 @@ reflected in the local value.
     (beginning-of-line)
     (newline)
     (forward-line -1)
-    (if newline-without-break-tab (indent-for-tab-command)))
+    (if newline-without-break-tab (indent-according-to-mode)))
 
   ;;(define-key cua-global-keymap [C-return] nil) ;;ta bort C-return from cua
   (define-key my-keys-map (kbd "<C-return>") 'newline-without-break-down)

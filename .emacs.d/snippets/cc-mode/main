@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: e_main
+# name: main
 # key: main
 # --
 int main(${1:int argc, char *argv[argc]}){

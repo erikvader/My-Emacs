@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: commentlinecentered
+# key: colc
+# copied from cob
+# --
+${1:$(let* ((col (current-column))
+           (str "")
+           (start (yas-trimmed-comment-start))
+           (lastcom (substring (yas-trimmed-comment-start) -1))
+           (end (yas-trimmed-comment-end)))
+         (while (< (length str) (ffloor (/ (- 78.0 (+ col (length start) (string-width yas-text) (length end))) 2.0)))
+                (setq str (concat str lastcom)))
+        (concat start str))} ${1:comment} ${1:$(let* ((col (current-column))
+                                                     (str "")
+                                                     (lastcom (substring (yas-trimmed-comment-start) -1))
+                                                     (start (yas-trimmed-comment-start))
+                                                     (end (yas-trimmed-comment-end)))
+                                                   (while (< (length str) (- 79.0 (if (eq (mod (string-width yas-text) 2) 1) (- col 1) col) (length end)))
+                                                          (setq str (concat str lastcom)))
+                                                 (concat str end))}$0

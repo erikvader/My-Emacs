@@ -2041,3 +2041,17 @@ All default keybindings have been commented out in the source file 'auto-complet
               (diminish 'abbrev-mode)))
 #+end_src
 
+* random from internet
+** insert a-z
+#+begin_src emacs-lisp :tangle yes
+  (defun insert-alphabet-az (&optional @use-uppercase-p)
+    "Insert letters a to z vertically.
+  If `universal-argument' is called first, use CAPITAL letters.
+
+  URL `http://ergoemacs.org/emacs/emacs_insert-alphabets.html'
+  Version 2015-11-06"
+    (interactive "P")
+    (let (($startChar (if @use-uppercase-p 65 97 )))
+      (dotimes ($i 26)
+        (insert (format "%c\n" (+ $startChar $i))))))
+#+end_src

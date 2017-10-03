@@ -643,6 +643,68 @@ reflected in the local value.
   (define-key eriks-map (kbd "c a") 'extract-c-copy-all-declarations)
   (define-key eriks-map (kbd "c n") 'extract-c-copy-next-declaration)
 #+end_src
+** exchange two regions
+#+begin_src emacs-lisp :tangle yes
+  (setq eriks-regions-saved nil)
+
+  (defun eriks-region-switch-abort ()
+    "Abort current transpose"
+    (interactive)
+    (setq eriks-regions-saved nil)
+    (message "aborted..."))
+
+  (defun eriks-region-switch (a b)
+    "Switches two regions.
+  Activate an region and then:
+     1st call: save the region for switching (abort with `eriks-region-switch-abort')
+     2nd call: switch!"
+    (interactive "r")
+    (if (not mark-active)
+        (message "Mark not active...")
+      (progn
+        (deactivate-mark)
+        (if (null eriks-regions-saved)
+            (setq eriks-regions-saved (simplify-region (cons a b)))
+          (let* ((sim (simplify-region (cons a b)))
+                 (old eriks-regions-saved)
+                 (sorted (sort-region sim old))
+                 (left (car sorted))
+                 (right (cdr sorted))
+                 (leftl (region-size left))
+                 (rightl (region-size right)))
+            (if (region-overlap left right)
+                (message "De overlappar")
+              (progn
+                (let* ((a (delete-and-extract-region (car left) (cdr left)))
+                       (nright (translate-region right (- 0 leftl)))
+                       (b (delete-and-extract-region (car nright) (cdr nright))))
+                  (goto-char (car nright))
+                  (insert a)
+                  (goto-char (car left))
+                  (insert b))))
+            (setq eriks-regions-saved nil))))))
+
+  (defun region-size (r)
+    (- (cdr r) (car r)))
+
+  (defun simplify-region (r)
+    (let ((a (car r))
+          (b (cdr r))))
+    (cons (min a b) (max a b)))
+
+  (defun sort-region (r a)
+    (if (< (car r) (car a))
+        (cons r a)
+      (cons a r)))
+
+  (defun region-overlap (r a)
+    (not (or
+          (<= (cdr r) (car a))
+          (>= (car r) (cdr a)))))
+
+  (defun translate-region (r x)
+    (cons (+ (car r) x) (+ (cdr r) x)))
+#+end_src
 * packages
 ** yasnippet
 #+begin_src emacs-lisp :tangle yes
@@ -1194,7 +1256,9 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("n" eriks-transpose-paragraph-forward "paragraph forward")
     ("p" eriks-transpose-paragraph-backward "paragraph backward")
     ("e" eriks-exchange-paragraphs "paragraph exhange")
-    ("q" nil "quit"))
+    ("r" eriks-region-switch "region switch" :color blue)
+    ("R" eriks-region-switch-abort "region abort" :color blue)
+    ("q" nil "quit" :color blue))
 
 
 #+end_src

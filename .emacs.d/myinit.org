@@ -624,7 +624,7 @@ reflected in the local value.
   (setq extract-c-regexp "^\\([[:graph:]]+[[:blank:]]+[^[:space:]]+(.*)\\)\\s-*{?\\s-*$")
 
   (defun extract-c-copy-next-declaration (&optional append)
-    "Copies the next function declaration in a c-file as a standalone declaration. 
+    "Copies the next function declaration in a c-file as a standalone declaration.
   If append, then append the copied value to the last one
   Returns t if successfully found one, nil otherwise"
     (interactive)
@@ -897,6 +897,7 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("m" mc/mark-pop nil)
     ("q" nil nil))
   (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
+  (define-key my-keys-map (kbd "C-c m") 'hydra-multiple-cursors/body)
 #+end_src
 ** smartparens
 *** standard config
@@ -1052,7 +1053,7 @@ All default keybindings have been commented out in the source file 'auto-complet
               (start-smartparens)
               (setq show-trailing-whitespace t)
               (rainbow-delimiters-mode t)
-              (modalka-mode 1)))
+              (toggle-modalka 1)))
 #+end_src
 ** C-like modes
 *** common
@@ -1462,9 +1463,13 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+begin_src emacs-lisp :tangle yes
   (require 'modalka)
 
-  (defun toggle-modalka ()
+  (defun toggle-modalka (&optional cmd)
+    "
+  cmd == 0                           => turn off
+  cmd == 1                           => turn on
+  cmd == nil or cmd == undefined typ => toggle"
     (interactive)
-    (modalka-mode 'toggle)
+    (modalka-mode (if (null cmd) 'toggle cmd))
     (if (bound-and-true-p modalka-mode)
         (setq modalka-insert-text nil)))
 
@@ -1573,6 +1578,13 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
+
+  (defun modalka-mc ()
+    (interactive)
+    (toggle-modalka 0)
+    (hydra-multiple-cursors/body))
+
+  (define-key modalka-mode-map (kbd "C") 'modalka-mc)
 
   (define-key modalka-mode-map (kbd "M-+") 'evil-numbers/inc-at-pt)
   (define-key modalka-mode-map (kbd "M--") 'evil-numbers/dec-at-pt)

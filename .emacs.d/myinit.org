@@ -5,6 +5,7 @@
   (require 'cc-mode)
   (require 'seq)
   (require 'multiple-cursors)
+  (require 'evil-numbers)
 
 #+end_src
 * Eriks keys minor mode
@@ -274,6 +275,11 @@ reflected in the local value.
     (if (< a 0)
         (- 0 a)
       a))
+
+  (define-key eriks-map (kbd "n +") 'evil-numbers/inc-at-pt)
+  (define-key eriks-map (kbd "n -") 'evil-numbers/dec-at-pt)
+
+
 #+end_src
 ** lxor & is-boundary
 #+begin_src emacs-lisp :tangle yes
@@ -1563,11 +1569,13 @@ All default keybindings have been commented out in the source file 'auto-complet
   (dotimes (i 10)
     (modalka-define-kbd (format "%d" i) (format "M-%d" i)))
 
-  (modalka-define-kbd "-" "M--")
+  (define-key modalka-mode-map (kbd "-") 'negative-argument)
 
   (define-key modalka-mode-map (kbd "n") 'eriks-find-char)
   (define-key modalka-mode-map (kbd "N") 'eriks-find-char-backward)
 
+  (define-key modalka-mode-map (kbd "M-+") 'evil-numbers/inc-at-pt)
+  (define-key modalka-mode-map (kbd "M--") 'evil-numbers/dec-at-pt)
 #+end_src
 ** action region
 #+begin_src emacs-lisp :tangle yes

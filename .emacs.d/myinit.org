@@ -1034,10 +1034,12 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+end_src
 ** auctex
 #+begin_src emacs-lisp :tangle yes
-  (add-hook 'LateX-mode-hook
-            (lambda ()
-              (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
-              (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end)))
+  (eval-after-load
+      "latex"
+    (add-hook 'LateX-mode-hook
+              (lambda ()
+                (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
+                (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end))))
 
 
 #+end_src

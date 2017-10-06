@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: section_alt
+# key: seca
+# --
+\section{${1:name}}
+$0

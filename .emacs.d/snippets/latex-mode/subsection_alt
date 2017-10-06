@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: subsection_alt
+# key: suba
+# --
+\subsection{${1:name}}
+$0

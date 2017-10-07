@@ -711,6 +711,23 @@ reflected in the local value.
   (defun translate-region (r x)
     (cons (+ (car r) x) (+ (cdr r) x)))
 #+end_src
+
+** copy char
+#+begin_src emacs-lisp :tangle yes
+  (defun eriks-copy-dwim ()
+    "If a region is active, then do `kill-ring-save' as normal.
+  But if it is inactive, then copy the current char at point."
+    (interactive)
+    (if (region-active-p)
+        (kill-ring-save (region-beginning) (region-end))
+      (kill-new (string (following-char)))))
+
+  ;; (defun eriks-kill-dwim ()
+  ;;   (interactive)
+  ;;   (if (region-active-p)
+  ;;       (kill-region (region-beginning) (region-end))
+  ;;     (kill-new (string (following-char)))))
+#+end_src
 * packages
 ** yasnippet
 #+begin_src emacs-lisp :tangle yes
@@ -1486,7 +1503,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "A") 'beginning-of-defun)
   (define-key modalka-mode-map (kbd "E") 'end-of-defun)
 
-  (modalka-define-kbd "W" "M-w")
+  (define-key modalka-mode-map (kbd "W") 'eriks-copy-dwim)
   (modalka-define-kbd "w" "C-w")
   (modalka-define-kbd "a" "C-a")
   (modalka-define-kbd "e" "C-e")

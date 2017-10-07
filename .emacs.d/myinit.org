@@ -809,6 +809,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;          (lambda ()
   ;;            (define-key dired-mode-map (kbd "M-s s") 'avy-goto-char)))
   (setq ivy-use-selectable-prompt t)
+
+  (setq avy-keys (nconc
+                  (number-sequence ?a ?z)
+                  '(?å ?ä ?ö)))
 #+end_src
 ** golden ratio scroll
 #+begin_src emacs-lisp :tangle yes
@@ -1557,7 +1561,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "X" "DEL")
 
   ;;avy
-  (define-key modalka-mode-map (kbd "G") 'avy-goto-char)
+  (define-key modalka-mode-map (kbd "G") 'avy-goto-char-timer) ;;avy-goto-char
   (define-key modalka-mode-map (kbd "g") 'avy-goto-char-in-line)
   (define-key modalka-mode-map (kbd "M-g l") 'avy-goto-line)
   (define-key modalka-mode-map (kbd "M-g w") 'avy-goto-word-0)

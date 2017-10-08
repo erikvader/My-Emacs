@@ -274,7 +274,16 @@ reflected in the local value.
   (define-key eriks-map (kbd "n +") 'evil-numbers/inc-at-pt)
   (define-key eriks-map (kbd "n -") 'evil-numbers/dec-at-pt)
 
+  (define-key eriks-map (kbd "a a") 'align)
+  (define-key eriks-map (kbd "a r") 'align-regexp)
+  (define-key eriks-map (kbd "a c") 'align-current)
 
+  (defun eriks-buffer-text-to-raw ()
+    (interactive)
+    (let ((inhibit-read-only t))
+      (set-text-properties (point-min) (point-max) nil)))
+
+  (define-key eriks-map (kbd "C-r") 'eriks-buffer-text-to-raw)
 #+end_src
 ** lxor & is-boundary
 #+begin_src emacs-lisp :tangle yes
@@ -1380,24 +1389,24 @@ All default keybindings have been commented out in the source file 'auto-complet
                                        :hint nil
                                        :post (progn (deactivate-mark) (whitespace-cleanup)))
     "
-    ^_k_^       _w_ copy      _o_pen       _N_umber-lines            |\\     -,,,--,,_
-  _h_   _l_     _y_ank        _t_ype       _e_xchange-point          /,`.-'`'   ..  \-;;,_
-    ^_j_^       _d_ kill      _c_lear      _r_eset-region-mark      |,4-  ) )_   .;.(  `'-'
+    ^_k_^       _W_ copy      _o_pen       _N_umber-lines            |\\     -,,,--,,_
+  _h_   _l_     _y_ank        _s_tring     _e_xchange-point          /,`.-'`'   ..  \-;;,_
+    ^_j_^       _w_ kill      _c_lear      _m_ark                   |,4-  ) )_   .;.(  `'-'
   ^^^^          _u_ndo        _q_ quit     ^ ^                     '---''(./..)-'(_\_)
   "
     ("k" (pic-move 0 -1))
     ("j" (pic-move 0 1))
     ("h" (pic-move -1 0))
     ("l" (pic-move 1 0))
-    ("d" kill-rectangle)                    ;; C-x r k
+    ("w" kill-rectangle)                    ;; C-x r k
     ("y" yank-rectangle)                    ;; C-x r y
-    ("w" copy-rectangle-as-kill)            ;; C-x r M-w
+    ("W" copy-rectangle-as-kill)            ;; C-x r M-w
     ("o" open-rectangle)                    ;; C-x r o
-    ("t" string-rectangle)                  ;; C-x r t
+    ("s" string-rectangle)                  ;; C-x r t
     ("c" clear-rectangle)                   ;; C-x r c
     ("e" exchange-point-and-mark)           ;; C-x C-x
     ("N" rectangle-number-lines)            ;; C-x r N
-    ("r" (if (region-active-p)
+    ("m" (if (region-active-p)
              (deactivate-mark)
            (rectangle-mark-mode 1)))
     ("u" undo nil)

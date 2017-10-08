@@ -143,11 +143,6 @@ reflected in the local value.
 
   (define-key my-keys-map (kbd "<f3>") 'kmacro-start-macro)
 
-  (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
-  (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
-  (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
-  (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
-
   (defun eriks-pop-kill-ring ()
     (interactive)
     (setq kill-ring (cdr kill-ring))
@@ -729,6 +724,18 @@ reflected in the local value.
   ;;     (kill-new (string (following-char)))))
 #+end_src
 * packages
+** windmove and framemove
+#+begin_src emacs-lisp :tangle yes
+  (require 'framemove)
+
+  (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
+  (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
+  (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
+  (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
+
+  (setq framemove-hook-into-windmove t)
+
+#+end_src
 ** yasnippet
 #+begin_src emacs-lisp :tangle yes
   ;;(require 'yasnippet)

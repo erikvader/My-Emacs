@@ -169,6 +169,20 @@ reflected in the local value.
                                                        plain-tex-mode))
                   (let ((mark-even-if-inactive transient-mark-mode))
                     (indent-region (region-beginning) (region-end) nil))))))
+
+  (defun eval-last-sexp-replace ()
+    "Runs `eval-last-sexp' and replaces the sexp with the evaluated value"
+    (interactive)
+    (let ((start (point)))
+      (setq current-prefix-arg '(4))
+      (call-interactively 'eval-last-sexp)
+      (save-excursion
+        (goto-char start)
+        (let ((sexp-end (point)))
+          (backward-sexp)
+          (delete-region (point) sexp-end)))))
+
+  (define-key my-keys-map (kbd "C-x M-e") 'eval-last-sexp-replace)
 #+end_src
 * Eriks map / prefix key
 ** random

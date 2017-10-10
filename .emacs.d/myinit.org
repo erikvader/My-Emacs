@@ -912,14 +912,15 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;; (asd-key '-map (kbd "m b") 'mc/mark-all-like-this)
   (define-key mc/keymap (kbd "<return>") nil)
 
-  (defhydra hydra-multiple-cursors ()
+  (defhydra hydra-multiple-cursors (:color pink)
     "
        ^Up^            ^Down^        ^Other^
   ----------------------------------------------------------
   [_p_]   Next    [_n_]   Next    [_l_] Edit lines      [_R_] Region-anchor
   [_P_]   Skip    [_N_]   Skip    [_a_] Mark all        [_m_] put cursor at mark
-  [_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
-  ^ ^             ^ ^             [_q_] Quit
+  [_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp  [_1_] Insert numbers
+  ^ ^             ^ ^             [_q_] Quit            [_2_] Insert letters
+  ^^C-v: next cursor, M-v: prev cursor, C-': only lines with cursors
   "
     ("l" mc/edit-lines nil :exit t)
     ("a" mc/mark-all-like-this nil :exit t)
@@ -932,6 +933,8 @@ All default keybindings have been commented out in the source file 'auto-complet
     ("r" mc/mark-all-in-region-regexp nil :exit t)
     ("R" set-rectangular-region-anchor nil :color blue)
     ("m" mc/mark-pop nil)
+    ("1" mc/insert-numbers nil)
+    ("2" mc/insert-letters nil)
     ("q" nil nil))
   (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
   (define-key my-keys-map (kbd "C-c m") 'hydra-multiple-cursors/body)

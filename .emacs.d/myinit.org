@@ -8,6 +8,15 @@
   (require 'evil-numbers)
 
 #+end_src
+* faces
+#+begin_src emacs-lisp :tangle yes
+  (defface eriks-fix-later-face
+    '((t :foreground "orange1"
+         :background "gray10"
+         :weight bold
+         ))
+    "Face to highlight FIXME and TODO")
+#+end_src
 * Eriks keys minor mode
 [[https://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs/5340797][Source from stackoverflow]]
 #+begin_src emacs-lisp :tangle yes
@@ -691,7 +700,7 @@ reflected in the local value.
             (setq eriks-regions-saved (simplify-region (cons a b)))
           (let* ((sim (simplify-region (cons a b)))
                  (old eriks-regions-saved)
-                 (sorted (sort-region sim old))
+                 (sorted (sort-regions sim old))
                  (left (car sorted))
                  (right (cdr sorted))
                  (leftl (region-size left))
@@ -716,7 +725,7 @@ reflected in the local value.
           (b (cdr r))))
     (cons (min a b) (max a b)))
 
-  (defun sort-region (r a)
+  (defun sort-regions (r a)
     (if (< (car r) (car a))
         (cons r a)
       (cons a r)))
@@ -728,6 +737,16 @@ reflected in the local value.
 
   (defun translate-region (r x)
     (cons (+ (car r) x) (+ (cdr r) x)))
+
+  (defun sort-region (r)
+    "in ascending order. min first."
+    (cons
+     (min (car r) (cdr r))
+     (max (car r) (cdr r))))
+
+  (defun swap-cons (c)
+    (cons (cdr c) (car c)))
+
 #+end_src
 
 ** copy char
@@ -849,7 +868,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;(define-key my-keys-map (kbd "M-s") 'eriks-avy-map)
   ;;(global-set-key (kbd "M-s") 'avy-goto-char)
   (define-key eriks-map (kbd "SPC") 'avy-goto-char)
-  (define-key eriks-map (kbd "C-SPC") 'avy-goto-char-2)
+  (define-key eriks-map (kbd "S-SPC") 'avy-goto-char-timer)
 
   ;;dired
   ;;(add-hook 'dired-mode-hook
@@ -1109,7 +1128,10 @@ All default keybindings have been commented out in the source file 'auto-complet
               (start-smartparens)
               (setq show-trailing-whitespace t)
               (rainbow-delimiters-mode t)
-              (toggle-modalka 1)))
+              (toggle-modalka 1)
+              (font-lock-add-keywords nil
+                                      '(("\\<\\(FIXME\\):" 1 'eriks-fix-later-face t)
+                                        ("\\<\\(TODO\\):" 1 'eriks-fix-later-face t)))))
 #+end_src
 ** C-like modes
 *** common

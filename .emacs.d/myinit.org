@@ -1778,9 +1778,12 @@ All default keybindings have been commented out in the source file 'auto-complet
             (setq current-prefix-arg old-prefix))))))
 
   (defun modalka-kill-delete-region (name func)
-    (let ((region (modalka-action-region name)))
+    (let ((region (swap-cons (modalka-action-region name))))
       (if region
-          (funcall func (car region) (cdr region))
+          (progn
+            (funcall func (car region) (cdr region))
+            ;; (message "%d : %d" (car region) (cdr region))
+            )
         (message "no region"))))
 
   (defun modalka-kill ()

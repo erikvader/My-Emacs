@@ -192,6 +192,8 @@ reflected in the local value.
           (delete-region (point) sexp-end)))))
 
   (define-key my-keys-map (kbd "C-x M-e") 'eval-last-sexp-replace)
+
+  ;;(add-hook 'after-save-hook 'whitespace-cleanup)
 #+end_src
 * Eriks map / prefix key
 ** random

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Cunit_assert_false
+# key: cuaf
+# --
+CU_ASSERT_FALSE($0);

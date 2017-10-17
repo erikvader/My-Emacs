@@ -1618,7 +1618,19 @@ All default keybindings have been commented out in the source file 'auto-complet
   (modalka-define-kbd "o" "C-<return>")
   (modalka-define-kbd "O" "C-S-<return>")
   (modalka-define-kbd "+" "C-+")
-  (define-key modalka-mode-map (kbd "p") 'hydra-smartparens/body)
+
+  ;;(define-key modalka-mode-map (kbd "p") 'hydra-smartparens/body)
+  (define-key modalka-mode-map (kbd "p s") 'sp-splice-sexp)
+  (define-key modalka-mode-map (kbd "p S") 'sp-split-sexp)
+  (define-key modalka-mode-map (kbd "p J") 'sp-join-sexp)
+  (define-key modalka-mode-map (kbd "p f b") 'sp-forward-barf-sexp)
+  (define-key modalka-mode-map (kbd "p f s") 'sp-forward-slurp-sexp)
+  (define-key modalka-mode-map (kbd "p b b") 'sp-backward-barf-sexp)
+  (define-key modalka-mode-map (kbd "p b s") 'sp-backward-slurp-sexp)
+  (define-key modalka-mode-map (kbd "p k") 'sp-kill-sexp)
+  (define-key modalka-mode-map (kbd "p h k") 'sp-kill-hybrid-sexp)
+  (define-key modalka-mode-map (kbd "p h b") 'sp-dedent-adjust-sexp)
+  (define-key modalka-mode-map (kbd "p h s") 'sp-slurp-hybrid-sexp)
 
   (modalka-define-kbd "s" "C-s")
 

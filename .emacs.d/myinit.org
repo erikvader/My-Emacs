@@ -753,13 +753,18 @@ reflected in the local value.
 
 ** copy char
 #+begin_src emacs-lisp :tangle yes
-  (defun eriks-copy-dwim ()
-    "If a region is active, then do `kill-ring-save' as normal.
-  But if it is inactive, then copy the current char at point."
-    (interactive)
+  (defun eriks-kill-dwim (f BEG END &optional region)
+    "If a region is active, then do f as normal.
+  But if it is inactive, then f the current char at point."
     (if (region-active-p)
-        (kill-ring-save (region-beginning) (region-end))
-      (kill-new (string (following-char)))))
+        (funcall f BEG END)
+      (progn
+        (push-mark (+ (point) 1) t t)
+        (funcall f (point) (mark)))))
+
+  (advice-add 'kill-ring-save :around 'eriks-kill-dwim)
+  (advice-add 'kill-region :around 'eriks-kill-dwim)
+  (advice-add 'sp-kill-region :around 'eriks-kill-dwim)
 
   ;; (defun eriks-kill-dwim ()
   ;;   (interactive)
@@ -1560,7 +1565,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key modalka-mode-map (kbd "A") 'beginning-of-defun)
   (define-key modalka-mode-map (kbd "E") 'end-of-defun)
 
-  (define-key modalka-mode-map (kbd "W") 'eriks-copy-dwim)
+  ;;(define-key modalka-mode-map (kbd "W") 'eriks-copy-dwim)
+  (modalka-define-kbd "W" "M-w")
   (modalka-define-kbd "w" "C-w")
   (modalka-define-kbd "a" "C-a")
   (modalka-define-kbd "e" "C-e")
@@ -2178,3 +2184,8 @@ All default keybindings have been commented out in the source file 'auto-complet
       (dotimes ($i 26)
         (insert (format "%c\n" (+ $startChar $i))))))
 #+end_src
+* nice kommandon
+- M-^   -> delete-indentation (join-line)
+- M-SPC -> just-one-space
+- C-M-W -> append-next-kill
+

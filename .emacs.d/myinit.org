@@ -1123,6 +1123,41 @@ All default keybindings have been commented out in the source file 'auto-complet
 
 
 #+end_src
+** evil
+#+begin_src emacs-lisp :tangle yes
+  (require 'evil)
+
+  (define-key evil-emacs-state-map [escape] 'evil-normal-state)
+  (evil-set-initial-state 'dired-mode 'emacs)
+
+  (define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
+  (define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
+
+  (define-key evil-normal-state-map (kbd "Y") 'browse-kill-ring)
+  (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
+  (define-key evil-normal-state-map (kbd "C-f") 'golden-ratio-scroll-screen-up)
+  (define-key evil-normal-state-map (kbd "C-b") 'golden-ratio-scroll-screen-down)
+
+  (defun evil-delete-advice (f BEG END &optional TYPE REGISTER YANK-HANDLER)
+    "Changes the behaviour of `evil-delete'.
+  \"_d<motion>     : adds the deleted stuff to the kill-ring
+  d<motion>       : will not att add to kill-ring
+  \"<reg>d<motion> : add to the specified register
+
+  (advice-add 'evil-delete :around 'evil-delete-advice)
+  "
+    (cond
+     ((null REGISTER)
+      (apply f BEG END TYPE ?_ YANK-HANDLER))
+     ((= REGISTER ?_)
+      (apply f BEG END TYPE nil YANK-HANDLER))
+     (t
+      (apply f BEG END TYPE REGISTER YANK-HANDLER))))
+
+  (advice-add 'evil-delete :around 'evil-delete-advice)
+
+  (evil-mode 1)
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes

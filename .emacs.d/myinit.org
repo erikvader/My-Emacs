@@ -874,7 +874,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;(define-prefix-command 'eriks-avy-map)
   ;;(define-key my-keys-map (kbd "M-s") 'eriks-avy-map)
   ;;(global-set-key (kbd "M-s") 'avy-goto-char)
-  (define-key eriks-map (kbd "SPC") 'avy-goto-char)
+  (define-key eriks-map (kbd "SPC") 'avy-goto-char-in-line)
   (define-key eriks-map (kbd "S-SPC") 'avy-goto-char-timer)
 
   ;;dired
@@ -1127,6 +1127,11 @@ All default keybindings have been commented out in the source file 'auto-complet
 #+begin_src emacs-lisp :tangle yes
   (require 'evil)
 
+  (require 'evil-surround)
+  (global-evil-surround-mode 1)
+
+  (evil-indent-plus-default-bindings) ;;ii iI ai aI iJ aJ
+
   (define-key evil-emacs-state-map [escape] 'evil-normal-state)
   (evil-set-initial-state 'dired-mode 'emacs)
 
@@ -1155,6 +1160,17 @@ All default keybindings have been commented out in the source file 'auto-complet
       (apply f BEG END TYPE REGISTER YANK-HANDLER))))
 
   (advice-add 'evil-delete :around 'evil-delete-advice)
+  (advice-remove 'evil-delete 'evil-delete-advice)
+
+  (define-key evil-normal-state-map (kbd "C-/") 'avy-goto-char-timer)
+
+  (define-prefix-command 'evil-spc)
+  (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
+  (define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
+
+  (define-key evil-spc (kbd "SPC") 'avy-goto-char-in-line)
+  (define-key evil-spc (kbd "+") 'hydra-evil-numbers/body)
+  (define-key evil-spc (kbd "-") 'hydra-evil-numbers/body)
 
   (evil-mode 1)
 #+end_src
@@ -1577,6 +1593,13 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key eriks-map (kbd "t") 'hydra-ggtags/body)
 
+#+end_src
+#+begin_src emacs-lisp :tangle yes
+  (defhydra hydra-evil-numbers (:color red :hint nil)
+    "
+[_+_] increment  [_-_] decrement"
+    ("+" evil-numbers/inc-at-pt nil)
+    ("-" evil-numbers/dec-at-pt nil))
 #+end_src
 * hide minor mode lighters in modeline
 #+begin_src emacs-lisp :tangle yes

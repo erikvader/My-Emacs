@@ -1133,6 +1133,8 @@ All default keybindings have been commented out in the source file 'auto-complet
          evil-motion-state-modes))
   (setq evil-motion-state-modes nil)
 
+  (setq evil-emacs-state-cursor 'bar)
+
   (require 'evil-surround)
   (global-evil-surround-mode 1)
 
@@ -1150,6 +1152,36 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-normal-state-map (kbd "C-b") 'golden-ratio-scroll-screen-down)
 
   (define-key evil-normal-state-map (kbd "C-w") 'hydra-windows/body)
+
+  (define-prefix-command 'evil-spc)
+  (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
+  (define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
+
+  (define-key evil-spc (kbd "M-+") 'hydra-evil-numbers/body)
+  (define-key evil-spc (kbd "C--") 'evil-numbers/dec-at-pt)
+  (define-key evil-spc (kbd "C-+") 'evil-numbers/inc-at-pt)
+
+  (define-key evil-spc (kbd ";") 'comment-dwim)
+
+  (define-key evil-spc (kbd "J") 'evil-join)
+
+  (require 'evil-easymotion)
+  (evilem-default-keybindings "SPC") ;;TODO: vara på space elr int? vara på comma?
+
+  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char-in-line)
+  (evil-declare-not-repeat 'avy-goto-char-in-line)
+
+  (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
+  (evil-declare-not-repeat 'avy-goto-char-timer)
+
+  (define-key evil-motion-state-map (kbd "K") 'sp-backward-up-sexp)
+  (define-key evil-normal-state-map (kbd "J") nil)
+  (define-key evil-visual-state-map (kbd "J") nil)
+  (define-key evil-motion-state-map (kbd "J") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "H") 'sp-backward-sexp)
+  (define-key evil-motion-state-map (kbd "L") 'sp-forward-sexp)
+
+  (evil-mode 1)
 
   ;; (defun evil-delete-advice (f BEG END &optional TYPE REGISTER YANK-HANDLER)
   ;;   "Changes the behaviour of `evil-delete'.
@@ -1169,19 +1201,6 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   ;; (advice-add 'evil-delete :around 'evil-delete-advice)
   ;; (advice-remove 'evil-delete 'evil-delete-advice)
-
-  (define-prefix-command 'evil-spc)
-  (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
-  (define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
-
-  (define-key evil-spc (kbd "C-+") 'hydra-evil-numbers/body)
-  (define-key evil-spc (kbd "-") 'evil-numbers/dec-at-pt)
-  (define-key evil-spc (kbd "+") 'evil-numbers/inc-at-pt)
-
-  (define-key evil-spc (kbd ";") 'comment-dwim)
-
-  (define-key evil-spc (kbd "J") 'evil-join)
-
   ;; (define-key evil-spc (kbd "h") 'windmove-left)
   ;; (define-key evil-spc (kbd "l") 'windmove-right)
 
@@ -1202,17 +1221,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;               (define-key evil-visual-state-map (kbd "l") nil)
   ;;               (delete-trailing-whitespace))))
 
-  (require 'evil-easymotion)
-  (evilem-default-keybindings "SPC") ;;TODO: vara på space elr int? vara på comma?
 
-  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char-in-line)
-  (evil-declare-not-repeat 'avy-goto-char-in-line)
-
-  (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
-  (evil-declare-not-repeat 'avy-goto-char-timer)
-
-
-  (evil-mode 1)
 #+end_src
 * prog-mode-hook
 ** prog-mode
@@ -1709,4 +1718,3 @@ All default keybindings have been commented out in the source file 'auto-complet
 - M-^   -> delete-indentation (join-line)
 - M-SPC -> just-one-space
 - C-M-W -> append-next-kill
-

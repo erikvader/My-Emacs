@@ -68,6 +68,7 @@
  '(evil-move-beyond-eol t)
  '(evil-move-cursor-back nil)
  '(evil-repeat-move-cursor nil)
+ '(evil-shift-width 1)
  '(evil-want-C-d-scroll nil)
  '(evil-want-C-i-jump nil)
  '(expand-region-fast-keys-enabled t)

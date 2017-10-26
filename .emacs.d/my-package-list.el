@@ -6,17 +6,13 @@
         eclim
         yasnippet
         s
-        popup
         dash
         all-the-icons-dired
         all-the-icons
         memoize
         font-lock+
         auctex
-        auto-complete
-        popup
         autopair
-        avy
         browse-kill-ring
         buffer-move
         charmap
@@ -32,84 +28,43 @@
         diminish
         disable-mouse
         dot-mode
-        dumb-jump
-        popup
-        dash
-        s
-        f
-        dash
-        s
-        eclim
-        yasnippet
-        s
-        popup
-        dash
+        evil-easymotion
+        avy
+        evil-indent-plus
+        evil
+        goto-chg
+        undo-tree
         evil-numbers
+        evil-surround
         expand-region
         f
-        dash
-        s
         flycheck
         seq
         let-alist
-        pkg-info
-        epl
-        dash
-        font-lock+
         fontawesome
+        framemove
         ggtags
         golden-ratio-scroll-screen
         haskell-mode
         haskell-snippets
-        yasnippet
-        hungry-delete
         hydra
         latex-preview-pane
-        let-alist
         linum-relative
         magit
         magit-popup
-        dash
         async
         git-commit
         with-editor
-        async
-        dash
-        with-editor
-        async
-        dash
-        async
-        magit-popup
-        dash
-        async
         markdown-mode
-        memoize
-        modalka
         multiple-cursors
-        neotree
         org-bullets
         outshine
         outorg
         packed
-        page-break-lines
-        popup
-        projectile
-        pkg-info
-        epl
         rainbow-delimiters
         rainbow-mode
-        s
-        seq
         smart-mode-line
         rich-minority
         smartparens
-        dash
-        swiper
-        ivy
-        tabbar
-        undo-tree
         which-key
-        with-editor
-        async
-        yasnippet
         ))

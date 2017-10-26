@@ -119,9 +119,11 @@ reflected in the local value.
   (global-disable-mouse-mode)
 
   (define-key my-keys-map (kbd "C-+") 'er/expand-region)
-  (global-set-key (kbd "M-s r") 'isearch-query-replace-regexp)
-  (global-set-key (kbd "M-s s") 'isearch-forward-regexp)
-  (global-set-key (kbd "M-s S") 'isearch-backward-regexp)
+  (define-key my-keys-map (kbd "M-s q") 'isearch-query-replace-regexp)
+  (define-key my-keys-map (kbd "M-s r") 'isearch-forward-regexp)
+  (define-key my-keys-map (kbd "M-s R") 'isearch-backward-regexp)
+  (define-key my-keys-map (kbd "M-s s") 'isearch-forward)
+  (define-key my-keys-map (kbd "M-s S") 'isearch-backward)
 
   ;;magit fixar detta redan med ett egen global mode
   ;;(global-auto-revert-mode t)
@@ -1116,10 +1118,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (evil-set-initial-state 'dired-mode 'emacs)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; normal mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
-  (define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
+  ;;(define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
+  ;;(define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
 
-  (define-key evil-normal-state-map (kbd "Y") 'browse-kill-ring)
   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
   (define-key evil-normal-state-map (kbd "C-f") 'golden-ratio-scroll-screen-up)
   (define-key evil-normal-state-map (kbd "C-b") 'golden-ratio-scroll-screen-down)
@@ -1128,6 +1129,12 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
+
+  (define-key evil-normal-state-map (kbd "gc") 'transpose-chars)
+  (define-key evil-normal-state-map (kbd "gl") 'transpose-lines)
+  (define-key evil-normal-state-map (kbd "gt") 'transpose-words)
+  (define-key evil-normal-state-map (kbd "gr") 'eriks-region-switch)
+  (define-key evil-normal-state-map (kbd "gR") 'eriks-region-switch-abort)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space key ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-prefix-command 'evil-spc)
@@ -1147,6 +1154,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-spc (kbd "p{") 'sp-backward-barf-sexp)
   (define-key evil-spc (kbd "ps") 'sp-split-sexp)
   (define-key evil-spc (kbd "pj") 'sp-join-sexp)
+
+  (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
+
+  (define-key evil-spc (kbd "y") 'browse-kill-ring)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'evil-easymotion)

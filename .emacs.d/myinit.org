@@ -194,6 +194,8 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-x M-e") 'eval-last-sexp-replace)
 
   ;;(add-hook 'after-save-hook 'whitespace-cleanup)
+  (define-key my-keys-map (kbd "M-SPC") 'cycle-spacing)
+  (define-key my-keys-map (kbd "<f8>") 'speedbar)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -309,6 +311,8 @@ reflected in the local value.
       (set-text-properties (point-min) (point-max) nil)))
 
   (define-key eriks-map (kbd "C-r") 'eriks-buffer-text-to-raw)
+
+  (define-key eriks-map (kbd "d") 'delete-duplicate-lines)
 #+end_src
 ** lxor & is-boundary
 #+begin_src emacs-lisp :tangle yes
@@ -885,7 +889,8 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (setq avy-keys (nconc
                   (number-sequence ?a ?z)
-                  '(?å ?ä ?ö)))
+                  ;; '(?å ?ä ?ö)
+                  ))
 #+end_src
 ** golden ratio scroll
 #+begin_src emacs-lisp :tangle yes
@@ -1110,6 +1115,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-emacs-state-map [escape] 'evil-normal-state)
   (evil-set-initial-state 'dired-mode 'emacs)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; normal mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
   (define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
 
@@ -1120,20 +1126,31 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key evil-normal-state-map (kbd "C-w") 'hydra-windows/body)
 
+  (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
+  (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space key ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-prefix-command 'evil-spc)
   (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
-  (define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
+  ;;(define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
 
   (define-key evil-spc (kbd "M-+") 'hydra-evil-numbers/body)
-  (define-key evil-spc (kbd "C--") 'evil-numbers/dec-at-pt)
-  (define-key evil-spc (kbd "C-+") 'evil-numbers/inc-at-pt)
 
   (define-key evil-spc (kbd ";") 'comment-dwim)
 
-  (define-key evil-spc (kbd "J") 'evil-join)
+  (define-key evil-spc (kbd "u") 'undo-tree-visualize)
+  (define-key evil-spc (kbd ".") 'repeat)
 
+  (define-key evil-spc (kbd "p]") 'sp-forward-slurp-sexp)
+  (define-key evil-spc (kbd "p[") 'sp-backward-slurp-sexp)
+  (define-key evil-spc (kbd "p}") 'sp-forward-barf-sexp)
+  (define-key evil-spc (kbd "p{") 'sp-backward-barf-sexp)
+  (define-key evil-spc (kbd "ps") 'sp-split-sexp)
+  (define-key evil-spc (kbd "pj") 'sp-join-sexp)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'evil-easymotion)
-  (evilem-default-keybindings "SPC") ;;TODO: vara på space elr int? vara på comma?
+  (evilem-default-keybindings "SPC")
 
   (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char-in-line)
   (evil-declare-not-repeat 'avy-goto-char-in-line)
@@ -1141,13 +1158,32 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)
 
-  (define-key evil-motion-state-map (kbd "K") 'sp-backward-up-sexp)
-  (define-key evil-normal-state-map (kbd "J") nil)
-  (define-key evil-visual-state-map (kbd "J") nil)
-  (define-key evil-motion-state-map (kbd "J") 'sp-down-sexp)
-  (define-key evil-motion-state-map (kbd "H") 'sp-backward-sexp)
-  (define-key evil-motion-state-map (kbd "L") 'sp-forward-sexp)
+  (evilem-define (kbd "SPC [u") 'sp-backward-up-sexp)
+  (evilem-define (kbd "SPC ]u") 'sp-up-sexp)
+  (evilem-define (kbd "SPC [n") 'sp-next-sexp)
+  (evilem-define (kbd "SPC ]n") 'sp-forward-sexp)
+  (evilem-define (kbd "SPC [p") 'sp-backward-sexp)
+  (evilem-define (kbd "SPC ]p") 'sp-previous-sexp)
+  (evilem-define (kbd "SPC [s") 'sp-beginning-of-sexp)
+  (evilem-define (kbd "SPC ]s") 'sp-end-of-sexp)
+  (evilem-define (kbd "SPC [d") 'sp-down-sexp)
+  (evilem-define (kbd "SPC ]d") 'sp-down-sexp)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define-key evil-motion-state-map (kbd "[u") 'sp-backward-up-sexp)
+  (define-key evil-motion-state-map (kbd "]u") 'sp-up-sexp)
+  (define-key evil-motion-state-map (kbd "[n") 'sp-next-sexp)
+  (define-key evil-motion-state-map (kbd "]n") 'sp-forward-sexp)
+  (define-key evil-motion-state-map (kbd "[p") 'sp-backward-sexp)
+  (define-key evil-motion-state-map (kbd "]p") 'sp-previous-sexp)
+  (define-key evil-motion-state-map (kbd "[s") 'sp-beginning-of-sexp)
+  (define-key evil-motion-state-map (kbd "]s") 'sp-end-of-sexp)
+  (define-key evil-motion-state-map (kbd "[d") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "]d") 'sp-down-sexp)
+
+  (define-key evil-motion-state-map (kbd "[w") 'eriks-skip-space-backwards)
+  (define-key evil-motion-state-map (kbd "]w") 'eriks-skip-space)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (evil-mode 1)
 
   ;; (defun evil-delete-advice (f BEG END &optional TYPE REGISTER YANK-HANDLER)

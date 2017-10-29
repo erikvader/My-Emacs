@@ -198,6 +198,22 @@ reflected in the local value.
   ;;(add-hook 'after-save-hook 'whitespace-cleanup)
   (define-key my-keys-map (kbd "M-SPC") 'cycle-spacing)
   (define-key my-keys-map (kbd "<f8>") 'speedbar)
+
+  (defun configure-tabs (width tabs)
+    (interactive "nTab width: \nnAllow tabs? (0/1/-1): ")
+    (setq tab-width      width
+          c-basic-offset width)
+    (cond
+     ((> tabs 0)
+      (setq indent-tabs-mode t))
+     ((< tabs 0)
+      (setq indent-tabs-mode nil))))
+
+  (define-key eriks-map (kbd "T t") 'configure-tabs)
+  (define-key eriks-map (kbd "T U") 'untabify)
+  (define-key eriks-map (kbd "T u") 'tabify)
+  (define-key eriks-map (kbd "T w") 'whitespace-cleanup)
+  (define-key eriks-map (kbd "T e") 'delete-trailing-whitespace)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -274,7 +290,7 @@ reflected in the local value.
 
   (define-key eriks-map (kbd "y") 'ansi-term)
 
-  (define-key eriks-map (kbd "C-c") 'whitespace-cleanup)
+  ;;(define-key eriks-map (kbd "C-c") 'whitespace-cleanup)
 
   ;; (defun edit-myinit-org ()
   ;;   (interactive)

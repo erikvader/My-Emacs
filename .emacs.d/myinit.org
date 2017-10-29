@@ -1227,10 +1227,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-motion-state-map (kbd "[ C-]") 'evil-forward-section-begin)
   (define-key evil-motion-state-map (kbd "] C-]") 'evil-forward-section-end)
 
-  (evil-remap "[<" "F<")
-  (evil-remap "[>" "F>")
-  (evil-remap "]<" "f<")
-  (evil-remap "]>" "f>")
+  (evil-remap "[<" "F<" evil-motion-state-map)
+  (evil-remap "[>" "F>" evil-motion-state-map)
+  (evil-remap "]<" "f<" evil-motion-state-map)
+  (evil-remap "]>" "f>" evil-motion-state-map)
 
   (define-key evil-motion-state-map (kbd "[^") 'sp-backward-up-sexp)
   (define-key evil-motion-state-map (kbd "]^") 'sp-up-sexp)
@@ -1247,6 +1247,24 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-motion-state-map (kbd "] SPC") 'eriks-skip-space)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (evil-define-text-object eriks-evil-inside-line-text-object (count &optional beg end type)
+    (save-excursion
+      (evil-first-non-blank)
+      (let ((first (point)))
+        (evil-end-of-line)
+        (evil-range first (point)))))
+
+  (evil-define-text-object eriks-evil-outside-line-text-object (count &optional beg end type)
+    (save-excursion
+      (move-beginning-of-line nil)
+      (let ((first (point)))
+        (evil-end-of-line)
+        (evil-range first (point)))))
+
+  (define-key evil-inner-text-objects-map (kbd "l") 'eriks-evil-inside-line-text-object)
+  (define-key evil-outer-text-objects-map (kbd "l") 'eriks-evil-outside-line-text-object)
+
   (evil-mode 1)
 
   ;; (defun evil-delete-advice (f BEG END &optional TYPE REGISTER YANK-HANDLER)

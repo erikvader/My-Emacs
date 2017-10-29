@@ -88,10 +88,10 @@ reflected in the local value.
   (browse-kill-ring-default-keybindings)
   ;; (powerline-default-theme)
 
-  (require 'all-the-icons)
+  ;;(require 'all-the-icons)
   ;; (require 'all-the-icons-ivy)
   ;; (all-the-icons-ivy-setup)
-  (all-the-icons-dired-mode)
+  ;;(all-the-icons-dired-mode)
 
   (require 'smart-mode-line)
   (sml/setup)
@@ -112,7 +112,7 @@ reflected in the local value.
   (setq auto-save-file-name-transforms
         `(("\\(?:[^/]*/\\)*\\(.*\\)" ,(concat autosave-dir "\\1") t)))
 
-  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+  ;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
   (winner-mode 1)
 
@@ -2152,17 +2152,19 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;                                                   'display '(raise -0.1)
   ;;                                                   )))
 
-  (diminish 'my-keys-minor-mode (format " %s" (propertize (all-the-icons-faicon "keyboard-o")
-                                                          'face `(:family ,(all-the-icons-faicon-family) :height 0.9)
-                                                          'display '(raise 0.0)
-                                                          )))
+  (diminish 'my-keys-minor-mode " mk")
+
+  ;; (diminish 'my-keys-minor-mode (format " %s" (propertize (all-the-icons-faicon "keyboard-o")
+  ;;                                                         'face `(:family ,(all-the-icons-faicon-family) :height 0.9)
+  ;;                                                         'display '(raise 0.0)
+  ;;                                                         )))
 
   (diminish 'outline-minor-mode (propertize " O" 'face '(:foreground "green")))
 
   (diminish 'smartparens-mode)
 
   (diminish 'projectile-mode)
-  (diminish 'all-the-icons-dired-mode)
+  ;;(diminish 'all-the-icons-dired-mode)
 
   ;; (add-hook 'smartparens-mode-hook
   ;;           (lambda ()

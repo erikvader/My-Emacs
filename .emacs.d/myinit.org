@@ -1117,9 +1117,25 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-emacs-state-map [escape] 'evil-normal-state)
   (evil-set-initial-state 'dired-mode 'emacs)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; evil remap ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun evil-remap (trigger action &optional map)
+    "remaps a key sequence to execute another key sequence in evil-mode.
+
+  'trigger' is the key sequence to \"remap\" to the key sequence 'action'.
+  The map to bind 'trigger' in is by default `evil-normal-state-map' (evil normal mode).
+
+  (evil-remap \"C-@\" \"@@\") will in normal mode, make C-@ virtually press @@ and run the latest keyboard macro (default behaviour). "
+    (let ((mmap (if (null map) evil-normal-state-map map)))
+      (define-key mmap (kbd trigger)
+        `(lambda ()
+           (interactive)
+           (execute-kbd-macro ,action)))))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; normal mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;(define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
   ;;(define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
+
+  (evil-remap "C-@" "@@")
 
   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
   (define-key evil-normal-state-map (kbd "C-f") 'golden-ratio-scroll-screen-up)
@@ -1159,6 +1175,9 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key evil-spc (kbd "y") 'browse-kill-ring)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; insert motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define-key evil-insert-state-map (kbd "C-^") 'sp-up-sexp)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'evil-easymotion)
   (evilem-default-keybindings "SPC")
@@ -1169,31 +1188,42 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)
 
-  (evilem-define (kbd "SPC [u") 'sp-backward-up-sexp)
-  (evilem-define (kbd "SPC ]u") 'sp-up-sexp)
-  (evilem-define (kbd "SPC [n") 'sp-next-sexp)
-  (evilem-define (kbd "SPC ]n") 'sp-forward-sexp)
-  (evilem-define (kbd "SPC [p") 'sp-backward-sexp)
-  (evilem-define (kbd "SPC ]p") 'sp-previous-sexp)
-  (evilem-define (kbd "SPC [s") 'sp-beginning-of-sexp)
-  (evilem-define (kbd "SPC ]s") 'sp-end-of-sexp)
-  (evilem-define (kbd "SPC [d") 'sp-down-sexp)
-  (evilem-define (kbd "SPC ]d") 'sp-down-sexp)
+  ;; (evilem-define (kbd "SPC [{") 'evil-backward-section-begin)
+  ;; (evilem-define (kbd "SPC ]{") 'evil-backward-section-end)
+  ;; (evilem-define (kbd "SPC [}") 'evil-forward-section-begin)
+  ;; (evilem-define (kbd "SPC ]}") 'evil-forward-section-end)
+
+  (evilem-define (kbd "SPC [^") 'sp-backward-up-sexp)
+  (evilem-define (kbd "SPC ]^") 'sp-up-sexp)
+  (evilem-define (kbd "SPC []") 'sp-next-sexp)
+  (evilem-define (kbd "SPC ]]") 'sp-forward-sexp)
+  (evilem-define (kbd "SPC [[") 'sp-backward-sexp)
+  (evilem-define (kbd "SPC ][") 'sp-previous-sexp)
+  (evilem-define (kbd "SPC ['") 'sp-beginning-of-sexp)
+  (evilem-define (kbd "SPC ]'") 'sp-end-of-sexp)
+  (evilem-define (kbd "SPC [\\") 'sp-backward-down-sexp)
+  (evilem-define (kbd "SPC ]\\") 'sp-down-sexp)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-key evil-motion-state-map (kbd "[u") 'sp-backward-up-sexp)
-  (define-key evil-motion-state-map (kbd "]u") 'sp-up-sexp)
-  (define-key evil-motion-state-map (kbd "[n") 'sp-next-sexp)
-  (define-key evil-motion-state-map (kbd "]n") 'sp-forward-sexp)
-  (define-key evil-motion-state-map (kbd "[p") 'sp-backward-sexp)
-  (define-key evil-motion-state-map (kbd "]p") 'sp-previous-sexp)
-  (define-key evil-motion-state-map (kbd "[s") 'sp-beginning-of-sexp)
-  (define-key evil-motion-state-map (kbd "]s") 'sp-end-of-sexp)
-  (define-key evil-motion-state-map (kbd "[d") 'sp-down-sexp)
-  (define-key evil-motion-state-map (kbd "]d") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "[{") 'evil-backward-section-begin)
+  (define-key evil-motion-state-map (kbd "]{") 'evil-backward-section-end)
+  (define-key evil-motion-state-map (kbd "[}") 'evil-forward-section-begin)
+  (define-key evil-motion-state-map (kbd "]}") 'evil-forward-section-end)
 
-  (define-key evil-motion-state-map (kbd "[w") 'eriks-skip-space-backwards)
-  (define-key evil-motion-state-map (kbd "]w") 'eriks-skip-space)
+  (define-key evil-motion-state-map (kbd "[^") 'sp-backward-up-sexp)
+  (define-key evil-motion-state-map (kbd "]^") 'sp-up-sexp)
+  (define-key evil-motion-state-map (kbd "[]") 'sp-next-sexp)
+  (define-key evil-motion-state-map (kbd "]]") 'sp-forward-sexp)
+  (define-key evil-motion-state-map (kbd "[[") 'sp-backward-sexp)
+  (define-key evil-motion-state-map (kbd "][") 'sp-previous-sexp)
+  (define-key evil-motion-state-map (kbd "['") 'sp-beginning-of-sexp)
+  (define-key evil-motion-state-map (kbd "]'") 'sp-end-of-sexp)
+  (define-key evil-motion-state-map (kbd "[\\") 'sp-backward-down-sexp)
+  (define-key evil-motion-state-map (kbd "]\\") 'sp-down-sexp)
+
+  (define-key evil-motion-state-map (kbd "[ SPC") 'eriks-skip-space-backwards)
+  (define-key evil-motion-state-map (kbd "] SPC") 'eriks-skip-space)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (evil-mode 1)
 

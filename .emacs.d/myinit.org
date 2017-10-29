@@ -1138,8 +1138,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (evil-remap "C-@" "@@")
 
   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
-  (define-key evil-normal-state-map (kbd "C-f") 'golden-ratio-scroll-screen-up)
-  (define-key evil-normal-state-map (kbd "C-b") 'golden-ratio-scroll-screen-down)
+  (define-key evil-normal-state-map (kbd "C-d") 'golden-ratio-scroll-screen-up)
+  (define-key evil-normal-state-map (kbd "C-u") 'golden-ratio-scroll-screen-down)
 
   (define-key evil-normal-state-map (kbd "C-w") 'hydra-windows/body)
 
@@ -1151,6 +1151,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-normal-state-map (kbd "gt") 'transpose-words)
   (define-key evil-normal-state-map (kbd "gr") 'eriks-region-switch)
   (define-key evil-normal-state-map (kbd "gR") 'eriks-region-switch-abort)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space key ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-prefix-command 'evil-spc)

@@ -61,7 +61,7 @@
    'dracula
    ;; default
    `(cursor ((,class (:background ,fg3))))
-   `(default ((((type nil)) (:background "#000000" :foreground ,fg1))
+   `(default ((((type nil)) (:background ,bg1 :foreground ,fg1))
               (,class (:background ,bg1 :foreground ,fg1))))
    `(default-italic ((,class (:italic t))))
    `(ffap ((,class (:foreground ,fg4))))

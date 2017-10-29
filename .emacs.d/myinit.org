@@ -199,21 +199,6 @@ reflected in the local value.
   (define-key my-keys-map (kbd "M-SPC") 'cycle-spacing)
   (define-key my-keys-map (kbd "<f8>") 'speedbar)
 
-  (defun configure-tabs (width tabs)
-    (interactive "nTab width: \nnAllow tabs? (0/1/-1): ")
-    (setq tab-width      width
-          c-basic-offset width)
-    (cond
-     ((> tabs 0)
-      (setq indent-tabs-mode t))
-     ((< tabs 0)
-      (setq indent-tabs-mode nil))))
-
-  (define-key eriks-map (kbd "T t") 'configure-tabs)
-  (define-key eriks-map (kbd "T U") 'untabify)
-  (define-key eriks-map (kbd "T u") 'tabify)
-  (define-key eriks-map (kbd "T w") 'whitespace-cleanup)
-  (define-key eriks-map (kbd "T e") 'delete-trailing-whitespace)
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -794,6 +779,24 @@ reflected in the local value.
   ;;       (kill-region (region-beginning) (region-end))
   ;;     (kill-new (string (following-char)))))
 #+end_src
+** tabs
+#+begin_src emacs-lisp :tangle yes
+  (defun configure-tabs (width tabs)
+    (interactive "nTab width: \nnAllow tabs? (0/1/-1): ")
+    (setq tab-width      width
+          c-basic-offset width)
+    (cond
+     ((> tabs 0)
+      (setq indent-tabs-mode t))
+     ((< tabs 0)
+      (setq indent-tabs-mode nil))))
+
+  (define-key eriks-map (kbd "T t") 'configure-tabs)
+  (define-key eriks-map (kbd "T U") 'untabify)
+  (define-key eriks-map (kbd "T u") 'tabify)
+  (define-key eriks-map (kbd "T w") 'whitespace-cleanup)
+  (define-key eriks-map (kbd "T e") 'delete-trailing-whitespace)
+#+end_src
 * packages
 ** windmove and framemove
 #+begin_src emacs-lisp :tangle yes
@@ -1207,11 +1210,6 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)
 
-  ;; (evilem-define (kbd "SPC [{") 'evil-backward-section-begin)
-  ;; (evilem-define (kbd "SPC ]{") 'evil-backward-section-end)
-  ;; (evilem-define (kbd "SPC [}") 'evil-forward-section-begin)
-  ;; (evilem-define (kbd "SPC ]}") 'evil-forward-section-end)
-
   (evilem-define (kbd "SPC [^") 'sp-backward-up-sexp)
   (evilem-define (kbd "SPC ]^") 'sp-up-sexp)
   (evilem-define (kbd "SPC []") 'sp-next-sexp)
@@ -1224,10 +1222,15 @@ All default keybindings have been commented out in the source file 'auto-complet
   (evilem-define (kbd "SPC ]\\") 'sp-down-sexp)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-key evil-motion-state-map (kbd "[{") 'evil-backward-section-begin)
-  (define-key evil-motion-state-map (kbd "]{") 'evil-backward-section-end)
-  (define-key evil-motion-state-map (kbd "[}") 'evil-forward-section-begin)
-  (define-key evil-motion-state-map (kbd "]}") 'evil-forward-section-end)
+  (define-key evil-motion-state-map (kbd "[ C-[") 'evil-backward-section-begin)
+  (define-key evil-motion-state-map (kbd "] C-[") 'evil-backward-section-end)
+  (define-key evil-motion-state-map (kbd "[ C-]") 'evil-forward-section-begin)
+  (define-key evil-motion-state-map (kbd "] C-]") 'evil-forward-section-end)
+
+  (evil-remap "[<" "F<")
+  (evil-remap "[>" "F>")
+  (evil-remap "]<" "f<")
+  (evil-remap "]>" "f>")
 
   (define-key evil-motion-state-map (kbd "[^") 'sp-backward-up-sexp)
   (define-key evil-motion-state-map (kbd "]^") 'sp-up-sexp)

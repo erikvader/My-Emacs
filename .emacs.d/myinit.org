@@ -126,9 +126,9 @@ reflected in the local value.
   ;;magit fixar detta redan med ett egen global mode
   ;;(global-auto-revert-mode t)
 
-  (define-key input-decode-map [?\C-i] [C-i])
+  ;;(define-key input-decode-map [?\C-i] [C-i])
   ;;(global-set-key (kbd "<C-i>") 'indent-region)
-  (define-key input-decode-map [?\C-m] [C-m])
+  ;;(define-key input-decode-map [?\C-m] [C-m])
   ;;(global-set-key (kbd "<C-i>") 'indent-region)
 
   (defun replace-char (c)
@@ -201,7 +201,7 @@ reflected in the local value.
   (define-prefix-command 'eriks-map)
   ;;(global-set-key (kbd "C-ö") 'eriks-map)
   (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
-  (define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
+  ;;(define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
 
   (define-key eriks-map (kbd "f r") 'fill-region)
   (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)

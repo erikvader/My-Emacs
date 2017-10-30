@@ -196,9 +196,10 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-x M-e") 'eval-last-sexp-replace)
 
   ;;(add-hook 'after-save-hook 'whitespace-cleanup)
-  (define-key my-keys-map (kbd "M-SPC") 'cycle-spacing)
+  ;;(define-key my-keys-map (kbd "M-SPC") 'cycle-spacing)
   (define-key my-keys-map (kbd "<f8>") 'speedbar)
 
+  (setq browse-url-browser-function 'browse-url-generic browse-url-generic-program "xdg-open")
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -1159,6 +1160,9 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (evil-remap "C-@" "@@")
 
+  (define-key evil-normal-state-map (kbd "ga") 'evil-lion-left)
+  (define-key evil-normal-state-map (kbd "gA") 'evil-lion-right)
+
   (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
   (define-key evil-normal-state-map (kbd "C-d") 'golden-ratio-scroll-screen-up)
   (define-key evil-normal-state-map (kbd "C-u") 'golden-ratio-scroll-screen-down)
@@ -1168,11 +1172,50 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
 
-  (define-key evil-normal-state-map (kbd "gc") 'transpose-chars)
-  (define-key evil-normal-state-map (kbd "gl") 'transpose-lines)
-  (define-key evil-normal-state-map (kbd "gt") 'transpose-words)
-  (define-key evil-normal-state-map (kbd "gr") 'eriks-region-switch)
-  (define-key evil-normal-state-map (kbd "gR") 'eriks-region-switch-abort)
+  (define-key evil-normal-state-map (kbd "gtc") 'transpose-chars)
+  (define-key evil-normal-state-map (kbd "gtl") 'transpose-lines)
+  (define-key evil-normal-state-map (kbd "gtw") 'transpose-words)
+  (define-key evil-normal-state-map (kbd "gtr") 'eriks-region-switch)
+  (define-key evil-normal-state-map (kbd "gtR") 'eriks-region-switch-abort)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; nerd commenter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (require 'evil-nerd-commenter)
+
+  (define-key evil-normal-state-map (kbd "gc") 'evilnc-comment-operator)
+  (define-key evil-normal-state-map (kbd "gC") 'evilnc-copy-and-comment-operator)
+
+  (define-key evil-inner-text-objects-map (kbd "c") 'evilnc-inner-comment)
+  (define-key evil-outer-text-objects-map (kbd "c") 'evilnc-outer-commenter)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; extra operator ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (require 'evil-extra-operator)
+
+  (define-key evil-normal-state-map (kbd "gr") 'evil-operator-eval)
+
+  (evil-define-operator eriks-evil-javadoc-search-operator (beg end type)
+    "Evil operator for javadoc search."
+    :move-point nil
+    (interactive "<R>")
+    (browse-url
+     (concat "http://javadocs.org/"
+             (url-hexify-string
+              (.eeo/make-url-args beg end type)))))
+
+  (define-key evil-normal-state-map (kbd "gsg") 'evil-operator-google-search)
+  (define-key evil-normal-state-map (kbd "gsj") 'eriks-evil-javadoc-search-operator)
+
+  (evil-define-operator eriks-evil-swiper-operator (beg end type)
+    (interactive "<R>")
+    (when (evil-visual-state-p)
+      (evil-exit-visual-state))
+    (swiper (buffer-substring beg end)))
+
+  (define-key evil-normal-state-map (kbd "SPC C-s") 'eriks-evil-swiper-operator)
+  (define-key evil-visual-state-map (kbd "SPC C-s") 'eriks-evil-swiper-operator)
+
+  (define-key evil-normal-state-map (kbd "SPC c") 'evil-operator-clone)
+  (define-key evil-visual-state-map (kbd "SPC c") 'evil-operator-clone)
+
   (require 'evil-textobj-between)
 
   (require 'evil-little-word)
@@ -1192,7 +1235,7 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key evil-spc (kbd "M-+") 'hydra-evil-numbers/body)
 
-  (define-key evil-spc (kbd ";") 'comment-dwim)
+  ;;(define-key evil-spc (kbd ";") 'comment-dwim)
 
   (define-key evil-spc (kbd "u") 'undo-tree-visualize)
   (define-key evil-spc (kbd ".") 'repeat)
@@ -1204,7 +1247,7 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-spc (kbd "ps") 'sp-split-sexp)
   (define-key evil-spc (kbd "pj") 'sp-join-sexp)
 
-  (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
+  ;; (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
 
   (define-key evil-spc (kbd "y") 'browse-kill-ring)
 
@@ -1233,10 +1276,10 @@ All default keybindings have been commented out in the source file 'auto-complet
   (evilem-define (kbd "SPC ]\\") 'sp-down-sexp)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-key evil-motion-state-map (kbd "[ C-[") 'evil-backward-section-begin)
-  (define-key evil-motion-state-map (kbd "] C-[") 'evil-backward-section-end)
-  (define-key evil-motion-state-map (kbd "[ C-]") 'evil-forward-section-begin)
-  (define-key evil-motion-state-map (kbd "] C-]") 'evil-forward-section-end)
+  (define-key evil-motion-state-map (kbd "[m") 'evil-backward-section-begin)
+  (define-key evil-motion-state-map (kbd "[M") 'evil-backward-section-end)
+  (define-key evil-motion-state-map (kbd "]m") 'evil-forward-section-begin)
+  (define-key evil-motion-state-map (kbd "]M") 'evil-forward-section-end)
 
   (evil-remap "[<" "F<" evil-motion-state-map)
   (evil-remap "[>" "F>" evil-motion-state-map)
@@ -1273,8 +1316,25 @@ All default keybindings have been commented out in the source file 'auto-complet
         (evil-end-of-line)
         (evil-range first (point)))))
 
-  (define-key evil-inner-text-objects-map (kbd "l") 'eriks-evil-inside-line-text-object)
-  (define-key evil-outer-text-objects-map (kbd "l") 'eriks-evil-outside-line-text-object)
+  (define-key evil-inner-text-objects-map (kbd "L") 'eriks-evil-inside-line-text-object)
+  (define-key evil-outer-text-objects-map (kbd "L") 'eriks-evil-outside-line-text-object)
+
+  (evil-define-text-object eriks-evil-inside-whitespace-text-object (count &optional beg end type)
+    (save-excursion
+      (eriks-skip-space -1 t)
+      (let ((first (point)))
+        (eriks-skip-space 1 t)
+        (evil-range first (point)))))
+
+  (evil-define-text-object eriks-evil-outside-whitespace-text-object (count &optional beg end type)
+    (save-excursion
+      (eriks-skip-space -1 nil)
+      (let ((first (point)))
+        (eriks-skip-space 1 nil)
+        (evil-range first (point)))))
+
+  (define-key evil-inner-text-objects-map (kbd "SPC") 'eriks-evil-inside-whitespace-text-object)
+  (define-key evil-outer-text-objects-map (kbd "SPC") 'eriks-evil-outside-whitespace-text-object)
 
   (evil-mode 1)
 

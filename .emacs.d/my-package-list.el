@@ -1,70 +1,79 @@
 ;; variable `package-activated-list'
 (setq package-list
       '(ac-emacs-eclim
-        auto-complete
-        popup
-        eclim
-        yasnippet
-        s
-        dash
-        all-the-icons-dired
         all-the-icons
-        memoize
-        font-lock+
+        all-the-icons-dired
+        async
         auctex
+        auto-complete
         autopair
+        avy
         browse-kill-ring
         buffer-move
         charmap
-        counsel-projectile
-        projectile
-        pkg-info
-        epl
+        color-moccur
         counsel
-        swiper
-        ivy
+        counsel-projectile
+        dash
         dashboard
-        page-break-lines
         diminish
         disable-mouse
         dot-mode
-        evil-easymotion
-        avy
-        evil-indent-plus
+        dumb-jump
+        eclim
+        epl
         evil
-        goto-chg
-        undo-tree
+        evil-easymotion
+        evil-extra-operator
+        evil-indent-plus
+        evil-lion
+        evil-nerd-commenter
         evil-numbers
         evil-surround
         expand-region
         f
         flycheck
-        seq
-        let-alist
         fontawesome
+        font-lock+
         framemove
         ggtags
+        git-commit
         golden-ratio-scroll-screen
+        goto-chg
         haskell-mode
         haskell-snippets
+        hungry-delete
         hydra
+        ivy
         latex-preview-pane
+        let-alist
         linum-relative
         magit
         magit-popup
-        async
-        git-commit
-        with-editor
         markdown-mode
+        memoize
+        modalka
         multiple-cursors
+        neotree
         org-bullets
-        outshine
         outorg
+        outshine
         packed
+        page-break-lines
+        pkg-info
+        popup
+        projectile
         rainbow-delimiters
         rainbow-mode
-        smart-mode-line
         rich-minority
+        s
+        seq
+        smart-mode-line
         smartparens
+        swiper
+        tabbar
+        undo-tree
         which-key
-        ))
+        with-editor
+        yasnippet
+        yasnippet))

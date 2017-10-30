@@ -317,7 +317,7 @@ reflected in the local value.
 
   (define-key eriks-map (kbd "d") 'delete-duplicate-lines)
 #+end_src
-** lxor & is-boundary
+** lxor & is-whitespace
 #+begin_src emacs-lisp :tangle yes
   (defun lxor (a b)
     "logical xor"
@@ -329,11 +329,12 @@ reflected in the local value.
     "logical xnor"
     (not (lxor a b)))
 
-  (defun is-boundary (char)
-    "Checks whether char is a space, newline or tab"
+  (defun is-whitespace (char &optional NOTNEWLINE)
+    "Checks whether char is a space, newline or tab.
+  if NOTNEWLINE, then don't count newlines as whitespace."
     (or
      (= char 32) ;;space
-     (= char 10) ;;newline
+     (and (not NOTNEWLINE) (= char 10)) ;;newline
      (= char 9)  ;; tab
      ;;(bolp)
      ;;(eolp)
@@ -368,9 +369,9 @@ reflected in the local value.
   (defun eriks-hungry-delete-whitespace (ARG)
     (interactive "p")
     (if (< ARG 0)
-        (while (is-boundary (preceding-char))
+        (while (is-whitespace (preceding-char))
           (delete-backward-char 1))
-      (while (is-boundary (following-char))
+      (while (is-whitespace (following-char))
         (delete-char 1))))
 
   (defun eriks-hungry-delete-whitespace-backward (ARG)
@@ -438,18 +439,19 @@ reflected in the local value.
     (if (call-interactively 'eriks-find-char-backward)
         (forward-char)))
 
-  (defun eriks-skip-space (ARG)
-    "Move point forward or backward until it doesnt encounter whitespace anymore."
+  (defun eriks-skip-space (ARG &optional SAMELINE)
+    "Move point forward or backward until it doesnt encounter whitespace anymore.
+  if SAMELINE then don't move the cursor between lines."
     (interactive "p")
     (if (< ARG 0)
-        (while (is-boundary (preceding-char))
+        (while (is-whitespace (preceding-char) SAMELINE)
           (left-char))
-      (while (is-boundary (following-char))
+      (while (is-whitespace (following-char) SAMELINE)
         (right-char))))
 
-  (defun eriks-skip-space-backwards ()
+  (defun eriks-skip-space-backwards (&optional SAMELINE)
     (interactive)
-    (eriks-skip-space -1))
+    (eriks-skip-space -1 SAMELINE))
 
   (defun eriks-kill-paragraph ()
     "Kills the current paragraph point is in."

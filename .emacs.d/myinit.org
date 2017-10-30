@@ -1125,7 +1125,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (setq evil-emacs-state-modes
         (append
          evil-emacs-state-modes
-         evil-motion-state-modes))
+         evil-motion-state-modes
+         '(moccur-grep-mode)))
   (setq evil-motion-state-modes nil)
 
   (setq evil-emacs-state-cursor 'bar)
@@ -1172,6 +1173,14 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-normal-state-map (kbd "gt") 'transpose-words)
   (define-key evil-normal-state-map (kbd "gr") 'eriks-region-switch)
   (define-key evil-normal-state-map (kbd "gR") 'eriks-region-switch-abort)
+  (require 'evil-textobj-between)
+
+  (require 'evil-little-word)
+  (define-key evil-motion-state-map (kbd "gle") 'evil-forward-little-word-end)
+
+  (setq evil-operator-moccur-grep-find-key "gsm")
+  (require 'evil-operator-moccur)
+  (global-evil-operator-moccur-mode 1)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)

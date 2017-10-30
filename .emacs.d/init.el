@@ -21,6 +21,7 @@
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'load-path "~/.emacs.d/themes/")
+(add-to-list 'load-path "~/.emacs.d/evil-plugins")
 
 ;;(add-to-list 'load-path "~/.emacs.d/non_elpa/i3-emacs")
 

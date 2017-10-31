@@ -1210,11 +1210,11 @@ All default keybindings have been commented out in the source file 'auto-complet
       (evil-exit-visual-state))
     (swiper (buffer-substring beg end)))
 
-  (define-key evil-normal-state-map (kbd "SPC C-s") 'eriks-evil-swiper-operator)
-  (define-key evil-visual-state-map (kbd "SPC C-s") 'eriks-evil-swiper-operator)
+  (define-key evil-normal-state-map (kbd "gss") 'eriks-evil-swiper-operator)
+  (define-key evil-visual-state-map (kbd "gss") 'eriks-evil-swiper-operator)
 
-  (define-key evil-normal-state-map (kbd "SPC c") 'evil-operator-clone)
-  (define-key evil-visual-state-map (kbd "SPC c") 'evil-operator-clone)
+  (define-key evil-normal-state-map (kbd "gp") 'evil-operator-clone)
+  (define-key evil-visual-state-map (kbd "gp") 'evil-operator-clone)
 
   (require 'evil-textobj-between)
 
@@ -1296,6 +1296,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (define-key evil-motion-state-map (kbd "]'") 'sp-end-of-sexp)
   (define-key evil-motion-state-map (kbd "[\\") 'sp-backward-down-sexp)
   (define-key evil-motion-state-map (kbd "]\\") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "[d") 'beginning-of-defun)
+  (define-key evil-motion-state-map (kbd "]d") 'end-of-defun)
 
   (define-key evil-motion-state-map (kbd "[ SPC") 'eriks-skip-space-backwards)
   (define-key evil-motion-state-map (kbd "] SPC") 'eriks-skip-space)
@@ -1335,6 +1337,15 @@ All default keybindings have been commented out in the source file 'auto-complet
 
   (define-key evil-inner-text-objects-map (kbd "SPC") 'eriks-evil-inside-whitespace-text-object)
   (define-key evil-outer-text-objects-map (kbd "SPC") 'eriks-evil-outside-whitespace-text-object)
+
+  (evil-define-text-object eriks-evil-inside-defun-text-object (count &optional beg end type)
+    (save-excursion
+      (beginning-of-defun)
+      (let ((first (point)))
+        (end-of-defun)
+        (evil-range first (point)))))
+
+  (define-key evil-inner-text-objects-map (kbd "d") 'eriks-evil-inside-defun-text-object)
 
   (evil-mode 1)
 

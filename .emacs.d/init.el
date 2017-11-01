@@ -52,6 +52,13 @@
  '(c-basic-offset 3)
  '(c-hanging-braces-alist (quote set-from-style))
  '(column-number-mode t)
+ '(company-begin-commands nil)
+ '(company-frontends
+   (quote
+    (company-pseudo-tooltip-frontend company-echo-metadata-frontend)))
+ '(company-idle-delay nil)
+ '(company-lighter-base "")
+ '(company-show-numbers t)
  '(create-lockfiles nil)
  '(cua-enable-cua-keys nil)
  '(cua-remap-control-z t)

@@ -830,53 +830,21 @@ reflected in the local value.
   ;;(define-key yas-minor-mode-map (kbd "TAB") nil)
 
 #+end_src
-** Auto-complete
-All default keybindings have been commented out in the source file 'auto-complete.el'
-
+** company
 #+begin_src emacs-lisp :tangle yes
-  (global-auto-complete-mode 1)
-  (ac-config-default)
+  (global-company-mode t)
 
-  (setq ac-dwim nil)
+  (defun eriks-company-command (ARG)
+    (interactive "p")
+    (cond
+     ((= ARG 2)
+      (call-interactively 'company-yasnippet))
+     (t
+      (call-interactively 'company-complete))))
 
-  (add-hook 'auto-complete-mode-hook
-            (lambda ()
-              ;;(define-key ac-completing-map (kbd "up") nil)
-              ;;(define-key ac-completing-map (kbd "down") nil)
-              ;;(define-key ac-completing-map (kbd "TAB") 'ac-next)
-              ;; (define-key ac-completing-map (kbd "<tab>") 'ac-expand)
-              ;; (define-key ac-completing-map (kbd "<backtab>") 'ac-expand-previous)
-              (define-key ac-completing-map (kbd "<tab>") 'ac-complete)
-              ;;(define-key ac-menu-map (kbd "C-o") 'ac-complete)
-              (define-key ac-completing-map (kbd "RET") 'ac-stop)
-              (define-key ac-completing-map (kbd "C-n") 'ac-next)
-              (define-key ac-completing-map (kbd "C-p") 'ac-previous)
-              (define-key ac-completing-map (kbd "C-s") 'ac-isearch)
-              ))
+  (define-key my-keys-map (kbd "C-SPC") 'eriks-company-command)
 
-  ;;adds yasnippet snippets to menu
-  ;; (eval-after-load "auto-complete"
-  ;;   '(add 'ac-sources 'ac-source-yasnippet))
-  (eval-after-load "auto-complete"
-    (lambda ()
-      (add-to-list 'ac-sources 'ac-source-yasnippet)))
-
-  (define-key my-keys-map (kbd "C-SPC") 'auto-complete)
-
-  ;;makes a key bring up the popup menu again if auto-complete is enabled
-  ;;otherwise, try to expand with yas
-  ;;(define-key ac-mode-map)
-  ;; (define-key my-keys-map (kbd "S-SPC")
-  ;;       (lambda ()
-  ;;         (interactive)
-  ;;         (if (bound-and-true-p auto-complete-mode)
-  ;;             (progn
-  ;;               (ac-trigger-key-command 1)
-  ;;               (message "auto-complete"))
-  ;;           (progn
-  ;;             (yas-expand)
-  ;;             (message "yasnippet")))))
-
+  (define-key company-active-map (kbd "<escape>") 'company-abort)
 
 #+end_src
 ** undo-tree
@@ -1157,6 +1125,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; normal mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;(define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
   ;;(define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
+
+  (define-key evil-normal-state-map (kbd "C-j") 'move-text-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'move-text-up)
 
   (evil-remap "C-@" "@@")
 
@@ -1474,9 +1445,9 @@ All default keybindings have been commented out in the source file 'auto-complet
   (defun eclim-java-start ()
     (interactive)
     (eclim-mode t)
-    (require 'ac-emacs-eclim)
+    ;; (require 'ac-emacs-eclim)
     ;;(ac-emacs-eclim-config)
-    (ac-emacs-eclim-java-setup)
+    ;; (ac-emacs-eclim-java-setup)
     )
 
   (defun start-eclim-if-inside-eclipse-workspace ()
@@ -1832,7 +1803,8 @@ All default keybindings have been commented out in the source file 'auto-complet
   (diminish 'which-key-mode)
   (diminish 'ivy-mode)
   (diminish 'undo-tree-mode)
-  (diminish 'auto-complete-mode)
+  ;; (diminish 'auto-complete-mode)
+  (diminish 'company-mode)
   (diminish 'yas-minor-mode)
   (diminish 'global-disable-mouse-mode)
   (add-hook 'auto-revert-mode-hook

@@ -1,11 +1,9 @@
 ;; variable `package-activated-list'
 (setq package-list
-      '(ac-emacs-eclim
-        all-the-icons
+      '(all-the-icons
         all-the-icons-dired
         async
         auctex
-        auto-complete
         autopair
         avy
         browse-kill-ring

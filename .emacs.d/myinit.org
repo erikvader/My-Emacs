@@ -209,6 +209,8 @@ reflected in the local value.
   (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
   ;;(define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
 
+  (define-key eriks-map (kbd "e") 'eclim-project-mode)
+
   (define-key eriks-map (kbd "f r") 'fill-region)
   (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
   (define-key eriks-map (kbd "f f") 'fill-paragraph)
@@ -1100,9 +1102,6 @@ reflected in the local value.
 
   (setq evil-emacs-state-cursor 'bar)
 
-  (require 'evil-surround)
-  (global-evil-surround-mode 1)
-
   (evil-indent-plus-default-bindings) ;;ii iI ai aI iJ aJ
 
   (define-key evil-emacs-state-map [escape] 'evil-normal-state)
@@ -1128,6 +1127,8 @@ reflected in the local value.
 
   (define-key evil-normal-state-map (kbd "C-j") 'move-text-down)
   (define-key evil-normal-state-map (kbd "C-k") 'move-text-up)
+  (define-key evil-visual-state-map (kbd "C-j") (concat ":m '>+1" (kbd "RET") "gv=gv"))
+  (define-key evil-visual-state-map (kbd "C-k") (concat ":m '<-2" (kbd "RET") "gv=gv"))
 
   (evil-remap "C-@" "@@")
 
@@ -1163,6 +1164,23 @@ reflected in the local value.
 
   (define-key evil-normal-state-map (kbd "gr") 'evil-operator-eval)
 
+  (defun search-online (website search)
+    (interactive "sWebsite: \nsQuery: ")
+    (browse-url
+     (concat website (url-hexify-string search))))
+
+  (defun search-online-google (search)
+    (interactive "sSearch: ")
+    (search-online "http://google.com/search?q=" search))
+
+  (define-key evil-normal-state-map (kbd "SPC s g") 'search-online-google)
+
+  (defun search-online-javadoc (search)
+    (interactive "sSearch: ")
+    (search-online "http://javadocs.org/" search))
+
+  (define-key evil-normal-state-map (kbd "SPC s j") 'search-online-javadoc)
+
   (evil-define-operator eriks-evil-javadoc-search-operator (beg end type)
     "Evil operator for javadoc search."
     :move-point nil
@@ -1172,8 +1190,8 @@ reflected in the local value.
              (url-hexify-string
               (.eeo/make-url-args beg end type)))))
 
-  (define-key evil-normal-state-map (kbd "gsg") 'evil-operator-google-search)
-  (define-key evil-normal-state-map (kbd "gsj") 'eriks-evil-javadoc-search-operator)
+  (define-key evil-normal-state-map (kbd "gSg") 'evil-operator-google-search)
+  (define-key evil-normal-state-map (kbd "gSj") 'eriks-evil-javadoc-search-operator)
 
   (evil-define-operator eriks-evil-swiper-operator (beg end type)
     (interactive "<R>")
@@ -1181,8 +1199,8 @@ reflected in the local value.
       (evil-exit-visual-state))
     (swiper (buffer-substring beg end)))
 
-  (define-key evil-normal-state-map (kbd "gss") 'eriks-evil-swiper-operator)
-  (define-key evil-visual-state-map (kbd "gss") 'eriks-evil-swiper-operator)
+  (define-key evil-normal-state-map (kbd "gSs") 'eriks-evil-swiper-operator)
+  (define-key evil-visual-state-map (kbd "gSs") 'eriks-evil-swiper-operator)
 
   (define-key evil-normal-state-map (kbd "gp") 'evil-operator-clone)
   (define-key evil-visual-state-map (kbd "gp") 'evil-operator-clone)
@@ -1192,45 +1210,61 @@ reflected in the local value.
   (require 'evil-little-word)
   (define-key evil-motion-state-map (kbd "gle") 'evil-forward-little-word-end)
 
-  (setq evil-operator-moccur-grep-find-key "gsm")
+  (setq evil-operator-moccur-grep-find-key "gSm")
   (require 'evil-operator-moccur)
   (global-evil-operator-moccur-mode 1)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; evil surround ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (require 'evil-surround)
+  (global-evil-surround-mode 1)
+
+  (define-key evil-visual-state-map (kbd "s") 'evil-surround-region)
+  (define-key evil-normal-state-map (kbd "gs") 'evil-surround-edit)
+
+  (defun erik-evil-surround-text ()
+    (let ((text (read-from-minibuffer "" "")))
+      (cons text text)))
+
+  (setq-default evil-surround-pairs-alist (cons '(?s . erik-evil-surround-text) evil-surround-pairs-alist))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space key ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-prefix-command 'evil-spc)
-  (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
+  ;; (define-prefix-command 'evil-spc)
+  ;; (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
   ;;(define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
 
-  (define-key evil-spc (kbd "M-+") 'hydra-evil-numbers/body)
+  (define-key evil-normal-state-map (kbd "SPC M-+") 'hydra-evil-numbers/body)
 
   ;;(define-key evil-spc (kbd ";") 'comment-dwim)
 
-  (define-key evil-spc (kbd "u") 'undo-tree-visualize)
-  (define-key evil-spc (kbd ".") 'repeat)
+  (define-key evil-normal-state-map (kbd "SPC u") 'undo-tree-visualize)
+  (define-key evil-normal-state-map (kbd "SPC .") 'repeat)
 
-  (define-key evil-spc (kbd "p]") 'sp-forward-slurp-sexp)
-  (define-key evil-spc (kbd "p[") 'sp-backward-slurp-sexp)
-  (define-key evil-spc (kbd "p}") 'sp-forward-barf-sexp)
-  (define-key evil-spc (kbd "p{") 'sp-backward-barf-sexp)
-  (define-key evil-spc (kbd "ps") 'sp-split-sexp)
-  (define-key evil-spc (kbd "pj") 'sp-join-sexp)
+  (define-key evil-normal-state-map (kbd "SPC p]") 'sp-forward-slurp-sexp)
+  (define-key evil-normal-state-map (kbd "SPC p[") 'sp-backward-slurp-sexp)
+  (define-key evil-normal-state-map (kbd "SPC p}") 'sp-forward-barf-sexp)
+  (define-key evil-normal-state-map (kbd "SPC p{") 'sp-backward-barf-sexp)
+  (define-key evil-normal-state-map (kbd "SPC ps") 'sp-split-sexp)
+  (define-key evil-normal-state-map (kbd "SPC pj") 'sp-join-sexp)
 
   ;; (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
 
-  (define-key evil-spc (kbd "y") 'browse-kill-ring)
+  (define-key evil-normal-state-map (kbd "SPC y") 'browse-kill-ring)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; insert motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-insert-state-map (kbd "C-^") 'sp-up-sexp)
+  (define-key evil-insert-state-map (kbd "C-e") 'end-of-line)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'evil-easymotion)
   (evilem-default-keybindings "SPC")
 
-  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char-in-line)
+  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char)
   (evil-declare-not-repeat 'avy-goto-char-in-line)
+
+  (define-key evil-motion-state-map (kbd ",") 'avy-goto-char-in-line)
 
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)
@@ -1365,6 +1399,7 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   (add-hook 'prog-mode-hook
             (lambda ()
+              (evil-set-initial-state major-mode 'normal)
               (make-local-variable 'newline-without-break-tab)
               (setq newline-without-break-tab t)
               ;;(autopair-mode 1)
@@ -1419,15 +1454,18 @@ reflected in the local value.
 *** java
 #+begin_src emacs-lisp :tangle yes
   (require 'eclim)
-  (setq eclimd-autostart nil)
+  (setq eclimd-autostart t)
+
+  (require 'company-emacs-eclim)
+  (company-emacs-eclim-setup)
 
   (custom-set-variables
    '(eclim-eclipse-dirs '("~/bin/eclipse-neon"))
    '(eclim-executable "~/bin/eclipse-neon/eclim"))
 
-  ;;(setq help-at-pt-display-when-idle t)
-  ;;(setq help-at-pt-timer-delay 0.1)
-  ;;(help-at-pt-set-timer)
+  (setq help-at-pt-display-when-idle t)
+  (setq help-at-pt-timer-delay 0.1)
+  (help-at-pt-set-timer)
 
   (add-hook 'eclim-mode-hook
             (lambda ()
@@ -1440,20 +1478,21 @@ reflected in the local value.
 
   (add-hook 'java-mode-hook
             (lambda ()
-              (start-eclim-if-inside-eclipse-workspace)))
+              (eclim-mode 1)
+              (evil-define-key 'normal eclim-mode-map (kbd "C-]") 'eclim-java-find-declaration)))
 
-  (defun eclim-java-start ()
-    (interactive)
-    (eclim-mode t)
-    ;; (require 'ac-emacs-eclim)
-    ;;(ac-emacs-eclim-config)
-    ;; (ac-emacs-eclim-java-setup)
-    )
+  ;; (defun eclim-java-start ()
+  ;;   (interactive)
+  ;;   (eclim-mode t)
+  ;;   ;; (require 'ac-emacs-eclim)
+  ;;   ;;(ac-emacs-eclim-config)
+  ;;   ;; (ac-emacs-eclim-java-setup)
+  ;;   )
 
-  (defun start-eclim-if-inside-eclipse-workspace ()
-    (if (null (search "workspace" (buffer-file-name)))
-        ()
-      (eclim-java-start)))
+  ;; (defun start-eclim-if-inside-eclipse-workspace ()
+  ;;   (if (null (search "workspace" (buffer-file-name)))
+  ;;       ()
+  ;;     (eclim-java-start)))
 
 
 #+end_src

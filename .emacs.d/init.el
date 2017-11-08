@@ -52,6 +52,11 @@
  '(c-basic-offset 3)
  '(c-hanging-braces-alist (quote set-from-style))
  '(column-number-mode t)
+ '(company-backends
+   (quote
+    (company-emacs-eclim company-bbdb company-css company-semantic company-xcode company-cmake company-capf company-files
+                         (company-dabbrev-code company-gtags company-etags company-keywords)
+                         company-oddmuse company-dabbrev)))
  '(company-begin-commands nil)
  '(company-frontends
    (quote
@@ -73,6 +78,7 @@
  '(eclim-eclipse-dirs (quote ("~/bin/eclipse-neon")))
  '(eclim-executable "~/bin/eclipse-neon/eclim")
  '(evil-cross-lines t)
+ '(evil-default-state (quote emacs))
  '(evil-move-beyond-eol t)
  '(evil-move-cursor-back nil)
  '(evil-repeat-move-cursor nil)

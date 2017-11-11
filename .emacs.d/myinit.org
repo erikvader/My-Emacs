@@ -1240,14 +1240,61 @@ reflected in the local value.
   (define-key evil-visual-state-map (kbd "s") 'evil-surround-region)
   (define-key evil-normal-state-map (kbd "gs") 'evil-surround-edit)
 
+  ;; (evil-declare-repeat 'evil-surround-region)
+
   (defun erik-evil-surround-text ()
     (let ((text (read-from-minibuffer "" "")))
       (cons text text)))
 
   (setq-default evil-surround-pairs-alist (cons '(?s . erik-evil-surround-text) evil-surround-pairs-alist))
 
+  (defun erik-evil-surround-latex-cmd ()
+    (let ((text (read-from-minibuffer "" "")))
+      (cons (concat "\\" text "{") "}")))
+
+  (setq-default evil-surround-pairs-alist (cons '(?l . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
+
+  ;; (evil-remap "g C-n" "\\rN1%d" evil-visual-state-map)
+
+  (defun eriks-evil-visual-block-insert (start padding format)
+    (save-excursion
+      (evil-emacs-state nil)
+      (rectangle-number-lines
+       (region-beginning)
+       (region-end)
+       start
+       (format format
+               (cond
+                ((= padding 0)
+                 "")
+                (t
+                 (number-to-string (- 0 padding))))))
+      (evil-normal-state)))
+
+  (defun eriks-evil-visual-block-insert-numbers-zero (padding)
+    (interactive "p")
+    (eriks-evil-visual-block-insert 1 padding "%%0%sd"))
+
+  (defun eriks-evil-visual-block-insert-numbers (padding)
+    (interactive "p")
+    (eriks-evil-visual-block-insert 1 padding "%%%sd"))
+
+  (defun eriks-evil-visual-block-insert-letters (padding)
+    (interactive "p")
+    (eriks-evil-visual-block-insert 97 padding "%%%sc"))
+
+  (defun eriks-evil-visual-block-insert-alt ()
+    (interactive)
+    (setq current-prefix-arg '(4))
+    (call-interactively 'rectangle-number-lines))
+
+  (define-key evil-visual-state-map (kbd "SPC i n") 'eriks-evil-visual-block-insert-numbers)
+  (define-key evil-visual-state-map (kbd "SPC i N") 'eriks-evil-visual-block-insert-numbers-zero)
+  (define-key evil-visual-state-map (kbd "SPC i l") 'eriks-evil-visual-block-insert-letters)
+  (define-key evil-visual-state-map (kbd "SPC i i") 'eriks-evil-visual-block-insert-alt)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space key ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; (define-prefix-command 'evil-spc)

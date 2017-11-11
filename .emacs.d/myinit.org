@@ -16,6 +16,14 @@
          :weight bold
          ))
     "Face to highlight FIXME and TODO")
+
+  (defun add-todo-font-lock ()
+    (interactive)
+    (font-lock-add-keywords nil
+                            '(("\\<\\(FIXME\\):" 1 'eriks-fix-later-face t)
+                              ("\\<\\(TODO\\):" 1 'eriks-fix-later-face t))))
+
+
 #+end_src
 * Eriks keys minor mode
 [[https://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs/5340797][Source from stackoverflow]]
@@ -200,6 +208,8 @@ reflected in the local value.
   (define-key my-keys-map (kbd "<f8>") 'speedbar)
 
   (setq browse-url-browser-function 'browse-url-generic browse-url-generic-program "xdg-open")
+
+
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -1082,10 +1092,11 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   (eval-after-load
       "latex"
-    (add-hook 'LateX-mode-hook
+    (add-hook 'LaTeX-mode-hook
               (lambda ()
                 (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
-                (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end))))
+                (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end)
+                (run-hooks 'prog-mode-hook))))
 
 
 #+end_src
@@ -1408,9 +1419,7 @@ reflected in the local value.
               (setq show-trailing-whitespace t)
               (rainbow-delimiters-mode t)
               ;;(toggle-modalka 1)
-              (font-lock-add-keywords nil
-                                      '(("\\<\\(FIXME\\):" 1 'eriks-fix-later-face t)
-                                        ("\\<\\(TODO\\):" 1 'eriks-fix-later-face t)))))
+              (add-todo-font-lock)))
 #+end_src
 ** C-like modes
 *** common

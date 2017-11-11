@@ -114,6 +114,7 @@
      (quote local-map)
      mode-line-minor-mode-keymap)))
  '(rm-whitelist nil)
+ '(sentence-end-double-space nil)
  '(setq global-linum-mode t)
  '(show-paren-mode t)
  '(show-trailing-whitespace nil)

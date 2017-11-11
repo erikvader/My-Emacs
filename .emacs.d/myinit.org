@@ -329,6 +329,14 @@ reflected in the local value.
   (define-key eriks-map (kbd "C-r") 'eriks-buffer-text-to-raw)
 
   (define-key eriks-map (kbd "d") 'delete-duplicate-lines)
+
+  ;; Set transparency of emacs
+  (defun transparency (value)
+    "Sets the transparency of the frame window. 0=transparent/100=opaque"
+    (interactive "nTransparency Value 0 - 100 opaque:")
+    (set-frame-parameter (selected-frame) 'alpha value))
+
+  (define-key eriks-map (kbd "C-t") 'transparency)
 #+end_src
 ** lxor & is-whitespace
 #+begin_src emacs-lisp :tangle yes

@@ -318,6 +318,7 @@
     (condition-case err
         (progn
           (transpose-words arg)
+          (when (< arg 0) (backward-word))
           (backward-char offset))
       (error
        (message

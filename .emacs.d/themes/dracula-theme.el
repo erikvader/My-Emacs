@@ -75,8 +75,8 @@
    `(link ((,class (:foreground ,const :underline t))))
    `(linum ((,class (:slant italic :foreground ,bg4 :background ,bg1))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,keyword))))
-   `(region ((,class (:background ,erik-region :foreground ,bg1))))
-   `(show-paren-match-face ((,class (:background ,erik-paren-match :foreground, darkest-black))))
+   `(region ((,class (:inverse-video t)))) ;;:background ,erik-region :foreground ,bg1
+   `(show-paren-match-face ((,class (:inverse-video t)))) ;;:background ,erik-paren-match :foreground, darkest-black
    `(trailing-whitespace ((,class :foreground nil :background ,erik-trailing)))
    `(vertical-border ((,class (:foreground ,bg2))))
    `(warning ((,class (:foreground ,warning))))

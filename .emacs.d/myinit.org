@@ -1148,6 +1148,10 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "M-j") 'drag-stuff-down)
   (define-key evil-normal-state-map (kbd "M-h") 'drag-stuff-left)
   (define-key evil-normal-state-map (kbd "M-l") 'drag-stuff-right)
+  (define-key evil-visual-state-map (kbd "M-k") 'drag-stuff-up)
+  (define-key evil-visual-state-map (kbd "M-j") 'drag-stuff-down)
+  (define-key evil-visual-state-map (kbd "M-h") 'drag-stuff-left)
+  (define-key evil-visual-state-map (kbd "M-l") 'drag-stuff-right)
   ;; (define-key evil-normal-state-map (kbd "C-k") 'move-text-up)
   ;; (define-key evil-normal-state-map (kbd "C-j") 'move-text-down)
   ;; (define-key evil-visual-state-map (kbd "C-j") (concat ":m '>+1" (kbd "RET") "gv=gv"))
@@ -1349,16 +1353,22 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)
 
-  (evilem-define (kbd "SPC [^") 'sp-backward-up-sexp)
-  (evilem-define (kbd "SPC ]^") 'sp-up-sexp)
-  (evilem-define (kbd "SPC []") 'sp-next-sexp)
+  (evilem-define (kbd "SPC ][") 'sp-next-sexp)
   (evilem-define (kbd "SPC ]]") 'sp-forward-sexp)
   (evilem-define (kbd "SPC [[") 'sp-backward-sexp)
-  (evilem-define (kbd "SPC ][") 'sp-previous-sexp)
-  (evilem-define (kbd "SPC ['") 'sp-beginning-of-sexp)
-  (evilem-define (kbd "SPC ]'") 'sp-end-of-sexp)
-  (evilem-define (kbd "SPC [\\") 'sp-backward-down-sexp)
-  (evilem-define (kbd "SPC ]\\") 'sp-down-sexp)
+  (evilem-define (kbd "SPC []") 'sp-previous-sexp)
+
+  (evilem-define (kbd "SPC {") 'sp-backward-up-sexp)
+  (evilem-define (kbd "SPC }") 'sp-up-sexp)
+  (evilem-define (kbd "SPC C-{") 'sp-backward-down-sexp)
+  (evilem-define (kbd "SPC C-}") 'sp-down-sexp)
+  (evilem-define (kbd "SPC (") 'sp-beginning-of-sexp)
+  (evilem-define (kbd "SPC )") 'sp-end-of-sexp)
+
+  (evilem-define (kbd "SPC ]s") 'forward-sentence)
+  (evilem-define (kbd "SPC [s") 'backward-sentence)
+  (evilem-define (kbd "SPC ]p") 'forward-paragraph)
+  (evilem-define (kbd "SPC [p") 'backward-paragraph)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-motion-state-map (kbd "[m") 'evil-backward-section-begin)
@@ -1371,22 +1381,28 @@ reflected in the local value.
   (evil-remap "]<" "f<" evil-motion-state-map)
   (evil-remap "]>" "f>" evil-motion-state-map)
 
-  (define-key evil-motion-state-map (kbd "[^") 'sp-backward-up-sexp)
-  (define-key evil-motion-state-map (kbd "]^") 'sp-up-sexp)
-  (define-key evil-motion-state-map (kbd "[]") 'sp-next-sexp)
+  (define-key evil-motion-state-map (kbd "]s") 'forward-sentence)
+  (define-key evil-motion-state-map (kbd "[s") 'backward-sentence)
+  (define-key evil-motion-state-map (kbd "]p") 'forward-paragraph)
+  (define-key evil-motion-state-map (kbd "[p") 'backward-paragraph)
+
+  (define-key evil-motion-state-map (kbd "][") 'sp-next-sexp)
   (define-key evil-motion-state-map (kbd "]]") 'sp-forward-sexp)
   (define-key evil-motion-state-map (kbd "[[") 'sp-backward-sexp)
-  (define-key evil-motion-state-map (kbd "][") 'sp-previous-sexp)
-  (define-key evil-motion-state-map (kbd "['") 'sp-beginning-of-sexp)
-  (define-key evil-motion-state-map (kbd "]'") 'sp-end-of-sexp)
-  (define-key evil-motion-state-map (kbd "[\\") 'sp-backward-down-sexp)
-  (define-key evil-motion-state-map (kbd "]\\") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "[]") 'sp-previous-sexp)
+
   (define-key evil-motion-state-map (kbd "[d") 'beginning-of-defun)
   (define-key evil-motion-state-map (kbd "]d") 'end-of-defun)
 
   (define-key evil-motion-state-map (kbd "[ SPC") 'eriks-skip-space-backwards)
   (define-key evil-motion-state-map (kbd "] SPC") 'eriks-skip-space)
 
+  (define-key evil-motion-state-map (kbd "{") 'sp-backward-up-sexp)
+  (define-key evil-motion-state-map (kbd "}") 'sp-up-sexp)
+  (define-key evil-motion-state-map (kbd "C-{") 'sp-backward-down-sexp)
+  (define-key evil-motion-state-map (kbd "C-}") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "(") 'sp-beginning-of-sexp)
+  (define-key evil-motion-state-map (kbd ")") 'sp-end-of-sexp)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (evil-define-text-object eriks-evil-inside-line-text-object (count &optional beg end type)

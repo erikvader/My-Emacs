@@ -1196,13 +1196,13 @@ reflected in the local value.
     (interactive "sSearch: ")
     (search-online "http://google.com/search?q=" search))
 
-  (define-key evil-normal-state-map (kbd "SPC s g") 'search-online-google)
+  (define-key evil-normal-state-map (kbd "SPC s G") 'search-online-google)
 
   (defun search-online-javadoc (search)
     (interactive "sSearch: ")
     (search-online "http://javadocs.org/" search))
 
-  (define-key evil-normal-state-map (kbd "SPC s j") 'search-online-javadoc)
+  (define-key evil-normal-state-map (kbd "SPC s J") 'search-online-javadoc)
 
   (evil-define-operator eriks-evil-javadoc-search-operator (beg end type)
     "Evil operator for javadoc search."
@@ -1213,8 +1213,10 @@ reflected in the local value.
              (url-hexify-string
               (.eeo/make-url-args beg end type)))))
 
-  (define-key evil-normal-state-map (kbd "gSg") 'evil-operator-google-search)
-  (define-key evil-normal-state-map (kbd "gSj") 'eriks-evil-javadoc-search-operator)
+  (define-key evil-normal-state-map (kbd "SPC s g") 'evil-operator-google-search)
+  (define-key evil-normal-state-map (kbd "SPC s j") 'eriks-evil-javadoc-search-operator)
+  (define-key evil-visual-state-map (kbd "SPC s g") 'evil-operator-google-search)
+  (define-key evil-visual-state-map (kbd "SPC s j") 'eriks-evil-javadoc-search-operator)
 
   (evil-define-operator eriks-evil-swiper-operator (beg end type)
     (interactive "<R>")
@@ -1222,8 +1224,10 @@ reflected in the local value.
       (evil-exit-visual-state))
     (swiper (buffer-substring beg end)))
 
-  (define-key evil-normal-state-map (kbd "gSs") 'eriks-evil-swiper-operator)
-  (define-key evil-visual-state-map (kbd "gSs") 'eriks-evil-swiper-operator)
+  (define-key evil-normal-state-map (kbd "SPC s s") 'eriks-evil-swiper-operator)
+  (define-key evil-visual-state-map (kbd "SPC s s") 'eriks-evil-swiper-operator)
+
+  (define-key evil-normal-state-map (kbd "SPC s S") 'swiper)
 
   (define-key evil-normal-state-map (kbd "gp") 'evil-operator-clone)
   (define-key evil-visual-state-map (kbd "gp") 'evil-operator-clone)
@@ -1233,7 +1237,11 @@ reflected in the local value.
   (require 'evil-little-word)
   (define-key evil-motion-state-map (kbd "gle") 'evil-forward-little-word-end)
 
-  (setq evil-operator-moccur-grep-find-key "gSm")
+  (define-key evil-normal-state-map (kbd "SPC s M") 'dmoccur)
+  (define-key evil-normal-state-map (kbd "SPC s N") 'moccur)
+  (define-key evil-normal-state-map (kbd "SPC s O") 'occur-by-moccur)
+
+  (setq evil-operator-moccur-grep-find-key (kbd "SPC s m"))
   (require 'evil-operator-moccur)
   (global-evil-operator-moccur-mode 1)
 
@@ -1241,8 +1249,10 @@ reflected in the local value.
   (require 'evil-surround)
   (global-evil-surround-mode 1)
 
-  (define-key evil-visual-state-map (kbd "s") 'evil-surround-region)
+  (define-key evil-visual-state-map (kbd "gs") 'evil-surround-region)
   (define-key evil-normal-state-map (kbd "gs") 'evil-surround-edit)
+  (define-key evil-visual-state-map (kbd "gS") 'evil-Surround-region)
+  (define-key evil-normal-state-map (kbd "gS") 'evil-Surround-edit)
 
   ;; (evil-declare-repeat 'evil-surround-region)
 
@@ -1331,10 +1341,10 @@ reflected in the local value.
   (require 'evil-easymotion)
   (evilem-default-keybindings "SPC")
 
-  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char)
+  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char-in-line)
   (evil-declare-not-repeat 'avy-goto-char-in-line)
 
-  (define-key evil-motion-state-map (kbd ",") 'avy-goto-char-in-line)
+  (define-key evil-motion-state-map (kbd "SPC G") 'avy-goto-char)
 
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)

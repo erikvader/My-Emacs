@@ -1162,7 +1162,7 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "ga") 'evil-lion-left)
   (define-key evil-normal-state-map (kbd "gA") 'evil-lion-right)
 
-  (define-key evil-normal-state-map (kbd "U") 'undo-tree-redo)
+  (define-key evil-normal-state-map (kbd "U")   'undo-tree-redo)
   (define-key evil-normal-state-map (kbd "C-d") 'golden-ratio-scroll-screen-up)
   (define-key evil-normal-state-map (kbd "C-u") 'golden-ratio-scroll-screen-down)
 
@@ -1403,6 +1403,52 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd "C-}") 'sp-down-sexp)
   (define-key evil-motion-state-map (kbd "(") 'sp-beginning-of-sexp)
   (define-key evil-motion-state-map (kbd ")") 'sp-end-of-sexp)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; multiple cursors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defvar evil-mc-key-map
+    (let ((map (make-sparse-keymap))
+          (keys '(("gmm" . evil-mc-make-all-cursors)
+                  ("gmu" . evil-mc-undo-all-cursors)
+                  ("gms" . evil-mc-pause-cursors)
+                  ("gmr" . evil-mc-resume-cursors)
+                  ("gmf" . evil-mc-make-and-goto-first-cursor)
+                  ("gml" . evil-mc-make-and-goto-last-cursor)
+                  ("gmh" . evil-mc-make-cursor-here)
+                  ("gmj" . evil-mc-make-cursor-move-next-line)
+                  ("gmk" . evil-mc-make-cursor-move-prev-line)
+                  ("gmN" . evil-mc-skip-and-goto-next-cursor)
+                  ("gmP" . evil-mc-skip-and-goto-prev-cursor)
+                  ("gmn" . evil-mc-skip-and-goto-next-match)
+                  ("gmp" . evil-mc-skip-and-goto-prev-match)
+                  ("M-n" . evil-mc-make-and-goto-next-cursor)
+                  ("M-p" . evil-mc-make-and-goto-prev-cursor)
+                  ("C-n" . evil-mc-make-and-goto-next-match)
+                  ("C-p" . evil-mc-make-and-goto-prev-match)
+                  ("gm+" . evil-mc-inc-num-at-each-cursor)
+                  ("gm-" . evil-mc-dec-num-at-each-cursor)
+                  ;; ("C-S-t" . evil-mc-skip-and-goto-next-match)
+                  )))
+      (dolist (key-data keys)
+        (evil-define-key 'normal map (kbd (car key-data)) (cdr key-data))
+        (evil-define-key 'visual map (kbd (car key-data)) (cdr key-data)))
+      map))
+
+  (require 'evil-mc)
+  (require 'evil-mc-extras)
+  (setq evil-mc-one-cursor-show-mode-line-text nil)
+  (setq evil-mc-mode-line-text-cursor-color nil)
+  (setq evil-mc-mode-line-text-inverse-colors nil)
+  (setq evil-mc-mode-line-text-cursor-color nil)
+
+  (add-to-list 'evil-mc-known-commands '(evil-surround-edit (:default . evil-mc-execute-default-evil-surround-region)))
+
+  ;; Temporary fix for bug with change command with multiple cursors
+  ;; https://github.com/gabesoft/evil-mc/issues/63
+  (add-hook 'evil-mc-before-cursors-created (lambda () (setq-default evil-move-cursor-back t)))
+  (add-hook 'evil-mc-after-cursors-deleted (lambda () (setq-default evil-move-cursor-back nil)))
+
+  (global-evil-mc-mode 1)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (evil-define-text-object eriks-evil-inside-line-text-object (count &optional beg end type)
@@ -1449,44 +1495,6 @@ reflected in the local value.
   (define-key evil-inner-text-objects-map (kbd "d") 'eriks-evil-inside-defun-text-object)
 
   (evil-mode 1)
-
-  ;; (defun evil-delete-advice (f BEG END &optional TYPE REGISTER YANK-HANDLER)
-  ;;   "Changes the behaviour of `evil-delete'.
-  ;; \"_d<motion>     : adds the deleted stuff to the kill-ring
-  ;; d<motion>       : will not att add to kill-ring
-  ;; \"<reg>d<motion> : add to the specified register
-
-  ;; (advice-add 'evil-delete :around 'evil-delete-advice)
-  ;; "
-  ;;   (cond
-  ;;    ((null REGISTER)
-  ;;     (apply f BEG END TYPE ?_ YANK-HANDLER))
-  ;;    ((= REGISTER ?_)
-  ;;     (apply f BEG END TYPE nil YANK-HANDLER))
-  ;;    (t
-  ;;     (apply f BEG END TYPE REGISTER YANK-HANDLER))))
-
-  ;; (advice-add 'evil-delete :around 'evil-delete-advice)
-  ;; (advice-remove 'evil-delete 'evil-delete-advice)
-  ;; (define-key evil-spc (kbd "h") 'windmove-left)
-  ;; (define-key evil-spc (kbd "l") 'windmove-right)
-
-  ;; (add-hook 'evil-visual-state-entry-hook
-  ;;           (lambda ()
-  ;;             (when (eq evil-visual-selection 'block)
-  ;;               (define-key evil-visual-state-map (kbd "k") 'picture-move-up)
-  ;;               (define-key evil-visual-state-map (kbd "j") 'picture-move-down)
-  ;;               (define-key evil-visual-state-map (kbd "h") 'picture-backward-column)
-  ;;               (define-key evil-visual-state-map (kbd "l") 'picture-forward-column))))
-
-  ;; (add-hook 'evil-visual-state-exit-hook
-  ;;           (lambda ()
-  ;;             (when (eq evil-visual-selection 'block)
-  ;;               (define-key evil-visual-state-map (kbd "k") nil)
-  ;;               (define-key evil-visual-state-map (kbd "j") nil)
-  ;;               (define-key evil-visual-state-map (kbd "h") nil)
-  ;;               (define-key evil-visual-state-map (kbd "l") nil)
-  ;;               (delete-trailing-whitespace))))
 
 
 #+end_src

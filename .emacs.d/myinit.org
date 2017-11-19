@@ -1177,6 +1177,10 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "gtr") 'eriks-region-switch)
   (define-key evil-normal-state-map (kbd "gtR") 'eriks-region-switch-abort)
 
+  (define-key evil-normal-state-map (kbd "M-u") 'universal-argument)
+  (define-key evil-insert-state-map (kbd "M-u") 'universal-argument)
+  (define-key evil-visual-state-map (kbd "M-u") 'universal-argument)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; nerd commenter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'evil-nerd-commenter)
 

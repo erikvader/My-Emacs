@@ -1104,7 +1104,8 @@ reflected in the local value.
               (lambda ()
                 (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
                 (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end)
-                (run-hooks 'prog-mode-hook))))
+                (run-hooks 'prog-mode-hook)
+                (embrace-surround-latex-hook))))
 
 
 #+end_src
@@ -1272,13 +1273,37 @@ reflected in the local value.
     (let ((text (read-from-minibuffer "" "")))
       (cons text text)))
 
-  (setq-default evil-surround-pairs-alist (cons '(?s . erik-evil-surround-text) evil-surround-pairs-alist))
-
   (defun erik-evil-surround-latex-cmd ()
     (let ((text (read-from-minibuffer "" "")))
       (cons (concat "\\" text "{") "}")))
 
-  (setq-default evil-surround-pairs-alist (cons '(?l . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
+  ;; (setq-default evil-surround-pairs-alist (cons '(?l . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
+
+  (evil-embrace-enable-evil-surround-integration)
+
+  (defun embrace-surround-normal-hook ()
+    (add-to-list 'evil-embrace-evil-surround-keys ?e)
+    (add-to-list 'evil-embrace-evil-surround-keys ?E)
+    (add-to-list 'evil-surround-pairs-alist '(?s . erik-evil-surround-text))
+    (add-to-list 'evil-embrace-evil-surround-keys ?s)
+    )
+
+  (defun embrace-surround-latex-hook ()
+    (embrace-add-pair ?$ "$" "$")
+    (embrace-add-pair-regexp ?l "\\\\.*?{" "}" 'erik-evil-surround-latex-cmd (embrace-build-help "\\func{" "}"))
+    (define-and-bind-text-object "$" "\\$" "\\$")
+    )
+
+  (defmacro define-and-bind-text-object (key start-regex end-regex)
+    (let ((inner-name (make-symbol "inner-name"))
+          (outer-name (make-symbol "outer-name")))
+      `(progn
+         (evil-define-text-object ,inner-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+         (evil-define-text-object ,outer-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count t))
+         (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
+         (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
@@ -1504,12 +1529,31 @@ reflected in the local value.
 
   (define-key evil-inner-text-objects-map (kbd "d") 'eriks-evil-inside-defun-text-object)
 
-  (require 'evil-cleverparens-text-objects)
 
-  (define-key evil-inner-text-objects-map (kbd "e") 'evil-cp-inner-form)
-  (define-key evil-outer-text-objects-map (kbd "e") 'evil-cp-a-form)
-  (define-key evil-inner-text-objects-map (kbd "E") 'evil-cp-inner-defun)
-  (define-key evil-outer-text-objects-map (kbd "E") 'evil-cp-a-defun)
+  (evil-define-text-object erik-evil-inner-form-text-object (count &optional beg end type)
+    (save-excursion
+      (sp-beginning-of-sexp)
+      (let ((first (point)))
+        (sp-end-of-sexp)
+        (evil-range first (point)))))
+
+  (evil-define-text-object erik-evil-outer-form-text-object (count &optional beg end type)
+    (save-excursion
+      (let ((start (point)))
+        (sp-backward-up-sexp)
+        (let ((first (point)))
+          (goto-char start)
+          (sp-up-sexp)
+          (evil-range first (point))))))
+
+  (define-key evil-outer-text-objects-map (kbd "e") 'erik-evil-outer-form-text-object)
+
+  ;; (require 'evil-cleverparens-text-objects)
+
+  ;; (define-key evil-inner-text-objects-map (kbd "e") 'evil-cp-inner-form)
+  ;; (define-key evil-outer-text-objects-map (kbd "e") 'evil-cp-a-form)
+  ;; (define-key evil-inner-text-objects-map (kbd "E") 'evil-cp-inner-defun)
+  ;; (define-key evil-outer-text-objects-map (kbd "E") 'evil-cp-a-defun)
 
   (evil-mode 1)
 

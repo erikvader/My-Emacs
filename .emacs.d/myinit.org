@@ -1034,7 +1034,7 @@ reflected in the local value.
     (forward-line -1)
     (indent-according-to-mode))
 
-
+  (sp-local-pair '(tex-mode plain-tex-mode latex-mode LaTeX-mode) "$" "$")
   (sp-local-pair '(c-mode java-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
   ;;(sp-local-pair 'java-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
 
@@ -1098,15 +1098,19 @@ reflected in the local value.
 #+end_src
 ** auctex
 #+begin_src emacs-lisp :tangle yes
+
   (eval-after-load
       "latex"
-    (add-hook 'LaTeX-mode-hook
-              (lambda ()
-                (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
-                (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end)
-                (run-hooks 'prog-mode-hook)
-                ;; (embrace-surround-latex-hook)
-                )))
+    (progn
+      (add-hook 'LaTeX-mode-hook
+                (lambda ()
+                  (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table) ;;make $ act like string so smartparens can navigate with it.
+                  (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
+                  (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end)
+                  ;; (define-key LaTeX-mode-map (kbd "$") nil)
+                  (run-hooks 'prog-mode-hook)
+                  ;; (embrace-surround-latex-hook)
+                  ))))
 
 
 #+end_src
@@ -1296,7 +1300,6 @@ reflected in the local value.
          (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
          (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
-  (sp-local-pair '(LaTeX-mode) "$" "$" :actions '(insert navigate autoskip))
   (define-and-bind-text-object "$" "\\$" "\\$")
 
   (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)

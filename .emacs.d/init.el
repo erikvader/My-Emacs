@@ -124,6 +124,7 @@
  '(sp-autodelete-opening-pair nil)
  '(sp-autodelete-pair nil)
  '(sp-highlight-pair-overlay nil)
+ '(sp-navigate-reindent-after-up nil)
  '(split-height-threshold nil)
  '(split-width-threshold 100)
  '(standard-indent 3)

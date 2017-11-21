@@ -1590,8 +1590,45 @@ reflected in the local value.
           (sp-up-sexp)
           (evil-range first (point))))))
 
+  (defun erik-evil-top-form-up (cursor)
+    (interactive "d")
+    (ignore-errors
+      (sp-backward-up-sexp))
+    (unless (= cursor (point))
+        (erik-evil-top-form-up (point))))
+
+  (defun erik-evil-top-form-end (cursor)
+    (interactive "d")
+    (erik-evil-top-form-up cursor)
+    (sp-forward-sexp))
+
+  (define-key evil-motion-state-map (kbd "g{") 'erik-evil-top-form-up)
+  (define-key evil-motion-state-map (kbd "g}") 'erik-evil-top-form-end)
+
+  (evil-define-text-object erik-evil-outer-top-form-text-object (count &optional beg end type)
+    (save-excursion
+      (erik-evil-top-form-up (point))
+      (let ((first (point)))
+        (sp-forward-sexp)
+        (evil-range first (point)))))
+
+  (evil-define-text-object erik-evil-inner-top-form-text-object (count &optional beg end type)
+    (save-excursion
+      (erik-evil-top-form-up (point))
+      (let ((first (point)))
+        (sp-forward-sexp)
+        (let ((end (point)))
+          (goto-char first)
+          (sp-down-sexp)
+          (let ((actual-first (point)))
+            (goto-char end)
+            (sp-backward-down-sexp)
+            (evil-range actual-first (point)))))))
+
   (define-key evil-outer-text-objects-map (kbd "e") 'erik-evil-outer-form-text-object)
   (define-key evil-inner-text-objects-map (kbd "e") 'erik-evil-inner-form-text-object)
+  (define-key evil-outer-text-objects-map (kbd "E") 'erik-evil-outer-top-form-text-object)
+  (define-key evil-inner-text-objects-map (kbd "E") 'erik-evil-inner-top-form-text-object)
 
   ;; (require 'evil-cleverparens-text-objects)
 

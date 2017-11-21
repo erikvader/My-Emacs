@@ -1034,7 +1034,6 @@ reflected in the local value.
     (forward-line -1)
     (indent-according-to-mode))
 
-  (sp-local-pair '(tex-mode plain-tex-mode latex-mode LaTeX-mode) "$" "$")
   (sp-local-pair '(c-mode java-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
   ;;(sp-local-pair 'java-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
 
@@ -1246,6 +1245,8 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "gp") 'evil-operator-clone)
   (define-key evil-visual-state-map (kbd "gp") 'evil-operator-clone)
 
+  (setq evil-textobj-between-a-key "b")
+  (setq evil-textobj-between-i-key "b")
   (require 'evil-textobj-between)
 
   (require 'evil-little-word)
@@ -1267,29 +1268,9 @@ reflected in the local value.
   (evil-define-key 'visual evil-surround-mode-map "S" 'evil-Surround-region)
   (evil-define-key 'normal evil-surround-mode-map "gs" 'evil-surround-edit)
   (evil-define-key 'normal evil-surround-mode-map "gS" 'evil-Surround-edit)
-  ;; (define-key evil-visual-state-map (kbd "s")  'evil-surround-region)
-  ;; (define-key evil-visual-state-map (kbd "S")  'evil-Surround-region)
-  ;; (define-key evil-normal-state-map (kbd "gs") 'evil-surround-edit)
-  ;; (define-key evil-normal-state-map (kbd "gS") 'evil-Surround-edit)
 
-  ;; (evil-declare-repeat 'evil-surround-region)
-
-  (defun erik-evil-surround-latex-cmd ()
-    (let ((text (read-from-minibuffer "" "")))
-      (cons (concat "\\" text "{") "}")))
-
-  ;; (setq-default evil-surround-pairs-alist (cons '(?l . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
-
-  ;; (evil-embrace-enable-evil-surround-integration)
-
-  ;; (defun embrace-surround-normal-hook ()
-  ;;   (add-to-list 'evil-embrace-evil-surround-keys ?e)
-  ;;   (add-to-list 'evil-embrace-evil-surround-keys ?E)
-  ;;   (add-to-list 'evil-surround-pairs-alist '(?s . erik-evil-surround-text))
-  ;;   (add-to-list 'evil-embrace-evil-surround-keys ?s)
-  ;;   )
-
-  (defmacro define-and-bind-text-object (key start-regex end-regex)
+  ;;make global inner and outer text objects with specified start delimeter and end delimeter.
+  (defmacro define-and-bind-text-object-global (key start-regex end-regex)
     (let ((inner-name (make-symbol "inner-name"))
           (outer-name (make-symbol "outer-name")))
       `(progn
@@ -1297,11 +1278,32 @@ reflected in the local value.
            (evil-select-paren ,start-regex ,end-regex beg end type count nil))
          (evil-define-text-object ,outer-name (count &optional beg end type)
            (evil-select-paren ,start-regex ,end-regex beg end type count t))
-         (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
-         (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
+         (define-key evil-inner-text-objects-map (kbd ,key) (quote ,inner-name))
+         (define-key evil-outer-text-objects-map (kbd ,key) (quote ,outer-name)))))
 
-  (define-and-bind-text-object "$" "\\$" "\\$")
+  ;;make local inner and outer text objects with specified start
+  ;;delimeter and end delimeter. binds key buffer locally by binding it
+  ;;to `evil-visual-operator-state-local-map'. This will work for any
+  ;;case except for evil-surround delete and change (or any other
+  ;;function/package that uses evil-(inner/outer)-state-map internally).
+  ;;For that to work the local map has to get its global counterpart as
+  ;;parent (do this in mode hook), and a change in evil-surround.el (or
+  ;;corresponding function/package) has to be made to use the local
+  ;;version instead.
+  (defmacro define-and-bind-text-object-local (key start-regex end-regex)
+    (let ((inner-name (make-symbol "inner-name"))
+          (outer-name (make-symbol "outer-name")))
+     `(progn
+         (evil-define-text-object ,inner-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+         (evil-define-text-object ,outer-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count t))
+         (define-key evil-visual-state-local-map   (kbd (format "i %s" ,key)) (quote ,inner-name)) ;;TODO: extract these
+         (define-key evil-operator-state-local-map (kbd (format "i %s" ,key)) (quote ,inner-name))
+         (define-key evil-visual-state-local-map   (kbd (format "a %s" ,key)) (quote ,outer-name))
+         (define-key evil-operator-state-local-map (kbd (format "a %s" ,key)) (quote ,outer-name)))))
 
+  ; generic ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)
     (let ((text (read-from-minibuffer "" "")))
       (if erik-evil-generic-outer
@@ -1325,6 +1327,7 @@ reflected in the local value.
 
   (setq-default evil-surround-pairs-alist (cons '(?g . erik-evil-surround-generic) evil-surround-pairs-alist))
 
+  ;;stop evil-surround from asking for the same text twice
   (setq erik-evil-generic-inner nil)
   (setq erik-evil-generic-outer nil)
   (setq erik-evil-generic-latest nil)
@@ -1347,10 +1350,24 @@ reflected in the local value.
   (advice-add 'evil-surround-inner-overlay :before 'erik-evil-generic-before-inner)
   (advice-add 'evil-surround-inner-overlay :after 'erik-evil-generic-after-inner)
 
-  (defun erik-evil-surround-disable-trim-whitespace (f range &optional regexp)
-    )
+  ;; global ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define-and-bind-text-object-global "f" "\\_<[a-bA-b0-9._-]+?(" ")")
 
-  (advice-add 'evil-surround-trim-whitespace-from-range :around ' erik-evil-surround-disable-trim-whitespace)
+  ;; latex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun erik-evil-surround-latex-cmd ()
+    (let ((text (read-from-minibuffer "" "")))
+      (cons (concat "\\" text "{") "}")))
+
+  (sp-local-pair '(tex-mode plain-tex-mode latex-mode LaTeX-mode) "$" "$")
+
+  (defun erik-evil-surround-latex-hook ()
+    (set-keymap-parent evil-operator-state-local-map evil-operator-state-map) ;makes evil-surround find non-buffer-local text objects (required to change in evil-surround.el)
+    (setq evil-surround-pairs-alist (cons '(?f . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
+    (define-and-bind-text-object-local "f" "\\\\[a-bA-b0-9._-]+?{" "}")
+    (define-and-bind-text-object-local "$" "\\$" "\\$"))
+
+  (dolist (hk '(tex-mode-hook plain-tex-mode-hook latex-mode-hook LaTeX-mode-hook))
+    (add-hook hk 'erik-evil-surround-latex-hook))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)

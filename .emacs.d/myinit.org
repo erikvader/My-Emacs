@@ -1291,7 +1291,7 @@ reflected in the local value.
 
   ;;make local inner and outer text objects with specified start
   ;;delimeter and end delimeter. binds key buffer locally by binding it
-  ;;to `evil-visual-operator-state-local-map'. This will work for any
+  ;;to `evil-operator-state-local-map'. This will work for any
   ;;case except for evil-surround delete and change (or any other
   ;;function/package that uses evil-(inner/outer)-state-map internally).
   ;;For that to work the local map has to get its global counterpart as
@@ -1311,6 +1311,10 @@ reflected in the local value.
          (define-key evil-visual-state-local-map   (kbd (format "a %s" ,key)) (quote ,outer-name))
          (define-key evil-operator-state-local-map (kbd (format "a %s" ,key)) (quote ,outer-name)))))
 
+  (defun erik-evil-surround-advice ()
+    (set-keymap-parent evil-operator-state-local-map evil-operator-state-map) ;makes evil-surround find non-buffer-local text objects (required to change in evil-surround.el)
+    )
+  (advice-add 'evil-initialize-local-keymaps :after 'erik-evil-surround-advice)
   ; generic ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)
     (let ((text (read-from-minibuffer "" "")))
@@ -1369,7 +1373,6 @@ reflected in the local value.
   (sp-local-pair '(tex-mode plain-tex-mode latex-mode LaTeX-mode) "$" "$")
 
   (defun erik-evil-surround-latex-hook ()
-    (set-keymap-parent evil-operator-state-local-map evil-operator-state-map) ;makes evil-surround find non-buffer-local text objects (required to change in evil-surround.el)
     (setq evil-surround-pairs-alist (cons '(?f . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
     (define-and-bind-text-object-local "f" "\\\\[a-bA-b0-9._-]+?{" "}")
     (define-and-bind-text-object-local "$" "\\$" "\\$"))

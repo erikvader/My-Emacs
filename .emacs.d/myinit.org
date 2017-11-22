@@ -209,7 +209,15 @@ reflected in the local value.
 
   (setq browse-url-browser-function 'browse-url-generic browse-url-generic-program "xdg-open")
 
-
+  (defun eriks-up-indentation ()
+    (interactive)
+    (back-to-indentation)
+    (let ((start (current-column)))
+      (while (and
+              (> (current-column) 0)
+              (>= (current-column) start))
+        (forward-line -1)
+        (back-to-indentation))))
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -1467,6 +1475,8 @@ reflected in the local value.
   (evilem-define (kbd "SPC ]p") 'forward-paragraph)
   (evilem-define (kbd "SPC [p") 'backward-paragraph)
 
+  (evilem-define (kbd "SPC [i") 'eriks-up-indentation)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-key evil-motion-state-map (kbd "[m") 'evil-backward-section-begin)
   (define-key evil-motion-state-map (kbd "[M") 'evil-backward-section-end)
@@ -1490,6 +1500,8 @@ reflected in the local value.
 
   (define-key evil-motion-state-map (kbd "[d") 'beginning-of-defun)
   (define-key evil-motion-state-map (kbd "]d") 'end-of-defun)
+
+  (define-key evil-motion-state-map (kbd "[i") 'eriks-up-indentation)
 
   (define-key evil-motion-state-map (kbd "[ SPC") 'eriks-skip-space-backwards)
   (define-key evil-motion-state-map (kbd "] SPC") 'eriks-skip-space)
@@ -1656,6 +1668,15 @@ reflected in the local value.
   ;; (define-key evil-outer-text-objects-map (kbd "e") 'evil-cp-a-form)
   ;; (define-key evil-inner-text-objects-map (kbd "E") 'evil-cp-inner-defun)
   ;; (define-key evil-outer-text-objects-map (kbd "E") 'evil-cp-a-defun)
+
+  ;; fastnar i infinite loop ibland
+  ;; (defun eriks-down-indentation ()
+  ;;   (interactive)
+  ;;   (back-to-indentation)
+  ;;   (let ((start (current-column)))
+  ;;     (while (= (current-column) start)
+  ;;       (forward-line 1)
+  ;;       (back-to-indentation))))
 
   (evil-mode 1)
 

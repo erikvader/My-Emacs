@@ -1743,7 +1743,7 @@ reflected in the local value.
 *** java
 #+begin_src emacs-lisp :tangle yes
   (require 'eclim)
-  (setq eclimd-autostart t)
+  (setq eclimd-autostart nil)
 
   (require 'company-emacs-eclim)
   (company-emacs-eclim-setup)
@@ -1767,7 +1767,6 @@ reflected in the local value.
 
   (add-hook 'java-mode-hook
             (lambda ()
-              (eclim-mode 1)
               (evil-define-key 'normal eclim-mode-map (kbd "C-]") 'eclim-java-find-declaration)))
 
   ;; (defun eclim-java-start ()

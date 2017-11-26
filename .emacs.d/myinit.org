@@ -1468,8 +1468,8 @@ reflected in the local value.
 
   (evilem-define (kbd "SPC {") 'sp-backward-up-sexp)
   (evilem-define (kbd "SPC }") 'sp-up-sexp)
-  (evilem-define (kbd "SPC C-{") 'sp-backward-down-sexp)
-  (evilem-define (kbd "SPC C-}") 'sp-down-sexp)
+  (evilem-define (kbd "SPC M-[") 'sp-backward-down-sexp)
+  (evilem-define (kbd "SPC M-]") 'sp-down-sexp)
   (evilem-define (kbd "SPC (") 'sp-beginning-of-sexp)
   (evilem-define (kbd "SPC )") 'sp-end-of-sexp)
 
@@ -1511,8 +1511,8 @@ reflected in the local value.
 
   (define-key evil-motion-state-map (kbd "{") 'sp-backward-up-sexp)
   (define-key evil-motion-state-map (kbd "}") 'sp-up-sexp)
-  (define-key evil-motion-state-map (kbd "C-{") 'sp-backward-down-sexp)
-  (define-key evil-motion-state-map (kbd "C-}") 'sp-down-sexp)
+  (define-key evil-motion-state-map (kbd "M-[") 'sp-backward-down-sexp)
+  (define-key evil-motion-state-map (kbd "M-]") 'sp-down-sexp)
   (define-key evil-motion-state-map (kbd "(") 'sp-beginning-of-sexp)
   (define-key evil-motion-state-map (kbd ")") 'sp-end-of-sexp)
 

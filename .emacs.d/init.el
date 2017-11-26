@@ -85,6 +85,7 @@
  '(evil-repeat-move-cursor nil)
  '(evil-shift-width 1)
  '(evil-want-C-d-scroll nil)
+ '(evil-want-Y-yank-to-eol t)
  '(expand-region-fast-keys-enabled t)
  '(fci-rule-color "#14151E")
  '(flycheck-global-modes nil)

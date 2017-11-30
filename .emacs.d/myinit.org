@@ -1824,42 +1824,41 @@ reflected in the local value.
     ("q" nil "quit" :color blue))
   (define-key eriks-map (kbd "z") 'hydra-zoom/body)
 
-  (defhydra hydra-windows (:hint nil)
+  (defhydra hydra-windows (:hint nil :color blue)
     "
-   ^Resize^         ^Transpose^    ^Buffer/tabbar^       ^^^^   ^Split^
+   ^Resize^         ^Transpose^        ^Move^            ^^^^   ^Split^
   -----------------------------------------------------------------------------------
-    ^Horizontal^        ^_W_^           ^_w_^                   [_3_] : horizontal
-   [_o_] : shrink     _A_   _D_       _a_   _d_                 [_2_] : vertical
-   [_p_] : enlarge      ^_S_^           ^_s_^                   [_0_] : close
+    ^Horizontal^        ^_w_^             ^_k_^                 [_3_] : horizontal
+   [_o_] : shrink     _a_   _d_         _h_   _l_               [_2_] : vertical
+   [_p_] : enlarge      ^_s_^             ^_j_^                 [_0_] : close
     ^ ^                                               ^^^^^^^^  [_1_] : close other
     ^Vertical^         ^^          [_b_] : switch buffer  ^^^^  [_+_] : balance
    [_u_] : shrink      ^^          [_K_] : kill           ^^^^  [_4_] : kill and close
    [_i_] : enlarge     ^^          [_f_] : find file        ^ ^
    ^ ^                 ^^          [_x_] : run command
-   [vim keys] : switch window   Winner :: [_z_], [_Z_]
+   Winner :: [_z_], [_Z_]
    _q_uit
   "
-    ;; _q_uit
     ("h" windmove-left nil)
     ("l" windmove-right nil)
     ("k" windmove-up nil)
     ("j" windmove-down nil)
-    ("o" shrink-window-horizontally nil)
-    ("p" enlarge-window-horizontally nil)
-    ("u" shrink-window nil)
-    ("i" enlarge-window nil)
-    ("W" buf-move-up nil)
-    ("S" buf-move-down nil)
-    ("A" buf-move-left nil)
-    ("D" buf-move-right nil)
-    ("d" nil nil)
-    ("a" nil nil)
-    ("w" nil nil)
-    ("s" nil nil)
-    ;;("d" tabbar-forward-tab nil)
-    ;;("a" tabbar-backward-tab nil)
-    ;;("w" tabbar-forward-group nil)
-    ;;("s" tabbar-backward-group nil)
+    ("o" shrink-window-horizontally nil :color red)
+    ("p" enlarge-window-horizontally nil :color red)
+    ("u" shrink-window nil :color red)
+    ("i" enlarge-window nil :color red)
+    ("w" buf-move-up nil)
+    ("s" buf-move-down nil)
+    ("a" buf-move-left nil)
+    ("d" buf-move-right nil)
+    ;; ("d" nil nil)
+    ;; ("a" nil nil)
+    ;; ("w" nil nil)
+    ;; ("s" nil nil)
+    ;; ("d" tabbar-forward-tab nil)
+    ;; ("a" tabbar-backward-tab nil)
+    ;; ("w" tabbar-forward-group nil)
+    ;; ("s" tabbar-backward-group nil)
     ("b" ivy-switch-buffer nil)
     ("K" kill-this-buffer nil)
     ("3" split-window-horizontally nil)
@@ -1873,11 +1872,9 @@ reflected in the local value.
     ("z" winner-undo nil)
     ("Z" winner-redo nil)
     ("q" nil nil :color blue))
+
   (define-key 'eriks-map (kbd "w") 'hydra-windows/body)
-
-
-
-
+  (define-key my-keys-map (kbd "C-w") 'hydra-windows/body)
 #+end_src
 ** transpose
 #+begin_src emacs-lisp :tangle yes

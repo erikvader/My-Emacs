@@ -218,6 +218,21 @@ reflected in the local value.
               (>= (current-column) start))
         (forward-line -1)
         (back-to-indentation))))
+
+  (defun eriks-up-same-column (&optional dir)
+    (interactive)
+    (let ((start (current-column))
+          (prev (point))
+          (dir (if (null dir) -1 dir)))
+      (while (and
+              (= (move-to-column start) start))
+        (setq prev (point))
+        (forward-line dir))
+      (goto-char prev)))
+
+  (defun eriks-down-same-column ()
+    (interactive)
+    (eriks-up-same-column 1))
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -1505,6 +1520,9 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd "]d") 'end-of-defun)
 
   (define-key evil-motion-state-map (kbd "[i") 'eriks-up-indentation)
+
+  (define-key evil-motion-state-map (kbd "[c") 'eriks-up-same-column)
+  (define-key evil-motion-state-map (kbd "]c") 'eriks-down-same-column)
 
   (define-key evil-motion-state-map (kbd "[ SPC") 'eriks-skip-space-backwards)
   (define-key evil-motion-state-map (kbd "] SPC") 'eriks-skip-space)

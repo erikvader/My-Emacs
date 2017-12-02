@@ -4,6 +4,7 @@
 
 ;; Author: edkolev <evgenysw@gmail.com>
 ;; URL: http://github.com/edkolev/evil-lion
+;; Package-Version: 20170810.2314
 ;; Package-Requires: ((emacs "24.3") (evil "1.0.0"))
 ;; Version: 0.0.2
 ;; Keywords: emulations, evil, vim
@@ -134,7 +135,7 @@ BEG and END specify the region."
           (push regex evil-lion--user-regex-history)
           (delete-dups evil-lion--user-regex-history)
           regex))
-    (regexp-quote (format  "%c" char))))
+    (regexp-quote (format "%c" char))))
 
 (declare-function align-region "align")
 (defun evil-lion--align-region (type count beg end regex)
@@ -147,24 +148,36 @@ BEG and END specify the retion to align.
 REGEX is the regex to align by."
   (when (> (length regex) 0)
 
-    (when (and count (> count 1))
-      (user-error "Only COUNT `1' is supported at the moment"))
+    ;; (when (and count (> count 1))
+    ;;   (user-error "Only COUNT `1' is supported at the moment"))
 
     (save-restriction
       (narrow-to-region beg end)
 
       ;; squeeze spaces if configured to do so
-      (when evil-lion-squeeze-spaces
-        (evil-lion--squeeze-spaces type count (point-min) (point-max) regex))
+      ;; (when evil-lion-squeeze-spaces
+      ;;   (evil-lion--squeeze-spaces type count (point-min) (point-max) regex))
+
+      ;; left --  (%s.*?){%d}\(\s-*\)%s
+      ;; right -- (%s.*?){%d}%s\(\s-*\)
 
       ;; prepare input for align-region and call it
       (let* ((indent-tabs-mode nil)
+             (group-regex
+              (if evil-lion-squeeze-spaces "\\(\\s-*\\)" "\\(\\)"))
              (regexp
-              (if (eq type 'left) (concat "\\(\\)" regex) (concat regex "\\(\\)")))
-             (spacing 0)
+              (cond ((and (not (null count)) (> count 1))
+                     (if (eq type 'left)
+                         (format "\\(%s.*?\\)\\{%d\\}%s%s" regex (- count 1) group-regex regex)
+                       (format "\\(%s.*?\\)\\{%d\\}%s%s" regex (- count 1) regex group-regex)))
+                    (t
+                     (if (eq type 'left)
+                         (concat group-regex regex)
+                       (concat regex group-regex)))))
+             (spacing 1)
              (repeat
-              (if (eq count 1) nil t))
-             (group 1)
+              (if (eq count 0) t nil))
+             (group (if (and (not (null count)) (> count 1)) 2 1))
              (rule
               (list (list nil (cons 'regexp regexp)
                           (cons 'group group)

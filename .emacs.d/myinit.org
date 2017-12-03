@@ -1202,6 +1202,7 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "gtc") 'transpose-chars)
   (define-key evil-normal-state-map (kbd "gtl") 'transpose-lines)
   (define-key evil-normal-state-map (kbd "gtw") 'transpose-words)
+  (define-key evil-normal-state-map (kbd "gts") 'subword-transpose)
   (define-key evil-normal-state-map (kbd "gtr") 'eriks-region-switch)
   (define-key evil-normal-state-map (kbd "gtR") 'eriks-region-switch-abort)
 
@@ -1260,6 +1261,15 @@ reflected in the local value.
       (evil-exit-visual-state))
     (swiper (buffer-substring beg end)))
 
+  (evil-define-operator eriks-evil-capitalize-operator (beg end type)
+    (interactive "<R>")
+    (when (evil-visual-state-p)
+      (evil-exit-visual-state))
+    (capitalize-region beg end))
+
+  (define-key evil-normal-state-map (kbd "g C-u") 'eriks-evil-capitalize-operator)
+  (define-key evil-visual-state-map (kbd "g C-u") 'eriks-evil-capitalize-operator)
+
   (define-key evil-normal-state-map (kbd "SPC s s") 'eriks-evil-swiper-operator)
   (define-key evil-visual-state-map (kbd "SPC s s") 'eriks-evil-swiper-operator)
 
@@ -1273,7 +1283,18 @@ reflected in the local value.
   (require 'evil-textobj-between)
 
   (require 'evil-little-word)
-  (define-key evil-motion-state-map (kbd "gle") 'evil-forward-little-word-end)
+  (define-key evil-motion-state-map (kbd "C-l C-w") 'evil-forward-little-word-begin)
+  (define-key evil-motion-state-map (kbd "C-l C-b") 'evil-backward-little-word-begin)
+  (define-key evil-motion-state-map (kbd "C-l C-S-w") 'evil-forward-little-word-end)
+  (define-key evil-motion-state-map (kbd "C-l C-e") 'evil-forward-little-word-end)
+  (define-key evil-motion-state-map (kbd "C-l C-S-b") 'evil-backward-little-word-end)
+  (define-key evil-motion-state-map (kbd "C-l w") 'evil-forward-little-word-begin)
+  (define-key evil-motion-state-map (kbd "C-l b") 'evil-backward-little-word-begin)
+  (define-key evil-motion-state-map (kbd "C-l W") 'evil-forward-little-word-end)
+  (define-key evil-motion-state-map (kbd "C-l e") 'evil-forward-little-word-end)
+  (define-key evil-motion-state-map (kbd "C-l B") 'evil-backward-little-word-end)
+  (define-key evil-outer-text-objects-map (kbd "C-l") 'evil-a-little-word)
+  (define-key evil-inner-text-objects-map (kbd "C-l") 'evil-inner-little-word)
 
   (define-key evil-normal-state-map (kbd "SPC s M") 'dmoccur)
   (define-key evil-normal-state-map (kbd "SPC s N") 'moccur)
@@ -1537,25 +1558,27 @@ reflected in the local value.
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; multiple cursors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defvar evil-mc-key-map
     (let ((map (make-sparse-keymap))
-          (keys '(("gmm" . evil-mc-make-all-cursors)
-                  ("gmu" . evil-mc-undo-all-cursors)
-                  ("gms" . evil-mc-pause-cursors)
-                  ("gmr" . evil-mc-resume-cursors)
-                  ("gmf" . evil-mc-make-and-goto-first-cursor)
-                  ("gml" . evil-mc-make-and-goto-last-cursor)
-                  ("gmh" . evil-mc-make-cursor-here)
-                  ("gmj" . evil-mc-make-cursor-move-next-line)
-                  ("gmk" . evil-mc-make-cursor-move-prev-line)
-                  ("gmN" . evil-mc-skip-and-goto-next-cursor)
-                  ("gmP" . evil-mc-skip-and-goto-prev-cursor)
-                  ("gmn" . evil-mc-skip-and-goto-next-match)
-                  ("gmp" . evil-mc-skip-and-goto-prev-match)
-                  ("M-n" . evil-mc-make-and-goto-next-cursor)
-                  ("M-p" . evil-mc-make-and-goto-prev-cursor)
-                  ("C-n" . evil-mc-make-and-goto-next-match)
-                  ("C-p" . evil-mc-make-and-goto-prev-match)
-                  ("gm+" . evil-mc-inc-num-at-each-cursor)
-                  ("gm-" . evil-mc-dec-num-at-each-cursor)
+          (keys '(("gmm"   . evil-mc-make-all-cursors)
+                  ("gmu"   . evil-mc-undo-all-cursors)
+                  ("gms"   . evil-mc-pause-cursors)
+                  ("gmr"   . evil-mc-resume-cursors)
+                  ("gmf"   . evil-mc-make-and-goto-first-cursor)
+                  ("gml"   . evil-mc-make-and-goto-last-cursor)
+                  ("gmh"   . evil-mc-make-cursor-here)
+                  ("gmj"   . evil-mc-make-cursor-move-next-line)
+                  ("gmk"   . evil-mc-make-cursor-move-prev-line)
+                  ("C-S-n" . evil-mc-make-cursor-move-next-line)
+                  ("C-S-p" . evil-mc-make-cursor-move-prev-line)
+                  ("gmN"   . evil-mc-skip-and-goto-next-cursor)
+                  ("gmP"   . evil-mc-skip-and-goto-prev-cursor)
+                  ("gmn"   . evil-mc-skip-and-goto-next-match)
+                  ("gmp"   . evil-mc-skip-and-goto-prev-match)
+                  ("M-n"   . evil-mc-make-and-goto-next-cursor)
+                  ("M-p"   . evil-mc-make-and-goto-prev-cursor)
+                  ("C-n"   . evil-mc-make-and-goto-next-match)
+                  ("C-p"   . evil-mc-make-and-goto-prev-match)
+                  ("gm+"   . evil-mc-inc-num-at-each-cursor)
+                  ("gm-"   . evil-mc-dec-num-at-each-cursor)
                   ;; ("C-S-t" . evil-mc-skip-and-goto-next-match)
                   )))
       (dolist (key-data keys)
@@ -1597,8 +1620,8 @@ reflected in the local value.
         (evil-end-of-line)
         (evil-range first (point)))))
 
-  (define-key evil-inner-text-objects-map (kbd "L") 'eriks-evil-inside-line-text-object)
-  (define-key evil-outer-text-objects-map (kbd "L") 'eriks-evil-outside-line-text-object)
+  (define-key evil-inner-text-objects-map (kbd "l") 'eriks-evil-inside-line-text-object)
+  (define-key evil-outer-text-objects-map (kbd "l") 'eriks-evil-outside-line-text-object)
 
   (evil-define-text-object eriks-evil-inside-whitespace-text-object (count &optional beg end type)
     (save-excursion
@@ -1892,7 +1915,7 @@ reflected in the local value.
     ("q" nil nil :color blue))
 
   (define-key 'eriks-map (kbd "w") 'hydra-windows/body)
-  (define-key my-keys-map (kbd "C-w") 'hydra-windows/body)
+  ;; (define-key my-keys-map (kbd "C-w") 'hydra-windows/body)
 #+end_src
 ** transpose
 #+begin_src emacs-lisp :tangle yes

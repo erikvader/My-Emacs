@@ -129,7 +129,7 @@ This is a cons cell (LEFT . RIGHT), both strings."
   "Return outer overlay for the delimited range represented by CHAR.
 This overlay includes the delimiters.
 See also `evil-surround-inner-overlay'."
-  (let ((outer (lookup-key evil-outer-text-objects-map (string char))))
+  (let ((outer (lookup-key evil-operator-state-local-map (string ?a char))))
     (when (functionp outer)
       (setq outer (funcall outer))
       (when (evil-range-p outer)
@@ -154,7 +154,7 @@ See also `evil-surround-inner-overlay'."
   "Return inner overlay for the delimited range represented by CHAR.
 This overlay excludes the delimiters.
 See also `evil-surround-outer-overlay'."
-  (let ((inner (lookup-key evil-inner-text-objects-map (string char))))
+  (let ((inner (lookup-key evil-operator-state-local-map (string ?i char))))
     (when (functionp inner)
       (setq inner (funcall inner))
       (when (evil-range-p inner)

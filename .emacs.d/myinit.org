@@ -1594,8 +1594,15 @@ reflected in the local value.
   (require 'evil-mc-extras)
 
   (add-to-list 'evil-mc-known-commands '(evil-surround-edit (:default . evil-mc-execute-default-evil-surround-region)))
-  (add-to-list 'evil-mc-known-commands '(eval-last-sexp-replace (:default . eval-last-sexp-replace)))
-  ;;TODO: dolist with all smartparens movements
+
+  (dolist (cmd '(eval-last-sexp-replace
+                 sp-end-of-sexp
+                 sp-beginning-of-sexp
+                 sp-up-sexp
+                 sp-backward-up-sexp
+                 sp-down-sexp
+                 sp-backward-down-sexp))
+    (add-to-list 'evil-mc-known-commands `(,cmd (:default . ,cmd))))
 
   ;; Temporary fix for bug with change command with multiple cursors
   ;; https://github.com/gabesoft/evil-mc/issues/63

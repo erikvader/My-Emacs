@@ -1611,6 +1611,12 @@ reflected in the local value.
 
   (global-evil-mc-mode 1)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ggtags ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (evil-define-key 'normal ggtags-mode-map (kbd "C-]") 'ggtags-find-tag-dwim)
+  (evil-define-key 'normal ggtags-mode-map (kbd "C-o") 'ggtags-prev-mark)
+  (evil-define-key 'normal ggtags-mode-map (kbd "C-i") 'ggtags-next-mark)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (evil-define-text-object eriks-evil-inside-line-text-object (count &optional beg end type)

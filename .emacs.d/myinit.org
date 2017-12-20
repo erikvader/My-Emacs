@@ -1187,6 +1187,10 @@ reflected in the local value.
 
   (evil-remap "C-@" "@@")
 
+  ;;opposite to J (join-lines)
+  (define-key evil-normal-state-map (kbd "S")
+    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([100 105 32 134217848 111 112 101 110 45 108 105 110 101 return] 0 "%d")) arg)))
+
   (define-key evil-normal-state-map (kbd "ga") 'evil-lion-left)
   (define-key evil-normal-state-map (kbd "gA") 'evil-lion-right)
 
@@ -1269,6 +1273,8 @@ reflected in the local value.
 
   (define-key evil-normal-state-map (kbd "g C-u") 'eriks-evil-capitalize-operator)
   (define-key evil-visual-state-map (kbd "g C-u") 'eriks-evil-capitalize-operator)
+  (define-key evil-normal-state-map (kbd "g o") 'eriks-evil-capitalize-operator)
+  (define-key evil-visual-state-map (kbd "g o") 'eriks-evil-capitalize-operator)
 
   (define-key evil-normal-state-map (kbd "SPC s s") 'eriks-evil-swiper-operator)
   (define-key evil-visual-state-map (kbd "SPC s s") 'eriks-evil-swiper-operator)

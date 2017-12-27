@@ -102,6 +102,9 @@
  '(neo-show-hidden-files t)
  '(neo-window-fixed-size t)
  '(org-src-window-setup (quote current-window))
+ '(package-selected-packages
+   (quote
+    (drag-stuff which-key tabbar smartparens smart-mode-line rainbow-mode rainbow-delimiters projectile packed outshine org-bullets neotree multiple-cursors modalka markdown-mode magit linum-relative latex-preview-pane hydra hungry-delete haskell-snippets haskell-mode golden-ratio-scroll-screen ggtags framemove fontawesome flycheck expand-region evil-surround evil-nerd-commenter evil-mc-extras evil-lion evil-indent-plus evil-extra-operator evil-easymotion dumb-jump dot-mode disable-mouse diminish dashboard counsel-projectile counsel company-emacs-eclim color-moccur charmap buffer-move browse-kill-ring autopair auctex all-the-icons-dired)))
  '(perl-continued-brace-offset -3)
  '(perl-continued-statement-offset 3)
  '(perl-indent-level 3)

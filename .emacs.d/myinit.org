@@ -935,7 +935,7 @@ reflected in the local value.
 ** projectile
 #+begin_src emacs-lisp :tangle yes
   (projectile-global-mode t)
-  (counsel-projectile-on)
+  (counsel-projectile-mode)
 #+end_src
 ** dumb jump
 #+begin_src emacs-lisp :tangle yes
@@ -2225,7 +2225,7 @@ reflected in the local value.
   ;; (diminish 'auto-complete-mode)
   (diminish 'company-mode)
   (diminish 'yas-minor-mode)
-  (diminish 'global-disable-mouse-mode)
+  (diminish 'disable-mouse-global-mode)
   (add-hook 'auto-revert-mode-hook
             (lambda ()
               (diminish 'auto-revert-mode)))

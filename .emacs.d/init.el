@@ -134,6 +134,7 @@
  '(split-width-threshold 100)
  '(standard-indent 3)
  '(tab-width 4)
+ '(text-scale-mode-step 1.05)
  '(tool-bar-mode nil)
  '(undo-tree-mode-lighter " untree")
  '(vc-annotate-background nil)
@@ -165,7 +166,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#000000" :foreground "#bbe0f0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "Ubuntu Mono")))))
+ '(default ((t (:inherit nil :stipple nil :background "#000000" :foreground "#bbe0f0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "DAMA" :family "Ubuntu Mono")))))
 
 ;;init files
 ;;(load-file "~/.emacs.d/inits/keybindings.el")

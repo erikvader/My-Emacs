@@ -5,6 +5,7 @@
   (require 'cc-mode)
   (require 'seq)
   (require 'multiple-cursors)
+  (require 'evil)
   (require 'evil-numbers)
 
 #+end_src
@@ -1073,10 +1074,45 @@ reflected in the local value.
 #+end_src
 ** outshine
 #+begin_src emacs-lisp :tangle yes
-  (require 'outshine)
-  ;; (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
   ;; (defvar outline-minor-mode-prefix "\M-#")
+  (require 'outshine)
+  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
 
+  ;; removed top-level sexpressions as outlines in lisp modes
+  (dolist (l-mode '(emacs-lisp-mode-hook lisp-mode-hook))
+    (add-hook l-mode (lambda ()
+                       (setq outline-regexp ";;;\\(;* [^ 	
+  ]\\|###autoload\\)"))))
+
+  ;; enable in some programming modes
+  (dolist (p-mode '(emacs-lisp-mode-hook
+                    lisp-mode-hook
+                    c-mode-hook
+                    java-mode-hook))
+    (add-hook p-mode 'outline-minor-mode))
+
+  ;; Narrowing now works within the headline rather than requiring to be on it
+  (advice-add 'outshine-narrow-to-subtree :before
+              (lambda (&rest args) (unless (outline-on-heading-p t)
+                                     (outline-previous-visible-heading 1))))
+
+  (evil-define-key '(normal visual motion) outline-minor-mode-map
+    (kbd "SPC ou") 'outline-up-heading
+    (kbd "SPC oj") 'outline-forward-same-level
+    (kbd "SPC ok") 'outline-backward-same-level
+    (kbd "SPC ol") 'outline-next-visible-heading
+    (kbd "SPC oh") 'outline-previous-visible-heading
+    (kbd "SPC on") 'outshine-narrow-to-subtree
+    (kbd "SPC ow") 'widen
+    (kbd "SPC oJ") 'outline-move-subtree-down
+    (kbd "SPC oK") 'outline-move-subtree-up
+    (kbd "SPC oH") 'outline-promote
+    (kbd "SPC oL") 'outline-demote
+    (kbd "SPC oi") 'outshine-insert-heading
+    (kbd "SPC oc") 'outshine-cycle-buffer
+    (kbd "SPC of") 'outline-hide-entry
+    (kbd "SPC os") 'outline-show-entry
+    )
 #+end_src
 ** ibuffer
 #+begin_src emacs-lisp :tangle yes
@@ -1139,8 +1175,6 @@ reflected in the local value.
 #+end_src
 ** evil
 #+begin_src emacs-lisp :tangle yes
-  (require 'evil)
-
   (setq evil-emacs-state-modes
         (append
          evil-emacs-state-modes

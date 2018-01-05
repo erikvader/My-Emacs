@@ -282,12 +282,12 @@
    `(org-upcoming-deadline ((,class (:foreground ,rainbow-7))))
    `(org-warning ((,class (:weight bold :foreground ,rainbow-4))))
    ;; outline
-   `(outline-1 ((,class (:foreground ,rainbow-6))))
-   `(outline-2 ((,class (:foreground ,rainbow-3))))
-   `(outline-3 ((,class (:foreground ,rainbow-2))))
-   `(outline-4 ((,class (:foreground ,rainbow-5))))
-   `(outline-5 ((,class (:foreground ,rainbow-5))))
-   `(outline-6 ((,class (:foreground ,rainbow-8))))
+   `(outline-1 ((,class (:height 1.25 :weight bold :background ,rainbow-6 :foreground ,bg1))))
+   `(outline-2 ((,class (:height 1.25 :weight bold :background ,rainbow-3 :foreground ,bg1))))
+   `(outline-3 ((,class (:height 1.25 :weight bold :background ,rainbow-2 :foreground ,bg1))))
+   `(outline-4 ((,class (:height 1.25 :weight bold :background ,rainbow-5 :foreground ,bg1))))
+   `(outline-5 ((,class (:height 1.25 :weight bold :background ,rainbow-5 :foreground ,bg1))))
+   `(outline-6 ((,class (:height 1.25 :weight bold :background ,rainbow-8 :foreground ,bg1))))
    ;; powerline
    `(powerline-evil-base-face ((t (:foreground ,bg2))))
    `(powerline-evil-emacs-face ((,class (:inherit powerline-evil-base-face :background ,rainbow-7))))

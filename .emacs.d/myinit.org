@@ -1247,6 +1247,7 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "gtl") 'transpose-lines)
   (define-key evil-normal-state-map (kbd "gtw") 'transpose-words)
   (define-key evil-normal-state-map (kbd "gts") 'subword-transpose)
+  (define-key evil-normal-state-map (kbd "gt C-l") 'subword-transpose)
   (define-key evil-normal-state-map (kbd "gtr") 'eriks-region-switch)
   (define-key evil-normal-state-map (kbd "gtR") 'eriks-region-switch-abort)
 
@@ -1549,6 +1550,7 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC p{") 'sp-backward-barf-sexp)
   (define-key evil-normal-state-map (kbd "SPC ps") 'sp-split-sexp)
   (define-key evil-normal-state-map (kbd "SPC pj") 'sp-join-sexp)
+  (define-key evil-normal-state-map (kbd "SPC pt") 'sp-transpose-sexp)
 
   ;; (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
 

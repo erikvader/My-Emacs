@@ -3,21 +3,23 @@
 (require 'package)
 (add-to-list 'package-archives
              '("melpa-stable" . "https://melpa.org/packages/"))
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+;; (when (< emacs-major-version 24)
+;;   ;; For important compatibility libraries like cl-lib
+;;   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 
 (package-initialize)
 
 (or (file-exists-p package-user-dir)
     (package-refresh-contents))
 
-(load-file "~/.emacs.d/my-package-list.el")
+;; (load-file "~/.emacs.d/my-package-list.el")
 
 ; install the missing packages
-(dolist (package package-list)
-  (unless (package-installed-p package)
-    (package-install package)))
+;; (dolist (package package-list)
+;;   (unless (package-installed-p package)
+;;     (package-install package)))
+
+(package-install-selected-packages)
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'load-path "~/.emacs.d/themes/")
@@ -104,7 +106,7 @@
  '(org-src-window-setup (quote current-window))
  '(package-selected-packages
    (quote
-    (drag-stuff which-key tabbar smartparens smart-mode-line rainbow-mode rainbow-delimiters projectile packed outshine org-bullets neotree multiple-cursors modalka markdown-mode magit linum-relative latex-preview-pane hydra hungry-delete haskell-snippets haskell-mode golden-ratio-scroll-screen ggtags framemove fontawesome flycheck expand-region evil-surround evil-nerd-commenter evil-mc-extras evil-lion evil-indent-plus evil-extra-operator evil-easymotion dumb-jump dot-mode disable-mouse diminish dashboard counsel-projectile counsel company-emacs-eclim color-moccur charmap buffer-move browse-kill-ring autopair auctex all-the-icons-dired)))
+    (drag-stuff which-key smartparens smart-mode-line rainbow-mode rainbow-delimiters projectile outshine org-bullets multiple-cursors markdown-mode magit linum-relative hydra haskell-snippets haskell-mode golden-ratio-scroll-screen ggtags framemove flycheck expand-region evil-surround evil-nerd-commenter evil-mc-extras evil-lion evil-indent-plus evil-extra-operator evil-easymotion disable-mouse diminish dashboard counsel-projectile counsel company-emacs-eclim color-moccur charmap buffer-move browse-kill-ring auctex)))
  '(perl-continued-brace-offset -3)
  '(perl-continued-statement-offset 3)
  '(perl-indent-level 3)

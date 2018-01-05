@@ -854,6 +854,11 @@ reflected in the local value.
   (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
   (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
 
+  (define-key my-keys-map (kbd "H-l") 'windmove-right)
+  (define-key my-keys-map (kbd "H-h") 'windmove-left)
+  (define-key my-keys-map (kbd "H-k") 'windmove-up)
+  (define-key my-keys-map (kbd "H-j") 'windmove-down)
+
   (setq framemove-hook-into-windmove t)
 
 #+end_src

@@ -125,7 +125,7 @@ reflected in the local value.
 
   (winner-mode 1)
 
-  (global-disable-mouse-mode)
+  ;; (global-disable-mouse-mode)
 
   (define-key my-keys-map (kbd "C-+") 'er/expand-region)
   (define-key my-keys-map (kbd "M-s q") 'isearch-query-replace-regexp)
@@ -904,10 +904,11 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   ;;ivy
   (ivy-mode 1)
+  (counsel-mode 1)
   (global-set-key (kbd "C-s") 'swiper)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
+  ;; (global-set-key (kbd "M-x") 'counsel-M-x)
   ;;(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (define-key my-keys-map [remap find-file] 'counsel-find-file)
+  ;; (define-key my-keys-map [remap find-file] 'counsel-find-file)
   ;;(define-key ivy-minibuffer-map (kbd "<tab>") 'ivy-partial)
 
   ;;avy
@@ -2253,14 +2254,14 @@ reflected in the local value.
             (lambda ()
               (diminish 'autopair-mode)))
 
-  ;;(diminish 'counsel-mode)
+  (diminish 'counsel-mode)
   (diminish 'which-key-mode)
   (diminish 'ivy-mode)
   (diminish 'undo-tree-mode)
   ;; (diminish 'auto-complete-mode)
   (diminish 'company-mode)
   (diminish 'yas-minor-mode)
-  (diminish 'disable-mouse-global-mode)
+  ;; (diminish 'disable-mouse-global-mode)
   (add-hook 'auto-revert-mode-hook
             (lambda ()
               (diminish 'auto-revert-mode)))

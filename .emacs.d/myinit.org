@@ -997,6 +997,7 @@ reflected in the local value.
 
   (defun start-smartparens ()
     (smartparens-mode t)
+    (show-smartparens-mode t)
 
     (define-key smartparens-mode-map (kbd "C-M-SPC") 'sp-mark-sexp)
 

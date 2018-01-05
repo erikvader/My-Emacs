@@ -1077,7 +1077,10 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   ;; (defvar outline-minor-mode-prefix "\M-#")
   (require 'outshine)
-  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  (add-hook 'outline-minor-mode-hook (lambda ()
+                                       (outshine-hook-function)
+                                       (define-key outline-minor-mode-map [remap self-insert-command] nil) ;;remove annyoing remap to outshine-self-insert-command
+                                       ))
 
   ;; removed top-level sexpressions as outlines in lisp modes
   (dolist (l-mode '(emacs-lisp-mode-hook lisp-mode-hook))

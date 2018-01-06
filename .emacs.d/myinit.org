@@ -1583,6 +1583,8 @@ reflected in the local value.
 
   (define-key evil-motion-state-map (kbd "C-;") 'evil-repeat-find-char)
   (define-key evil-motion-state-map (kbd "C-,") 'evil-repeat-find-char-reverse)
+  (define-key evil-motion-state-map (kbd "H-.") 'evil-repeat-find-char)
+  (define-key evil-motion-state-map (kbd "H-,") 'evil-repeat-find-char-reverse)
 
   (evilem-define (kbd "SPC ][") 'sp-next-sexp)
   (evilem-define (kbd "SPC ]]") 'sp-forward-sexp)

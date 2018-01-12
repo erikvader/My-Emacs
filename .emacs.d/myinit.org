@@ -1929,14 +1929,12 @@ reflected in the local value.
 #+end_src
 ** lisp hook
 #+begin_src emacs-lisp :tangle yes
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda ()
-              ;; (smartparens-strict-mode t)
-              ;;(make-local-variable 'newline-without-break-tab)
-              ;;(setq newline-without-break-tab t)
-              ;;(autopair-mode)
-              ;;(setq show-trailing-whitespace t)
-              ))
+  (defun lisp-modes-hook ()
+    (eldoc-mode 1))
+
+  (dolist (l-mode '(emacs-lisp-mode-hook
+                    lisp-mode-hook))
+    (add-hook l-mode 'lisp-modes-hook))
 
 #+end_src
 ** perl hook

@@ -134,6 +134,8 @@ reflected in the local value.
   (define-key my-keys-map (kbd "M-s s") 'isearch-forward)
   (define-key my-keys-map (kbd "M-s S") 'isearch-backward)
 
+  (define-key my-keys-map (kbd "H-t") 'transpose-chars)
+
   ;;magit fixar detta redan med ett egen global mode
   ;;(global-auto-revert-mode t)
 

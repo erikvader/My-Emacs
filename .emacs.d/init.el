@@ -131,6 +131,7 @@
  '(sp-autodelete-closing-pair nil)
  '(sp-autodelete-opening-pair nil)
  '(sp-autodelete-pair nil)
+ '(sp-escape-quotes-after-insert nil)
  '(sp-highlight-pair-overlay nil)
  '(sp-navigate-reindent-after-up nil)
  '(split-height-threshold nil)

@@ -1239,13 +1239,33 @@ reflected in the local value.
 
   (evil-remap "C-@" "@@")
 
+  (defun evil-open-line ()
+    "open-line for evil, designed to be the opposite of J (join-lines).
+
+  Indents the new line if it is not empty. If the current major mode is
+  derived from prog-mode, then `indent-according-to-mode' is used,
+  otherwise the current line's indentation is used.
+
+  Assumes `left-margin' is 0 or that there is no fill prefix (that
+  open-line doesn't indent the new line in any way)"
+    (interactive)
+    (let ((start-ind (current-indentation)))
+      (just-one-space 0)
+      (open-line 1)
+      (save-excursion
+        (forward-char)
+        (unless (eolp)
+          (if (derived-mode-p 'prog-mode)
+              (indent-according-to-mode)
+            (indent-to start-ind))))))
+
   ;;opposite to J (join-lines)
-  (define-key evil-normal-state-map (kbd "S")
-    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([100 105 32 134217848 111 112 101 110 45 108 105 110 101 return] 0 "%d")) arg)))
+  (define-key evil-normal-state-map (kbd "S") 'evil-open-line)
+  ;; (define-key evil-normal-state-map (kbd "S")
+  ;;   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([100 105 32 134217848 111 112 101 110 45 108 105 110 101 return] 0 "%d")) arg)))
 
-  (define-key evil-normal-state-map (kbd "g o")
-    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ("Sl==[ " 0 "%d")) arg)))
-
+  ;; (define-key evil-normal-state-map (kbd "g o")
+  ;;   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ("Sl==[ " 0 "%d")) arg)))
 
   (define-key evil-normal-state-map (kbd "ga") 'evil-lion-left)
   (define-key evil-normal-state-map (kbd "gA") 'evil-lion-right)

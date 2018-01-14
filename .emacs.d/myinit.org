@@ -136,6 +136,12 @@ reflected in the local value.
 
   (define-key my-keys-map (kbd "H-t") 'transpose-chars)
 
+  ;; remove some annoying keybindings
+  (global-set-key (kbd "<home>") nil)
+  (global-set-key (kbd "<end>") nil)
+  (global-set-key (kbd "<prior>") nil)
+  (global-set-key (kbd "<next>") nil)
+
   ;;magit fixar detta redan med ett egen global mode
   ;;(global-auto-revert-mode t)
 
@@ -1568,6 +1574,11 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC ps") 'sp-split-sexp)
   (define-key evil-normal-state-map (kbd "SPC pj") 'sp-join-sexp)
   (define-key evil-normal-state-map (kbd "SPC pt") 'sp-transpose-sexp)
+
+  (define-key evil-normal-state-map (kbd "H-]") 'sp-forward-slurp-sexp)
+  (define-key evil-normal-state-map (kbd "H-[") 'sp-backward-slurp-sexp)
+  (define-key evil-normal-state-map (kbd "H-}") 'sp-forward-barf-sexp)
+  (define-key evil-normal-state-map (kbd "H-{") 'sp-backward-barf-sexp)
 
   ;; (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
 

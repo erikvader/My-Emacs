@@ -1461,7 +1461,7 @@ reflected in the local value.
 
   ;; between ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (evil-define-text-object erik-evil-between-outer-text-object (count &optional beg end type)
-    (let ((text (string (read-char))))
+    (let ((text (evil-read-key)))
       (if erik-evil-generic-outer
           (setq erik-evil-generic-latest text))
       (evil-select-paren text text beg end type count t)))
@@ -1470,7 +1470,7 @@ reflected in the local value.
     (let ((text (if (and erik-evil-generic-inner
                          erik-evil-generic-latest)
                     erik-evil-generic-latest
-                  (string (read-char)))))
+                  (evil-read-key))))
       (evil-select-paren text text beg end type count nil)))
 
   (define-key evil-inner-text-objects-map (kbd "b") 'erik-evil-between-inner-text-object) ;;vib" -- gives weird behaviour when inner is only one character long

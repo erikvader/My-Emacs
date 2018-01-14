@@ -1356,6 +1356,13 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC s N") 'moccur)
   (define-key evil-normal-state-map (kbd "SPC s O") 'occur-by-moccur)
 
+  (define-key evil-normal-state-map (kbd "SPC s a p") 'projectile-ag)
+  (define-key evil-normal-state-map (kbd "SPC s a c") 'counsel-ag)
+  (define-key evil-normal-state-map (kbd "SPC s a a") 'ag)
+  (define-key evil-normal-state-map (kbd "SPC s a r") 'ag-regexp)
+  (define-key evil-normal-state-map (kbd "SPC s a R") 'ag-project-regexp)
+  (define-key evil-normal-state-map (kbd "SPC s a P") 'ag-project)
+
   (setq evil-operator-moccur-grep-find-key (kbd "SPC s m"))
   (require 'evil-operator-moccur)
   (global-evil-operator-moccur-mode 1)

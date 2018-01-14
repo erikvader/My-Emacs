@@ -176,7 +176,7 @@ REGEX is the regex to align by."
                        (concat regex group-regex)))))
              (spacing 1)
              (repeat
-              (if (eq count 0) t nil))
+              (if (or (null count) (eq count 0)) t nil))
              (group (if (and (not (null count)) (> count 1)) 2 1))
              (rule
               (list (list nil (cons 'regexp regexp)

@@ -1338,10 +1338,6 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "gp") 'evil-operator-clone)
   (define-key evil-visual-state-map (kbd "gp") 'evil-operator-clone)
 
-  ;; (setq evil-textobj-between-a-key "b")
-  ;; (setq evil-textobj-between-i-key "b")
-  ;; (require 'evil-textobj-between)
-
   (require 'evil-little-word)
   (define-key evil-motion-state-map (kbd "C-l C-w") 'evil-forward-little-word-begin)
   (define-key evil-motion-state-map (kbd "C-l C-b") 'evil-backward-little-word-begin)
@@ -1460,21 +1456,25 @@ reflected in the local value.
   (advice-add 'evil-surround-inner-overlay :after 'erik-evil-generic-after-inner)
 
   ;; between ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (evil-define-text-object erik-evil-between-outer-text-object (count &optional beg end type)
-    (let ((text (evil-read-key)))
-      (if erik-evil-generic-outer
-          (setq erik-evil-generic-latest text))
-      (evil-select-paren text text beg end type count t)))
+  ;; (evil-define-text-object erik-evil-between-outer-text-object (count &optional beg end type)
+  ;;   (let ((text (evil-read-key)))
+  ;;     (if erik-evil-generic-outer
+  ;;         (setq erik-evil-generic-latest text))
+  ;;     (evil-select-paren text text beg end type count t)))
 
-  (evil-define-text-object erik-evil-between-inner-text-object (count &optional beg end type)
-    (let ((text (if (and erik-evil-generic-inner
-                         erik-evil-generic-latest)
-                    erik-evil-generic-latest
-                  (evil-read-key))))
-      (evil-select-paren text text beg end type count nil)))
+  ;; (evil-define-text-object erik-evil-between-inner-text-object (count &optional beg end type)
+  ;;   (let ((text (if (and erik-evil-generic-inner
+  ;;                        erik-evil-generic-latest)
+  ;;                   erik-evil-generic-latest
+  ;;                 (evil-read-key))))
+  ;;     (evil-select-paren text text beg end type count nil)))
 
-  (define-key evil-inner-text-objects-map (kbd "b") 'erik-evil-between-inner-text-object) ;;vib" -- gives weird behaviour when inner is only one character long
-  (define-key evil-outer-text-objects-map (kbd "b") 'erik-evil-between-outer-text-object)
+  ;; (define-key evil-inner-text-objects-map (kbd "b") 'erik-evil-between-inner-text-object) ;;vib" -- gives weird behaviour when inner is only one character long
+  ;; (define-key evil-outer-text-objects-map (kbd "b") 'erik-evil-between-outer-text-object)
+
+  (setq evil-textobj-between-a-key "b")
+  (setq evil-textobj-between-i-key "b")
+  (require 'evil-textobj-between)
 
   (defun erik-evil-surround-between-cmd ()
     (let ((text (string (read-char))))

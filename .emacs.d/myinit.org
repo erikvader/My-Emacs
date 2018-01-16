@@ -1869,6 +1869,34 @@ reflected in the local value.
 
 
 #+end_src
+** git gutter
+#+begin_src emacs-lisp :tangle yes
+  (setq git-gutter-fr+-side 'right-fringe)
+  (require 'git-gutter-fringe+)
+
+  (set-face-foreground 'git-gutter-fr+-modified "yellow")
+  (set-face-background 'git-gutter-fr+-modified "yellow")
+
+  (set-face-foreground 'git-gutter-fr+-deleted "red")
+  (set-face-background 'git-gutter-fr+-deleted "red")
+
+  (set-face-foreground 'git-gutter-fr+-added "green")
+  (set-face-background 'git-gutter-fr+-added "green")
+
+  ;; (fringe-helper-define 'git-gutter-fr+-modified nil
+  ;;   "XXXXXXXX"
+  ;;   "XXXXXXXX"
+  ;;   "........"
+  ;;   "........"
+  ;;   "........"
+  ;;   "........"
+  ;;   "XXXXXXXX"
+  ;;   "XXXXXXXX"
+  ;;   )
+
+  (global-git-gutter+-mode 1)
+  ;; (git-gutter+-toggle-fringe)
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes

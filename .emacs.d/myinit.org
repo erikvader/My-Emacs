@@ -1239,6 +1239,16 @@ reflected in the local value.
 
   (evil-remap "C-@" "@@")
 
+  (defun evil-capitalize-last-word ()
+    (interactive)
+    (save-excursion
+      ;; (evil-backward-word-end)
+      (let ((end (point)))
+        (evil-backward-word-begin)
+        (eriks-evil-capitalize-operator (point) end))))
+
+  (define-key evil-insert-state-map (kbd "M-c") 'evil-capitalize-last-word)
+
   (defun evil-open-line ()
     "open-line for evil, designed to be the opposite of J (join-lines).
 

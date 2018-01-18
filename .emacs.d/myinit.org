@@ -1114,21 +1114,21 @@ reflected in the local value.
                                      (outline-previous-visible-heading 1))))
 
   (evil-define-key '(normal visual motion) outline-minor-mode-map
-    (kbd "SPC ou") 'outline-up-heading
-    (kbd "SPC oj") 'outline-forward-same-level
-    (kbd "SPC ok") 'outline-backward-same-level
-    (kbd "SPC ol") 'outline-next-visible-heading
-    (kbd "SPC oh") 'outline-previous-visible-heading
-    (kbd "SPC on") 'outshine-narrow-to-subtree
-    (kbd "SPC ow") 'widen
-    (kbd "SPC oJ") 'outline-move-subtree-down
-    (kbd "SPC oK") 'outline-move-subtree-up
-    (kbd "SPC oH") 'outline-promote
-    (kbd "SPC oL") 'outline-demote
-    (kbd "SPC oi") 'outshine-insert-heading
-    (kbd "SPC oc") 'outshine-cycle-buffer
-    (kbd "SPC of") 'outline-hide-entry
-    (kbd "SPC os") 'outline-show-entry
+    (kbd "zxu") 'outline-up-heading
+    (kbd "zxj") 'outline-forward-same-level
+    (kbd "zxk") 'outline-backward-same-level
+    (kbd "zxl") 'outline-next-visible-heading
+    (kbd "zxh") 'outline-previous-visible-heading
+    (kbd "zxn") 'outshine-narrow-to-subtree
+    (kbd "zxw") 'widen
+    (kbd "zxJ") 'outline-move-subtree-down
+    (kbd "zxK") 'outline-move-subtree-up
+    (kbd "zxH") 'outline-promote
+    (kbd "zxL") 'outline-demote
+    (kbd "zxi") 'outshine-insert-heading
+    (kbd "zxc") 'outshine-cycle-buffer
+    (kbd "zxf") 'outline-hide-entry
+    (kbd "zxs") 'outline-show-entry
     )
 #+end_src
 ** ibuffer

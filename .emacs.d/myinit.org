@@ -328,7 +328,7 @@ reflected in the local value.
 
   ;;(define-key eriks-map (kbd "i") 'edit-myinit-org)
 
-  (define-key eriks-map (kbd "g") 'magit-status)
+  (define-key eriks-map (kbd "gs") 'magit-status)
   (define-key eriks-map (kbd "U") 'counsel-unicode-char)
   ;;(define-key eriks-map (kbd "M") 'counsel-mark-ring)
 
@@ -1908,6 +1908,11 @@ reflected in the local value.
 
   (global-git-gutter+-mode 1)
   ;; (git-gutter+-toggle-fringe)
+
+  (define-key eriks-map (kbd "gg") 'git-gutter+-mode) ; Turn on/off in the current buffer
+  (define-key eriks-map (kbd "gG") 'global-git-gutter+-mode) ; Turn on/off globally
+  (define-key eriks-map (kbd "gj") 'git-gutter+-next-hunk)
+  (define-key eriks-map (kbd "gk") 'git-gutter+-previous-hunk)
 #+end_src
 * prog-mode-hook
 ** prog-mode

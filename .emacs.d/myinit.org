@@ -1192,6 +1192,7 @@ reflected in the local value.
 #+end_src
 ** evil
 #+begin_src emacs-lisp :tangle yes
+  ;;; setup
   (setq evil-emacs-state-modes
         (append
          evil-emacs-state-modes
@@ -1206,7 +1207,7 @@ reflected in the local value.
   (define-key evil-emacs-state-map [escape] 'evil-normal-state)
   (evil-set-initial-state 'dired-mode 'emacs)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; evil remap ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; evil remap
   (defun evil-remap (trigger action &optional map)
     "remaps a key sequence to execute another key sequence in evil-mode.
 
@@ -1220,7 +1221,7 @@ reflected in the local value.
            (interactive)
            (execute-kbd-macro ,action)))))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; normal mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; normal mode
   ;;(define-key evil-normal-state-map (kbd "RET") 'newline-without-break-down)
   ;;(define-key evil-normal-state-map (kbd "<S-return>") 'newline-without-break-up)
 
@@ -1304,7 +1305,7 @@ reflected in the local value.
   (define-key evil-insert-state-map (kbd "M-u") 'universal-argument)
   (define-key evil-visual-state-map (kbd "M-u") 'universal-argument)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; nerd commenter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; nerd commenter
   (require 'evil-nerd-commenter)
 
   (define-key evil-normal-state-map (kbd "gc") 'evilnc-comment-operator)
@@ -1313,7 +1314,7 @@ reflected in the local value.
   (define-key evil-inner-text-objects-map (kbd "c") 'evilnc-inner-comment)
   (define-key evil-outer-text-objects-map (kbd "c") 'evilnc-outer-commenter)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; extra operator ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; extra operator
   (require 'evil-extra-operator)
 
   (define-key evil-normal-state-map (kbd "gr") 'evil-operator-eval)
@@ -1406,7 +1407,7 @@ reflected in the local value.
   (require 'evil-operator-moccur)
   (global-evil-operator-moccur-mode 1)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; evil surround ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; evil surround
   (require 'evil-surround)
   (global-evil-surround-mode 1)
 
@@ -1454,7 +1455,7 @@ reflected in the local value.
     )
   (advice-add 'evil-initialize-local-keymaps :after 'erik-evil-surround-advice)
 
-  ; generic ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; generic
   (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)
     (let ((text (read-from-minibuffer "" "")))
       (if erik-evil-generic-outer
@@ -1501,7 +1502,7 @@ reflected in the local value.
   (advice-add 'evil-surround-inner-overlay :before 'erik-evil-generic-before-inner)
   (advice-add 'evil-surround-inner-overlay :after 'erik-evil-generic-after-inner)
 
-  ;; between ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; between
   ;; (evil-define-text-object erik-evil-between-outer-text-object (count &optional beg end type)
   ;;   (let ((text (evil-read-key)))
   ;;     (if erik-evil-generic-outer
@@ -1528,10 +1529,10 @@ reflected in the local value.
 
   (setq-default evil-surround-pairs-alist (cons '(?b . erik-evil-surround-between-cmd) evil-surround-pairs-alist))
 
-  ;; global ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; global
   (define-and-bind-text-object-global "f" "\\_<[a-bA-b0-9._-]+?(" ")")
 
-  ;; latex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; latex
   (defun erik-evil-surround-latex-cmd ()
     (let ((text (read-from-minibuffer "" "")))
       (cons (concat "\\" text "{") "}")))
@@ -1546,7 +1547,7 @@ reflected in the local value.
   (dolist (hk '(tex-mode-hook plain-tex-mode-hook latex-mode-hook LaTeX-mode-hook))
     (add-hook hk 'erik-evil-surround-latex-hook))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; visual mode
   ;; (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
 
   ;; (evil-remap "g C-n" "\\rN1%d" evil-visual-state-map)
@@ -1588,7 +1589,7 @@ reflected in the local value.
   (define-key evil-visual-state-map (kbd "SPC i l") 'eriks-evil-visual-block-insert-letters)
   (define-key evil-visual-state-map (kbd "SPC i i") 'eriks-evil-visual-block-insert-alt)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space key ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; space key
   ;; (define-prefix-command 'evil-spc)
   ;; (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
   ;;(define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
@@ -1618,11 +1619,11 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC y") 'browse-kill-ring)
   (define-key evil-normal-state-map (kbd "SPC Y") 'counsel-yank-pop)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; insert motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; insert motion
   (define-key evil-insert-state-map (kbd "C-^") 'sp-up-sexp)
   (define-key evil-insert-state-map (kbd "C-e") 'end-of-line)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; space motion ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; space motion
   (require 'evil-easymotion)
   (evilem-default-keybindings "SPC")
 
@@ -1659,7 +1660,7 @@ reflected in the local value.
 
   (evilem-define (kbd "SPC [i") 'eriks-up-indentation)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; motion map ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; motion map
   (define-key evil-motion-state-map (kbd "[m") 'evil-backward-section-begin)
   (define-key evil-motion-state-map (kbd "[M") 'evil-backward-section-end)
   (define-key evil-motion-state-map (kbd "]m") 'evil-forward-section-begin)
@@ -1698,11 +1699,11 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd "(") 'sp-beginning-of-sexp)
   (define-key evil-motion-state-map (kbd ")") 'sp-end-of-sexp)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; evil-exchange ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; evil-exchange
   (require 'evil-exchange)
   (evil-exchange-install)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; multiple cursors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; multiple cursors
   (defvar evil-mc-key-map
     (let ((map (make-sparse-keymap))
           (keys '(("gmm"   . evil-mc-make-all-cursors)
@@ -1758,13 +1759,13 @@ reflected in the local value.
 
   (global-evil-mc-mode 1)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ggtags ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; ggtags
 
   (evil-define-key 'normal ggtags-mode-map (kbd "C-]") 'ggtags-find-tag-dwim)
   (evil-define-key 'normal ggtags-mode-map (kbd "C-o") 'ggtags-prev-mark)
   (evil-define-key 'normal ggtags-mode-map (kbd "C-i") 'ggtags-next-mark)
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; other ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; other
 
   (evil-define-text-object eriks-evil-inside-line-text-object (count &optional beg end type)
     (save-excursion

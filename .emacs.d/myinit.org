@@ -1250,6 +1250,7 @@ reflected in the local value.
         (eriks-evil-capitalize-operator (point) end))))
 
   (define-key evil-insert-state-map (kbd "M-c") 'evil-capitalize-last-word)
+  (define-key my-keys-map (kbd "M-c") 'evil-capitalize-last-word)
 
   (defun evil-open-line ()
     "open-line for evil, designed to be the opposite of J (join-lines).

@@ -1237,6 +1237,8 @@ reflected in the local value.
   ;; (define-key evil-visual-state-map (kbd "C-j") (concat ":m '>+1" (kbd "RET") "gv=gv"))
   ;; (define-key evil-visual-state-map (kbd "C-k") (concat ":m '<-2" (kbd "RET") "gv=gv"))
 
+  (define-key evil-normal-state-map (kbd "<f12>") 'evil-ex-nohighlight)
+
   (evil-remap "C-@" "@@")
 
   (defun evil-capitalize-last-word ()

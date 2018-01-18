@@ -86,6 +86,7 @@
  '(evil-move-beyond-eol t)
  '(evil-move-cursor-back nil)
  '(evil-repeat-move-cursor nil)
+ '(evil-search-module (quote evil-search))
  '(evil-shift-width 1)
  '(evil-want-C-d-scroll nil)
  '(evil-want-Y-yank-to-eol t)

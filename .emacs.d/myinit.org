@@ -742,44 +742,44 @@ reflected in the local value.
 #+end_src
 ** exchange two regions
 #+begin_src emacs-lisp :tangle yes
-  (setq eriks-regions-saved nil)
+  ;; (setq eriks-regions-saved nil)
 
-  (defun eriks-region-switch-abort ()
-    "Abort current transpose"
-    (interactive)
-    (setq eriks-regions-saved nil)
-    (message "aborted..."))
+  ;; (defun eriks-region-switch-abort ()
+  ;;   "Abort current transpose"
+  ;;   (interactive)
+  ;;   (setq eriks-regions-saved nil)
+  ;;   (message "aborted..."))
 
-  (defun eriks-region-switch (a b)
-    "Switches two regions.
-  Activate an region and then:
-     1st call: save the region for switching (abort with `eriks-region-switch-abort')
-     2nd call: switch!"
-    (interactive "r")
-    (if (not mark-active)
-        (message "Mark not active...")
-      (progn
-        (deactivate-mark)
-        (if (null eriks-regions-saved)
-            (setq eriks-regions-saved (simplify-region (cons a b)))
-          (let* ((sim (simplify-region (cons a b)))
-                 (old eriks-regions-saved)
-                 (sorted (sort-regions sim old))
-                 (left (car sorted))
-                 (right (cdr sorted))
-                 (leftl (region-size left))
-                 (rightl (region-size right)))
-            (if (region-overlap left right)
-                (message "De overlappar")
-              (progn
-                (let* ((a (delete-and-extract-region (car left) (cdr left)))
-                       (nright (translate-region right (- 0 leftl)))
-                       (b (delete-and-extract-region (car nright) (cdr nright))))
-                  (goto-char (car nright))
-                  (insert a)
-                  (goto-char (car left))
-                  (insert b))))
-            (setq eriks-regions-saved nil))))))
+  ;; (defun eriks-region-switch (a b)
+  ;;   "Switches two regions.
+  ;; Activate an region and then:
+  ;;    1st call: save the region for switching (abort with `eriks-region-switch-abort')
+  ;;    2nd call: switch!"
+  ;;   (interactive "r")
+  ;;   (if (not mark-active)
+  ;;       (message "Mark not active...")
+  ;;     (progn
+  ;;       (deactivate-mark)
+  ;;       (if (null eriks-regions-saved)
+  ;;           (setq eriks-regions-saved (simplify-region (cons a b)))
+  ;;         (let* ((sim (simplify-region (cons a b)))
+  ;;                (old eriks-regions-saved)
+  ;;                (sorted (sort-regions sim old))
+  ;;                (left (car sorted))
+  ;;                (right (cdr sorted))
+  ;;                (leftl (region-size left))
+  ;;                (rightl (region-size right)))
+  ;;           (if (region-overlap left right)
+  ;;               (message "De overlappar")
+  ;;             (progn
+  ;;               (let* ((a (delete-and-extract-region (car left) (cdr left)))
+  ;;                      (nright (translate-region right (- 0 leftl)))
+  ;;                      (b (delete-and-extract-region (car nright) (cdr nright))))
+  ;;                 (goto-char (car nright))
+  ;;                 (insert a)
+  ;;                 (goto-char (car left))
+  ;;                 (insert b))))
+  ;;           (setq eriks-regions-saved nil))))))
 
   (defun region-size (r)
     (- (cdr r) (car r)))
@@ -1292,13 +1292,13 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
 
-  (define-key evil-normal-state-map (kbd "gtc") 'transpose-chars)
-  (define-key evil-normal-state-map (kbd "gtl") 'transpose-lines)
-  (define-key evil-normal-state-map (kbd "gtw") 'transpose-words)
-  (define-key evil-normal-state-map (kbd "gts") 'subword-transpose)
-  (define-key evil-normal-state-map (kbd "gt C-l") 'subword-transpose)
-  (define-key evil-normal-state-map (kbd "gtr") 'eriks-region-switch)
-  (define-key evil-normal-state-map (kbd "gtR") 'eriks-region-switch-abort)
+  ;; (define-key evil-normal-state-map (kbd "gtc") 'transpose-chars)
+  ;; (define-key evil-normal-state-map (kbd "gtl") 'transpose-lines)
+  ;; (define-key evil-normal-state-map (kbd "gtw") 'transpose-words)
+  ;; (define-key evil-normal-state-map (kbd "gts") 'subword-transpose)
+  ;; (define-key evil-normal-state-map (kbd "gt C-l") 'subword-transpose)
+  ;; (define-key evil-normal-state-map (kbd "gtr") 'eriks-region-switch)
+  ;; (define-key evil-normal-state-map (kbd "gtR") 'eriks-region-switch-abort)
 
   (define-key evil-normal-state-map (kbd "M-u") 'universal-argument)
   (define-key evil-insert-state-map (kbd "M-u") 'universal-argument)
@@ -1547,7 +1547,7 @@ reflected in the local value.
     (add-hook hk 'erik-evil-surround-latex-hook))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; visual mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
+  ;; (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)
 
   ;; (evil-remap "g C-n" "\\rN1%d" evil-visual-state-map)
 
@@ -1697,6 +1697,10 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd "M-]") 'sp-down-sexp)
   (define-key evil-motion-state-map (kbd "(") 'sp-beginning-of-sexp)
   (define-key evil-motion-state-map (kbd ")") 'sp-end-of-sexp)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; evil-exchange ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (require 'evil-exchange)
+  (evil-exchange-install)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; multiple cursors ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defvar evil-mc-key-map

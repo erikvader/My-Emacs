@@ -2063,6 +2063,16 @@ reflected in the local value.
               ;; (electric-pair-mode 1)
               ))
 #+end_src
+** html hook
+#+begin_src emacs-lisp :tangle yes
+  (defun close-tag-stay ()
+    (interactive)
+    (save-excursion
+      (sgml-close-tag)))
+
+  (add-hook 'html-mode-hook (lambda ()
+                             (define-key html-mode-map (kbd "C-c C-e") 'close-tag-stay)))
+#+end_src
 * Hydra
 ** various hydras
 #+begin_src emacs-lisp :tangle yes

@@ -1273,8 +1273,25 @@ reflected in the local value.
               (indent-according-to-mode)
             (indent-to start-ind))))))
 
+  (defun evil-open-line-above ()
+    "same as `evil-open-line' except that it is more like gO<esc>"
+    (interactive)
+    (save-excursion
+      (forward-line -1)
+      (end-of-line)
+      (evil-open-line)))
+
+  (defun evil-open-line-below ()
+    "same as `evil-open-line' except that it is more like go<esc>"
+    (interactive)
+    (save-excursion
+      (end-of-line)
+      (evil-open-line)))
+
   ;;opposite to J (join-lines)
   (define-key evil-normal-state-map (kbd "S") 'evil-open-line)
+  (define-key evil-normal-state-map (kbd "gO") 'evil-open-line-above)
+  (define-key evil-normal-state-map (kbd "go") 'evil-open-line-below)
   ;; (define-key evil-normal-state-map (kbd "S")
   ;;   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([100 105 32 134217848 111 112 101 110 45 108 105 110 101 return] 0 "%d")) arg)))
 

@@ -1253,7 +1253,7 @@ reflected in the local value.
   (define-key evil-insert-state-map (kbd "M-c") 'evil-capitalize-last-word)
   (define-key my-keys-map (kbd "M-c") 'evil-capitalize-last-word)
 
-  (defun evil-open-line ()
+  (defun evil-open-line (ARG)
     "open-line for evil, designed to be the opposite of J (join-lines).
 
   Indents the new line if it is not empty. If the current major mode is
@@ -1262,10 +1262,10 @@ reflected in the local value.
 
   Assumes `left-margin' is 0 or that there is no fill prefix (that
   open-line doesn't indent the new line in any way)"
-    (interactive)
+    (interactive "p")
     (let ((start-ind (current-indentation)))
       (just-one-space 0)
-      (open-line 1)
+      (open-line ARG)
       (save-excursion
         (forward-char)
         (unless (eolp)
@@ -1273,20 +1273,19 @@ reflected in the local value.
               (indent-according-to-mode)
             (indent-to start-ind))))))
 
-  (defun evil-open-line-above ()
+  (defun evil-open-line-above (ARG)
     "same as `evil-open-line' except that it is more like gO<esc>"
-    (interactive)
+    (interactive "p")
     (save-excursion
-      (forward-line -1)
-      (end-of-line)
-      (evil-open-line)))
+      (beginning-of-line)
+      (newline ARG)))
 
-  (defun evil-open-line-below ()
+  (defun evil-open-line-below (ARG)
     "same as `evil-open-line' except that it is more like go<esc>"
-    (interactive)
+    (interactive "p")
     (save-excursion
       (end-of-line)
-      (evil-open-line)))
+      (newline ARG)))
 
   ;;opposite to J (join-lines)
   (define-key evil-normal-state-map (kbd "S") 'evil-open-line)

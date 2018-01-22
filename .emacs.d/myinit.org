@@ -2072,7 +2072,8 @@ reflected in the local value.
       (sgml-close-tag)))
 
   (add-hook 'html-mode-hook (lambda ()
-                             (define-key html-mode-map (kbd "C-c C-e") 'close-tag-stay)))
+                              (define-key html-mode-map (kbd "C-c C-e") 'close-tag-stay)
+                              (define-key html-mode-map (kbd "/") nil)))
 #+end_src
 ** org-mode
 #+begin_src emacs-lisp :tangle yes

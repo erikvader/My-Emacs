@@ -931,6 +931,8 @@ reflected in the local value.
   (define-key eriks-map (kbd "SPC") 'avy-goto-char-in-line)
   (define-key eriks-map (kbd "S-SPC") 'avy-goto-char-timer)
 
+  (define-key swiper-map (kbd "<escape>") 'keyboard-escape-quit)
+
   ;;dired
   ;;(add-hook 'dired-mode-hook
   ;;          (lambda ()

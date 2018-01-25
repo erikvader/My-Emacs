@@ -1442,7 +1442,7 @@ reflected in the local value.
     "highlights a given regex written in minibuffer interactively.
   Uses a default face unless C-u is used."
     (interactive)
-    (let* ((reg (read-regexp "highlight"))
+    (let* ((reg (read-regexp "highlight" "" 'evil-ex-search-history))
            (hi-lock-auto-select-face t)
            (face (hi-lock-read-face-name)))
       (hi-lock-face-buffer reg face)))

@@ -24,7 +24,15 @@
                             '(("\\<\\(FIXME\\):" 1 'eriks-fix-later-face t)
                               ("\\<\\(TODO\\):" 1 'eriks-fix-later-face t))))
 
+  (defface hi-red
+    '((t :foreground "black"
+         :background "tomato"))
+    "red highlight face")
 
+  (defface hi-cyan
+    '((t :foreground "black"
+         :background "cyan2"))
+    "cyan highlight face")
 #+end_src
 * Eriks keys minor mode
 [[https://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs/5340797][Source from stackoverflow]]
@@ -1427,6 +1435,17 @@ reflected in the local value.
 
   ;;; evil-highlight
   (require 'hi-lock)
+
+  (setq-default hi-lock-face-defaults (list "hi-yellow"
+                                            "hi-pink"
+                                            "hi-blue"
+                                            "hi-red"
+                                            "hi-cyan"
+                                            "hi-yellow-p"
+                                            "hi-pink-p"
+                                            "hi-blue-p"
+                                            "hi-red-p"
+                                            "hi-cyan-p"))
 
   ;; C-u makes it prompt for a face for some nice reason
   (evil-define-operator eriks-evil-highlight-operator (beg end type)

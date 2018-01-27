@@ -1286,9 +1286,11 @@ reflected in the local value.
   (defun evil-open-line-above (ARG)
     "same as `evil-open-line' except that it is more like gO<esc>"
     (interactive "p")
-    (save-excursion
-      (beginning-of-line)
-      (newline ARG)))
+    (if (bolp)
+        (newline ARG)
+      (save-excursion
+        (beginning-of-line)
+        (newline ARG))))
 
   (defun evil-open-line-below (ARG)
     "same as `evil-open-line' except that it is more like go<esc>"

@@ -1449,30 +1449,35 @@ reflected in the local value.
                                             "hi-red-p"
                                             "hi-cyan-p"))
 
-  ;; C-u makes it prompt for a face for some nice reason
-  (evil-define-operator eriks-evil-highlight-operator (beg end type)
-    (interactive "<R>")
-    ;; (when (evil-visual-state-p)
-    ;;   (evil-exit-visual-state))
-    (let* ((hi-lock-auto-select-face t)
-           (face (hi-lock-read-face-name))
-           (reg (regexp-quote (buffer-substring beg end))))
-      (hi-lock-face-buffer reg face)))
-
-  (defun eriks-evil-highlight-regex ()
-    "highlights a given regex written in minibuffer interactively.
-  Uses a default face unless C-u is used."
-    (interactive)
-    (let* ((reg (read-regexp "highlight" "" 'evil-ex-search-history))
-           (hi-lock-auto-select-face t)
+  (defun eriks-evil-highlight (reg &optional AUTO-SELECT-FACE)
+    (setq current-prefix-arg nil)
+    (let* ((hi-lock-auto-select-face AUTO-SELECT-FACE)
+           (current-prefix-arg nil)
            (face (hi-lock-read-face-name)))
       (hi-lock-face-buffer reg face)))
 
-  (define-key evil-normal-state-map (kbd "SPC h h") 'eriks-evil-highlight-operator) ;; highlight motion,     auto face unless C-u
-  (define-key evil-visual-state-map (kbd "SPC h h") 'eriks-evil-highlight-operator) ;; highlight selection,  auto face unless C-u
-  (define-key evil-normal-state-map (kbd "SPC h u") 'unhighlight-regexp)            ;; unhighlight prompted, all with C-u
-  (define-key evil-normal-state-map (kbd "SPC h r") 'eriks-evil-highlight-regex)    ;; highlight prompted,   auto face unless C-u
-  ;; (define-key evil-visual-state-map (kbd "SPC h u") 'unhighlight-regexp)
+  (evil-define-operator eriks-evil-highlight-operator (beg end type)
+    (interactive "<R>")
+    (eriks-evil-highlight (regexp-quote (buffer-substring beg end)) t))
+
+  (evil-define-operator eriks-evil-highlight-operator-manual (beg end type)
+    (interactive "<R>")
+    (eriks-evil-highlight (regexp-quote (buffer-substring beg end)) nil))
+
+  (defun eriks-evil-highlight-regex (ARG)
+    "highlights a given regex written in minibuffer interactively.
+  Uses a default face unless C-u is used."
+    (interactive "P")
+    (eriks-evil-highlight
+     (read-regexp "highlight" "" 'evil-ex-search-history)
+     (null (equal ARG '(4)))))
+
+  (define-key evil-normal-state-map (kbd "SPC h h") 'eriks-evil-highlight-operator)        ;; highlight motion,     auto face
+  (define-key evil-visual-state-map (kbd "SPC h h") 'eriks-evil-highlight-operator)        ;; highlight selection,  auto face
+  (define-key evil-normal-state-map (kbd "SPC h H") 'eriks-evil-highlight-operator-manual) ;; highlight motion,     manual face
+  (define-key evil-visual-state-map (kbd "SPC h H") 'eriks-evil-highlight-operator-manual) ;; highlight selection,  manual face
+  (define-key evil-normal-state-map (kbd "SPC h u") 'unhighlight-regexp)                   ;; unhighlight prompted, all with C-u
+  (define-key evil-normal-state-map (kbd "SPC h r") 'eriks-evil-highlight-regex)           ;; highlight prompted,   auto face unless C-u
 
   ;;; evil surround
   (require 'evil-surround)

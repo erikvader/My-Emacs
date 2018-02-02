@@ -183,7 +183,7 @@
 ;;load init
 (org-babel-load-file (expand-file-name "~/.emacs.d/myinit.org"))
 
-(toggle-frame-maximized)
+;; (toggle-frame-maximized)
 ;;only two vertical windows will sensibly created
 (setq split-width-threshold (+ 1 (/ (frame-width) 2)))
 (put 'downcase-region 'disabled nil)

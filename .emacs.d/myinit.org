@@ -1083,7 +1083,7 @@ reflected in the local value.
     (forward-line -1)
     (indent-according-to-mode))
 
-  (sp-local-pair '(c-mode java-mode css-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  (sp-local-pair '(c-mode java-mode css-mode js-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
   ;;(sp-local-pair 'java-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
 
 #+end_src

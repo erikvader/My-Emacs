@@ -1706,6 +1706,7 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd ";") 'avy-goto-char)
 
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
+  (define-key evil-motion-state-map (kbd "C-/") 'avy-goto-char-timer)
   (evil-declare-not-repeat 'avy-goto-char-timer)
 
   (define-key evil-motion-state-map (kbd "C-;") 'evil-repeat-find-char)

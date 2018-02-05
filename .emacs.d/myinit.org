@@ -947,8 +947,9 @@ reflected in the local value.
   ;;            (define-key dired-mode-map (kbd "M-s s") 'avy-goto-char)))
   (setq ivy-use-selectable-prompt t)
 
-  (setq avy-keys (nconc
-                  (number-sequence ?a ?z)
+  (setq avy-keys '(;;nconc
+                  ?a ?s ?d ?f ?g ?h ?j ?k ?l
+                  ;; (number-sequence ?a ?z)
                   ;; '(?å ?ä ?ö)
                   ))
 #+end_src
@@ -1700,10 +1701,10 @@ reflected in the local value.
   (evilem-default-keybindings "SPC")
 
   (define-key evil-motion-state-map (kbd ",") 'avy-goto-char-in-line)
-  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char-in-line)
+  (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char)
   (evil-declare-not-repeat 'avy-goto-char-in-line)
 
-  (define-key evil-motion-state-map (kbd ";") 'avy-goto-char)
+  (define-key evil-motion-state-map (kbd ";") 'avy-goto-char-timer)
 
   (define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
   (define-key evil-motion-state-map (kbd "C-/") 'avy-goto-char-timer)

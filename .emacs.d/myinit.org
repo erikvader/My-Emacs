@@ -2007,7 +2007,9 @@ reflected in the local value.
                               ("True" "False")))
 
   (defvar rotate-text-c-like-symbols
-    '(("||" "&&")))
+    '(("||" "&&")
+      ("==" "!=")
+      (">=" "<=" "<" ">")))
 
   (defvar rotate-text-java-symbols
     '(("protected" "public" "private")))
@@ -2046,8 +2048,14 @@ reflected in the local value.
                 (setq-local comment-start "//")
                 (setq-local comment-end "")
 
-                (modify-syntax-entry ?| "_") ;; are set as punctuation, so rotate-text can find them
-                (modify-syntax-entry ?& "_")
+                ;; (modify-syntax-entry ?| "_") ;; are set as punctuation, so rotate-text can find them
+                ;; (modify-syntax-entry ?& "_")
+                ;; (modify-syntax-entry ?< "_")
+                ;; (modify-syntax-entry ?> "_")
+                ;; (modify-syntax-entry ?= "_")
+                ;; (modify-syntax-entry ?! "_")
+                (set-syntax-table (make-syntax-table)) ;; remove c's custom syntax table with a blank one (resetting everything to standard) mainly to behave at all with rotate-text
+
                 ;;hs-minor-mode (hideShow)
 
                 ;;(add-to-list 'ac-sources 'ac-source-c-headers)

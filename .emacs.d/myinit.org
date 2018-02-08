@@ -1191,7 +1191,7 @@ reflected in the local value.
     (progn
       (add-hook 'LaTeX-mode-hook
                 (lambda ()
-                  (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table) ;;make $ act like string so smartparens can navigate with it.
+                  ;; (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table) ;;make $ act like string so smartparens can navigate with it.
                   (define-key LaTeX-mode-map [remap beginning-of-defun] 'LaTeX-find-matching-begin)
                   (define-key LaTeX-mode-map [remap end-of-defun] 'LaTeX-find-matching-end)
                   ;; (define-key LaTeX-mode-map (kbd "$") nil)
@@ -1319,8 +1319,10 @@ reflected in the local value.
 
   (define-key evil-normal-state-map (kbd "C-w") 'hydra-windows/body)
 
-  (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
-  (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
+  ;; (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
+  ;; (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "M--") 'rotate-text-backward)
+  (define-key evil-normal-state-map (kbd "M-+") 'rotate-text)
 
   ;; (define-key evil-normal-state-map (kbd "gtc") 'transpose-chars)
   ;; (define-key evil-normal-state-map (kbd "gtl") 'transpose-lines)
@@ -1994,6 +1996,31 @@ reflected in the local value.
   (define-key eriks-map (kbd "gj") 'git-gutter+-next-hunk)
   (define-key eriks-map (kbd "gk") 'git-gutter+-previous-hunk)
 #+end_src
+** rotate text
+#+begin_src emacs-lisp :tangle yes
+  ;; (add-to-list 'load-path "/path/to/rotate-text")
+  ;; (autoload 'rotate-text "rotate-text" nil t)
+  ;; (autoload 'rotate-text-backward "rotate-text" nil t)
+  (require 'rotate-text)
+
+  (setq rotate-text-symbols '(("true" "false")
+                              ("True" "False")))
+
+  (defvar rotate-text-c-like-symbols
+    '(("||" "&&")))
+
+  (defvar rotate-text-java-symbols
+    '(("protected" "public" "private")))
+
+  (defmacro make-rotate-text-hook (hook-name patterns symbols words)
+    `(defun ,(intern (concat "rotate-text-" (symbol-name hook-name) "-hook")) ()
+       (setq rotate-text-local-symbols (apply #'append (cons rotate-text-local-symbols ,symbols)))
+       (setq rotate-text-local-words (apply #'append (cons rotate-text-local-words ,words)))
+       (setq rotate-text-local-patterns (apply #'append (cons rotate-text-local-patterns ,patterns)))))
+
+  (make-rotate-text-hook c nil (list rotate-text-c-like-symbols) nil)
+  (make-rotate-text-hook java nil (list rotate-text-java-symbols rotate-text-c-like-symbols) nil)
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes
@@ -2019,6 +2046,8 @@ reflected in the local value.
                 (setq-local comment-start "//")
                 (setq-local comment-end "")
 
+                (modify-syntax-entry ?| "_") ;; are set as punctuation, so rotate-text can find them
+                (modify-syntax-entry ?& "_")
                 ;;hs-minor-mode (hideShow)
 
                 ;;(add-to-list 'ac-sources 'ac-source-c-headers)
@@ -2047,6 +2076,7 @@ reflected in the local value.
             (lambda ()
               (flycheck-mode 1)
               (ggtags-mode 1)
+              (rotate-text-c-hook)
               ))
 #+end_src
 *** java
@@ -2076,7 +2106,8 @@ reflected in the local value.
 
   (add-hook 'java-mode-hook
             (lambda ()
-              (evil-define-key 'normal eclim-mode-map (kbd "C-]") 'eclim-java-find-declaration)))
+              (evil-define-key 'normal eclim-mode-map (kbd "C-]") 'eclim-java-find-declaration)
+              (rotate-text-java-hook)))
 
   ;; (defun eclim-java-start ()
   ;;   (interactive)

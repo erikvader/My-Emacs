@@ -62,8 +62,8 @@
   :group 'matching)
 
 (defcustom rotate-text-patterns
-  '(("\\_<[^-]\\(\\sw\\|\\s_\\)*[0-9]+" rotate-text-increment-number-in-symbol)
-    ("-?0x?[0-9a-fA-F]+" rotate-text-increment-hex-number)
+  '(("-?0x?[0-9a-fA-F]+" rotate-text-increment-hex-number)
+    ("\\_<[^-]\\(\\sw\\|\\s_\\)*[0-9]+" rotate-text-increment-number-in-symbol)
     ("-?[0-9]+" rotate-text-increment-number))
   "*Patterns and functions to rotate them.
 Each entry is a list.  Its first element should be the regular expression to

@@ -1453,7 +1453,6 @@ reflected in the local value.
                                             "hi-cyan-p"))
 
   (defun eriks-evil-highlight (reg &optional AUTO-SELECT-FACE)
-    (setq current-prefix-arg nil)
     (let* ((hi-lock-auto-select-face AUTO-SELECT-FACE)
            (current-prefix-arg nil)
            (face (hi-lock-read-face-name)))

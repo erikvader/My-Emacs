@@ -2002,8 +2002,9 @@ reflected in the local value.
   ;; (autoload 'rotate-text-backward "rotate-text" nil t)
   (require 'rotate-text)
 
-  (setq rotate-text-symbols '(("true" "false")
-                              ("True" "False")))
+  (setq rotate-text-symbols nil)
+
+  (push '("true" "false") rotate-text-words)
 
   (defvar rotate-text-c-like-symbols
     '(("||" "&&")

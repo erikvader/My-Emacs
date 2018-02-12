@@ -2023,6 +2023,13 @@ reflected in the local value.
   (make-rotate-text-hook c nil (list rotate-text-c-like-symbols) nil)
   (make-rotate-text-hook java nil (list rotate-text-java-symbols rotate-text-c-like-symbols) nil)
 #+end_src
+** atomic chrome
+#+begin_src emacs-lisp :tangle yes
+  (require 'atomic-chrome)
+  (setq atomic-chrome-extension-type-list '(atomic-chrome))
+  (setq atomic-chrome-buffer-open-style 'frame)
+  (atomic-chrome-start-server)
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes

@@ -2022,6 +2022,15 @@ reflected in the local value.
 
   (make-rotate-text-hook c nil (list rotate-text-c-like-symbols) nil)
   (make-rotate-text-hook java nil (list rotate-text-java-symbols rotate-text-c-like-symbols) nil)
+
+  (add-hook 'c-mode-hook    'rotate-text-c-hook)
+  (add-hook 'java-mode-hook 'rotate-text-java-hook)
+  (add-hook 'js-mode-hook   'rotate-text-c-hook)
+
+  (defun clear-syntax-table ()
+    (set-syntax-table (make-syntax-table)))
+
+  (mapcar (lambda (mode) (add-hook mode 'clear-syntax-table)) '(c-mode-common-hook js-mode-hook))
 #+end_src
 ** atomic chrome
 #+begin_src emacs-lisp :tangle yes
@@ -2061,7 +2070,7 @@ reflected in the local value.
                 ;; (modify-syntax-entry ?> "_")
                 ;; (modify-syntax-entry ?= "_")
                 ;; (modify-syntax-entry ?! "_")
-                (set-syntax-table (make-syntax-table)) ;; remove c's custom syntax table with a blank one (resetting everything to standard) mainly to behave at all with rotate-text
+                ;; (set-syntax-table (make-syntax-table)) ;; remove c's custom syntax table with a blank one (resetting everything to standard) mainly to behave at all with rotate-text
 
                 ;;hs-minor-mode (hideShow)
 
@@ -2091,7 +2100,7 @@ reflected in the local value.
             (lambda ()
               (flycheck-mode 1)
               (ggtags-mode 1)
-              (rotate-text-c-hook)
+              ;; (rotate-text-c-hook)
               ))
 #+end_src
 *** java
@@ -2122,7 +2131,8 @@ reflected in the local value.
   (add-hook 'java-mode-hook
             (lambda ()
               (evil-define-key 'normal eclim-mode-map (kbd "C-]") 'eclim-java-find-declaration)
-              (rotate-text-java-hook)))
+              ;; (rotate-text-java-hook)
+              ))
 
   ;; (defun eclim-java-start ()
   ;;   (interactive)

@@ -1319,8 +1319,8 @@ reflected in the local value.
 
   (define-key evil-normal-state-map (kbd "C-w") 'hydra-windows/body)
 
-  ;; (define-key evil-normal-state-map (kbd "M--") 'evil-numbers/dec-at-pt)
-  ;; (define-key evil-normal-state-map (kbd "M-+") 'evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "C-M--") 'evil-numbers/dec-at-pt)
+  (define-key evil-normal-state-map (kbd "C-M-+") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "M--") 'rotate-text-backward)
   (define-key evil-normal-state-map (kbd "M-+") 'rotate-text)
 

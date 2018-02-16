@@ -2061,7 +2061,10 @@ reflected in the local value.
     "Highlight enclosing parens."
     (cond ((looking-at-p "\\s(") (funcall fn))
           (t (save-excursion
-               (ignore-errors (backward-up-list))
+               (ignore-errors (backward-up-list 1 t t))
+               (while (and (characterp (char-after))
+                           (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
+                 (ignore-errors (backward-up-list 1 t t)))
                (funcall fn)))))
 #+end_src
 * prog-mode-hook
@@ -2075,6 +2078,7 @@ reflected in the local value.
               ;;(autopair-mode 1)
               ;;(paredit-mode t)
               (show-paren-local-mode)
+              ;; (show-smartparens-mode t)
               (start-smartparens)
               ;; (highlight-parentheses-mode t)
               (setq show-trailing-whitespace t)

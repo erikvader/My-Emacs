@@ -2060,14 +2060,15 @@ reflected in the local value.
   ;; show-paren-function
   (define-advice sp-show--pair-function (:around (fn) fix)
     "Highlight enclosing parens."
-    (cond ((looking-at-p "\\s(") (funcall fn))
-          (t (save-excursion
-               ;; (ignore-errors (sp-backward-up-sexp))
-               (ignore-errors (backward-up-list 1 t t))
-               (while (and (characterp (char-after))
-                           (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
-                 (ignore-errors (backward-up-list 1 t t)))
-               (funcall fn)))))
+    (when show-smartparens-mode
+      (cond ((looking-at-p "\\s(") (funcall fn))
+            (t (save-excursion
+                 ;; (ignore-errors (sp-backward-up-sexp))
+                 (ignore-errors (backward-up-list 1 t t))
+                 (while (and (characterp (char-after))
+                             (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
+                   (ignore-errors (backward-up-list 1 t t)))
+                 (funcall fn))))))
 
   (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
 #+end_src

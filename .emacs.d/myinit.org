@@ -1216,6 +1216,9 @@ reflected in the local value.
   (evil-indent-plus-default-bindings) ;;ii iI ai aI iJ aJ
 
   (define-key evil-emacs-state-map [escape] 'evil-normal-state)
+  (define-key evil-emacs-state-map (kbd "C-w") 'evil-delete-backward-word)
+  (define-key my-keys-map (kbd "C-w") 'evil-delete-backward-word)
+
   (evil-set-initial-state 'dired-mode 'emacs)
 
   ;;; evil remap

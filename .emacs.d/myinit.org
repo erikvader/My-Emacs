@@ -2027,10 +2027,10 @@ reflected in the local value.
   (add-hook 'java-mode-hook 'rotate-text-java-hook)
   (add-hook 'js-mode-hook   'rotate-text-c-hook)
 
-  (defun clear-syntax-table ()
-    (set-syntax-table (make-syntax-table)))
+  ;; (defun clear-syntax-table ()
+  ;;   (set-syntax-table (make-syntax-table)))
 
-  (mapcar (lambda (mode) (add-hook mode 'clear-syntax-table)) '(c-mode-common-hook js-mode-hook))
+  ;; (mapcar (lambda (mode) (add-hook mode 'clear-syntax-table)) '(c-mode-common-hook js-mode-hook))
 #+end_src
 ** atomic chrome
 #+begin_src emacs-lisp :tangle yes

@@ -137,14 +137,15 @@ text."
                        replacements)))))))
 
 (defun rotate-text-match-at-point (regexp)
-  (save-excursion
-    (let ((pos (point)))
-      (goto-char (point-at-bol))
-      (catch 'match
-        (while (re-search-forward regexp (1+ (point-at-eol)) t)
-          (and (>= pos (match-beginning 0))
-               (<= pos (match-end 0))
-               (throw 'match (match-string-no-properties 0))))))))
+  (with-syntax-table (make-syntax-table)
+    (save-excursion
+      (let ((pos (point)))
+        (goto-char (point-at-bol))
+        (catch 'match
+          (while (re-search-forward regexp (1+ (point-at-eol)) t)
+            (and (>= pos (match-beginning 0))
+                 (<= pos (match-end 0))
+                 (throw 'match (match-string-no-properties 0)))))))))
 
 (defun rotate-text-symbol-at-point ()
   "Rotate the symbol at point."

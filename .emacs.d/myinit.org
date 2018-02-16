@@ -2071,6 +2071,26 @@ reflected in the local value.
 
   (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
 #+end_src
+** eyebrowse
+#+begin_src emacs-lisp :tangle yes
+  (require 'eyebrowse)
+  (define-key eyebrowse-mode-map (kbd "C-<") 'eyebrowse-prev-window-config)
+  (define-key eyebrowse-mode-map (kbd "C->") 'eyebrowse-next-window-config)
+  (define-key eyebrowse-mode-map (kbd "C-'") 'eyebrowse-last-window-config)
+  (define-key eyebrowse-mode-map (kbd "C-<delete>") 'eyebrowse-close-window-config)
+  (define-key eyebrowse-mode-map (kbd "M-0") 'eyebrowse-switch-to-window-config-0)
+  (define-key eyebrowse-mode-map (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
+  (define-key eyebrowse-mode-map (kbd "M-2") 'eyebrowse-switch-to-window-config-2)
+  (define-key eyebrowse-mode-map (kbd "M-3") 'eyebrowse-switch-to-window-config-3)
+  (define-key eyebrowse-mode-map (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
+  (define-key eyebrowse-mode-map (kbd "M-5") 'eyebrowse-switch-to-window-config-5)
+  (define-key eyebrowse-mode-map (kbd "M-6") 'eyebrowse-switch-to-window-config-6)
+  (define-key eyebrowse-mode-map (kbd "M-7") 'eyebrowse-switch-to-window-config-7)
+  (define-key eyebrowse-mode-map (kbd "M-8") 'eyebrowse-switch-to-window-config-8)
+  (define-key eyebrowse-mode-map (kbd "M-9") 'eyebrowse-switch-to-window-config-9)
+
+  (eyebrowse-mode t)
+#+end_src
 * prog-mode-hook
 ** prog-mode
 #+begin_src emacs-lisp :tangle yes

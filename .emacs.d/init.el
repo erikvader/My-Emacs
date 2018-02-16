@@ -91,6 +91,7 @@
  '(evil-want-C-d-scroll nil)
  '(evil-want-Y-yank-to-eol t)
  '(expand-region-fast-keys-enabled t)
+ '(eyebrowse-mode-line-style (quote always))
  '(fci-rule-color "#14151E")
  '(flycheck-global-modes nil)
  '(ggtags-highlight-tag nil)
@@ -111,7 +112,7 @@
  '(org-src-window-setup (quote current-window))
  '(package-selected-packages
    (quote
-    (atomic-chrome evil-exchange git-gutter-fringe+ yasnippet-snippets wgrep-ag ag drag-stuff which-key smartparens smart-mode-line rainbow-mode rainbow-delimiters projectile outshine org-bullets multiple-cursors markdown-mode magit linum-relative hydra haskell-snippets haskell-mode golden-ratio-scroll-screen ggtags framemove flycheck expand-region evil-surround evil-nerd-commenter evil-mc-extras evil-lion evil-indent-plus evil-extra-operator evil-easymotion disable-mouse diminish dashboard counsel-projectile counsel company-emacs-eclim color-moccur charmap buffer-move browse-kill-ring auctex)))
+    (eyebrowse atomic-chrome evil-exchange git-gutter-fringe+ yasnippet-snippets wgrep-ag ag drag-stuff which-key smartparens smart-mode-line rainbow-mode rainbow-delimiters projectile outshine org-bullets multiple-cursors markdown-mode magit linum-relative hydra haskell-snippets haskell-mode golden-ratio-scroll-screen ggtags framemove flycheck expand-region evil-surround evil-nerd-commenter evil-mc-extras evil-lion evil-indent-plus evil-extra-operator evil-easymotion disable-mouse diminish dashboard counsel-projectile counsel company-emacs-eclim color-moccur charmap buffer-move browse-kill-ring auctex)))
  '(perl-continued-brace-offset -3)
  '(perl-continued-statement-offset 3)
  '(perl-indent-level 3)
@@ -175,6 +176,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#000000" :foreground "#bbe0f0" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "DAMA" :family "Ubuntu Mono"))))
+ '(eyebrowse-mode-line-active ((t (:inherit mode-line-emphasis :foreground "white smoke"))))
  '(moccur-face ((t nil))))
 
 ;;init files

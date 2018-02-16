@@ -2048,24 +2048,28 @@ reflected in the local value.
   ;; (setq hl-paren-colors '("#ccccc7"))
   ;; (require 'highlight-parentheses)
 
-  (show-paren-mode)                        ;; activate the needed timer
-  (setq show-paren-mode ())                ;; The timer will do nothing if this is nil
+  ;; (show-paren-mode)                        ;; activate the needed timer
+  ;; (setq show-paren-mode ())                ;; The timer will do nothing if this is nil
 
-  (defun show-paren-local-mode ()
-    (interactive)
-    (make-local-variable 'show-paren-mode) ;; The value of shom-paren-mode will be local to this buffer.
-    (setq show-paren-mode t))
+  ;; (defun show-paren-local-mode ()
+  ;;   (interactive)
+  ;;   (make-local-variable 'show-paren-mode) ;; The value of shom-paren-mode will be local to this buffer.
+  ;;   (setq show-paren-mode t))
 
   ;; advice from internet to hihglight parentheses inside them
-  (define-advice show-paren-function (:around (fn) fix)
+  ;; show-paren-function
+  (define-advice sp-show--pair-function (:around (fn) fix)
     "Highlight enclosing parens."
     (cond ((looking-at-p "\\s(") (funcall fn))
           (t (save-excursion
+               ;; (ignore-errors (sp-backward-up-sexp))
                (ignore-errors (backward-up-list 1 t t))
                (while (and (characterp (char-after))
                            (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
                  (ignore-errors (backward-up-list 1 t t)))
                (funcall fn)))))
+
+  (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
 #+end_src
 * prog-mode-hook
 ** prog-mode
@@ -2077,8 +2081,8 @@ reflected in the local value.
               (setq newline-without-break-tab t)
               ;;(autopair-mode 1)
               ;;(paredit-mode t)
-              (show-paren-local-mode)
-              ;; (show-smartparens-mode t)
+              ;; (show-paren-local-mode)
+              (show-smartparens-mode t)
               (start-smartparens)
               ;; (highlight-parentheses-mode t)
               (setq show-trailing-whitespace t)

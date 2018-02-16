@@ -137,6 +137,7 @@
  '(sp-escape-quotes-after-insert nil)
  '(sp-highlight-pair-overlay nil)
  '(sp-navigate-reindent-after-up nil)
+ '(sp-show-enclosing-pair-commands nil)
  '(split-height-threshold nil)
  '(split-width-threshold 100)
  '(standard-indent 3)

@@ -1270,22 +1270,29 @@ reflected in the local value.
   (defun evil-open-line (ARG)
     "open-line for evil, designed to be the opposite of J (join-lines).
 
-  Indents the new line if it is not empty. If the current major mode is
-  derived from prog-mode, then `indent-according-to-mode' is used,
-  otherwise the current line's indentation is used.
+  Indents the new line if it is not empty.
+   - if prefix argument is raw, then `indent-according-to-mode'
+   - if prefix argument is non-negative, then indent that much
+   - if derived from prog-mode, then `indent-according-to-mode'
+   - else indent to the same amount as the previous line
 
   Assumes `left-margin' is 0 or that there is no fill prefix (that
   open-line doesn't indent the new line in any way)"
-    (interactive "p")
+    (interactive "P")
     (let ((start-ind (current-indentation)))
       (just-one-space 0)
-      (open-line ARG)
+      (open-line 1)
       (save-excursion
         (forward-char)
         (unless (eolp)
-          (if (derived-mode-p 'prog-mode)
-              (indent-according-to-mode)
-            (indent-to start-ind))))))
+          (cond ((equal ARG '(4))
+                 (indent-according-to-mode))
+                ((and (numberp ARG) (>= ARG 0))
+                 (indent-to ARG))
+                ((derived-mode-p 'prog-mode)
+                 (indent-according-to-mode))
+                (t
+                 (indent-to start-ind)))))))
 
   (defun evil-open-line-above (ARG)
     "same as `evil-open-line' except that it is more like gO<esc>"
@@ -1307,11 +1314,22 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "S") 'evil-open-line)
   (define-key evil-normal-state-map (kbd "gO") 'evil-open-line-above)
   (define-key evil-normal-state-map (kbd "go") 'evil-open-line-below)
-  ;; (define-key evil-normal-state-map (kbd "S")
-  ;;   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([100 105 32 134217848 111 112 101 110 45 108 105 110 101 return] 0 "%d")) arg)))
 
-  ;; (define-key evil-normal-state-map (kbd "g o")
-  ;;   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ("Sl==[ " 0 "%d")) arg)))
+  ;; copy of the normal evil-join
+  (evil-define-operator eriks/evil-join (beg end)
+    "Join the selected lines. But don't add any spaces if a prefix
+  argument is specified."
+    :motion evil-line
+    (let ((count (count-lines beg end)))
+      (when (> count 1)
+        (setq count (1- count)))
+      (goto-char beg)
+      (dotimes (var count)
+        (join-line 1)
+        (when current-prefix-arg
+          (just-one-space 0)))))
+
+  (define-key evil-normal-state-map (kbd "J") 'eriks/evil-join)
 
   (define-key evil-normal-state-map (kbd "ga") 'evil-lion-left)
   (define-key evil-normal-state-map (kbd "gA") 'evil-lion-right)

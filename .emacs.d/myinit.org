@@ -337,6 +337,7 @@ reflected in the local value.
   ;;(define-key eriks-map (kbd "i") 'edit-myinit-org)
 
   (define-key eriks-map (kbd "gs") 'magit-status)
+  (define-key eriks-map (kbd "gt") 'git-timemachine)
   (define-key eriks-map (kbd "U") 'counsel-unicode-char)
   ;;(define-key eriks-map (kbd "M") 'counsel-mark-ring)
 

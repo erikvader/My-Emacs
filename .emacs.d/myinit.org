@@ -102,7 +102,7 @@ my-keys-minor-mode-map is so any later changes to the global value are automatic
 reflected in the local value.
 * misc
 #+begin_src emacs-lisp :tangle yes
-  (browse-kill-ring-default-keybindings)
+  ;; (browse-kill-ring-default-keybindings)
   ;; (powerline-default-theme)
 
   ;;(require 'all-the-icons)
@@ -256,25 +256,25 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   (define-prefix-command 'eriks-map)
   ;;(global-set-key (kbd "C-ö") 'eriks-map)
-  (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
+  ;; (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
   ;;(define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
 
-  (define-key eriks-map (kbd "e") 'eclim-project-mode)
+  ;; (define-key eriks-map (kbd "e") 'eclim-project-mode)
 
-  (define-key eriks-map (kbd "f r") 'fill-region)
-  (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
-  (define-key eriks-map (kbd "f f") 'fill-paragraph)
+  ;; (define-key eriks-map (kbd "f r") 'fill-region)
+  ;; (define-key eriks-map (kbd "f p") 'fill-region-as-paragraph)
+  ;; (define-key eriks-map (kbd "f f") 'fill-paragraph)
 
   (define-key eriks-map (kbd "C-f") 'ff-find-other-file)
 
-  (define-key eriks-map (kbd "r") 'linum-relative-toggle)
+  ;; (define-key eriks-map (kbd "r") 'linum-relative-toggle)
   (linum-relative-toggle)
 
-  (define-key eriks-map (kbd "l") 'eriks-toggle-visual-line)
+  ;; (define-key eriks-map (kbd "C-l") 'eriks-toggle-visual-line)
 
-  (defun eriks-toggle-visual-line ()
-    (interactive)
-    (setq line-move-visual (not line-move-visual)))
+  ;; (defun eriks-toggle-visual-line ()
+  ;;   (interactive)
+  ;;   (setq line-move-visual (not line-move-visual)))
 
   ;; (defun eriks-kill-line ()
   ;;   "Kills (cuts) the whole current line"
@@ -306,8 +306,8 @@ reflected in the local value.
     (newline-without-break-down))
 
 
-  (define-key eriks-map (kbd ":") 'eriks-add-semicolon)
-  (define-key eriks-map (kbd ";") 'eriks-add-semicolon-and-newline)
+  ;; (define-key eriks-map (kbd ":") 'eriks-add-semicolon)
+  ;; (define-key eriks-map (kbd ";") 'eriks-add-semicolon-and-newline)
 
   (defun eriks-insert-paren (p)
     (interactive "p")
@@ -326,7 +326,7 @@ reflected in the local value.
   ;;     (interactive)
   ;;     (eriks-insert-paren "{}")))
 
-  (define-key eriks-map (kbd "y") 'ansi-term)
+  ;; (define-key eriks-map (kbd "y") 'ansi-term)
 
   ;;(define-key eriks-map (kbd "C-c") 'whitespace-cleanup)
 
@@ -355,21 +355,21 @@ reflected in the local value.
         (- 0 a)
       a))
 
-  (define-key eriks-map (kbd "n +") 'evil-numbers/inc-at-pt)
-  (define-key eriks-map (kbd "n -") 'evil-numbers/dec-at-pt)
+  ;; (define-key eriks-map (kbd "n +") 'evil-numbers/inc-at-pt)
+  ;; (define-key eriks-map (kbd "n -") 'evil-numbers/dec-at-pt)
 
-  (define-key eriks-map (kbd "a a") 'align)
-  (define-key eriks-map (kbd "a r") 'align-regexp)
-  (define-key eriks-map (kbd "a c") 'align-current)
+  ;; (define-key eriks-map (kbd "a a") 'align)
+  ;; (define-key eriks-map (kbd "a r") 'align-regexp)
+  ;; (define-key eriks-map (kbd "a c") 'align-current)
 
   (defun eriks-buffer-text-to-raw ()
     (interactive)
     (let ((inhibit-read-only t))
       (set-text-properties (point-min) (point-max) nil)))
 
-  (define-key eriks-map (kbd "C-r") 'eriks-buffer-text-to-raw)
+  ;; (define-key eriks-map (kbd "C-r") 'eriks-buffer-text-to-raw)
 
-  (define-key eriks-map (kbd "d") 'delete-duplicate-lines)
+  ;; (define-key eriks-map (kbd "d") 'delete-duplicate-lines)
 
   ;; Set transparency of emacs
   (defun transparency (value)
@@ -377,7 +377,7 @@ reflected in the local value.
     (interactive "nTransparency Value 0 - 100 opaque:")
     (set-frame-parameter (selected-frame) 'alpha value))
 
-  (define-key eriks-map (kbd "C-t") 'transparency)
+  ;; (define-key eriks-map (kbd "C-t") 'transparency)
 #+end_src
 ** lxor & is-whitespace
 #+begin_src emacs-lisp :tangle yes
@@ -671,7 +671,7 @@ reflected in the local value.
       (insert paren)
       (indent-region b (+ e 1))))
 
-  (define-key eriks-map (kbd "s") 'eriks-slurp)
+  ;; (define-key eriks-map (kbd "s") 'eriks-slurp)
 
   (defvar last-post-command-position 0
     "Holds the cursor position from the last run of post-command-hooks.")
@@ -689,7 +689,7 @@ reflected in the local value.
     (setq eriks-sticky-char (not eriks-sticky-char))
     (setq last-post-command-position (point)))
 
-  (define-key eriks-map (kbd "C-s") 'eriks-sticky-toggle)
+  ;; (define-key eriks-map (kbd "C-s") 'eriks-sticky-toggle)
 
   (defun do-stuff-if-moved-post-command ()
     (if eriks-sticky-char
@@ -746,8 +746,8 @@ reflected in the local value.
         (while (extract-c-copy-next-declaration (not first))
           (setq first nil)))))
 
-  (define-key eriks-map (kbd "c a") 'extract-c-copy-all-declarations)
-  (define-key eriks-map (kbd "c n") 'extract-c-copy-next-declaration)
+  ;; (define-key eriks-map (kbd "c a") 'extract-c-copy-all-declarations)
+  ;; (define-key eriks-map (kbd "c n") 'extract-c-copy-next-declaration)
 #+end_src
 ** exchange two regions
 #+begin_src emacs-lisp :tangle yes
@@ -855,11 +855,11 @@ reflected in the local value.
      ((< tabs 0)
       (setq indent-tabs-mode nil))))
 
-  (define-key eriks-map (kbd "T t") 'configure-tabs)
-  (define-key eriks-map (kbd "T U") 'untabify)
-  (define-key eriks-map (kbd "T u") 'tabify)
-  (define-key eriks-map (kbd "T w") 'whitespace-cleanup)
-  (define-key eriks-map (kbd "T e") 'delete-trailing-whitespace)
+  (define-key eriks-map (kbd "t t") 'configure-tabs)
+  (define-key eriks-map (kbd "t U") 'untabify)
+  (define-key eriks-map (kbd "t u") 'tabify)
+  (define-key eriks-map (kbd "t w") 'whitespace-cleanup)
+  (define-key eriks-map (kbd "t e") 'delete-trailing-whitespace)
 #+end_src
 * packages
 ** windmove and framemove
@@ -930,7 +930,7 @@ reflected in the local value.
   ;;(define-key my-keys-map (kbd "C-z") 'undo)
   (global-set-key (kbd "C-S-z") 'undo-tree-redo)
   ;;(define-key my-keys-map (kbd "C-S-z") 'undo-tree-redo)
-  (define-key eriks-map (kbd "u") 'undo-tree-visualize)
+  ;; (define-key eriks-map (kbd "u") 'undo-tree-visualize)
 #+end_src
 ** ivy and avy
 #+begin_src emacs-lisp :tangle yes
@@ -947,8 +947,8 @@ reflected in the local value.
   ;;(define-prefix-command 'eriks-avy-map)
   ;;(define-key my-keys-map (kbd "M-s") 'eriks-avy-map)
   ;;(global-set-key (kbd "M-s") 'avy-goto-char)
-  (define-key eriks-map (kbd "SPC") 'avy-goto-char-in-line)
-  (define-key eriks-map (kbd "S-SPC") 'avy-goto-char-timer)
+  ;; (define-key eriks-map (kbd "SPC") 'avy-goto-char-in-line)
+  ;; (define-key eriks-map (kbd "S-SPC") 'avy-goto-char-timer)
 
   (define-key ivy-minibuffer-map (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -1020,8 +1020,8 @@ reflected in the local value.
     ("1" mc/insert-numbers nil)
     ("2" mc/insert-letters nil)
     ("q" nil nil))
-  (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
-  (define-key my-keys-map (kbd "C-c m") 'hydra-multiple-cursors/body)
+  ;; (define-key 'eriks-map (kbd "m") 'hydra-multiple-cursors/body)
+  ;; (define-key my-keys-map (kbd "C-c m") 'hydra-multiple-cursors/body)
 #+end_src
 ** smartparens
 *** standard config
@@ -1066,7 +1066,7 @@ reflected in the local value.
         (hydra-smartparens/body)
       (message "smartparens not activated!")))
 
-  (define-key eriks-map (kbd "p") 'hydra-smartparens/body) ;;'start-hydra-smartparens-if-activated
+  ;; (define-key eriks-map (kbd "p") 'hydra-smartparens/body) ;;'start-hydra-smartparens-if-activated
 
   (defhydra hydra-smartparens (:color blue)
     "
@@ -1237,6 +1237,9 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-w") 'evil-delete-backward-word)
 
   (evil-set-initial-state 'dired-mode 'emacs)
+
+  (define-key evil-normal-state-map (kbd "SPC x") 'eriks-map)
+  (define-key evil-visual-state-map (kbd "SPC x") 'eriks-map)
 
   ;;; evil remap
   (defun evil-remap (trigger action &optional map)
@@ -2301,8 +2304,6 @@ reflected in the local value.
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")
     ("q" nil "quit" :color blue))
-  (define-key eriks-map (kbd "z") 'hydra-zoom/body)
-
   (defhydra hydra-windows (:hint nil :color blue)
     "
    ^Resize^         ^Transpose^        ^Move^            ^^^^   ^Split^

@@ -974,20 +974,6 @@ reflected in the local value.
   (projectile-global-mode t)
   (counsel-projectile-mode)
 #+end_src
-** dumb jump
-#+begin_src emacs-lisp :tangle yes
-  ;;(dumb-jump-mode)
-
-  ;;(fset 'eriks-dumb-jump-keymap (make-sparse-keymap))
-  (define-prefix-command 'eriks-dumb-jump-keymap)
-  (define-key eriks-map (kbd "j") 'eriks-dumb-jump-keymap)
-
-  (define-key 'eriks-dumb-jump-keymap (kbd "j") 'dumb-jump-go)
-  (define-key 'eriks-dumb-jump-keymap (kbd "b") 'dumb-jump-back)
-
-  (setq dumb-jump-selector 'ivy)
-
-#+end_src
 ** multiple cursors
 #+begin_src emacs-lisp :tangle yes
   ;; (asd-key '-map (kbd "m l") 'mc/edit-lines)
@@ -2298,12 +2284,6 @@ reflected in the local value.
 * Hydra
 ** various hydras
 #+begin_src emacs-lisp :tangle yes
-  ;; font zoom
-  (defhydra hydra-zoom ()
-    "zoom"
-    ("g" text-scale-increase "in")
-    ("l" text-scale-decrease "out")
-    ("q" nil "quit" :color blue))
   (defhydra hydra-windows (:hint nil :color blue)
     "
    ^Resize^         ^Transpose^        ^Move^            ^^^^   ^Split^

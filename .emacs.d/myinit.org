@@ -2099,7 +2099,7 @@ reflected in the local value.
                    (ignore-errors (backward-up-list 1 t t)))
                  (funcall fn))))))
 
-  (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
+  ;; (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
 #+end_src
 ** eyebrowse
 #+begin_src emacs-lisp :tangle yes

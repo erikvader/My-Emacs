@@ -135,6 +135,7 @@
  '(sp-autodelete-closing-pair nil)
  '(sp-autodelete-opening-pair nil)
  '(sp-autodelete-pair nil)
+ '(sp-echo-match-when-invisible nil)
  '(sp-escape-quotes-after-insert nil)
  '(sp-highlight-pair-overlay nil)
  '(sp-navigate-reindent-after-up nil)

@@ -1032,6 +1032,12 @@ reflected in the local value.
   ;;                                           (define-key smartparens-strict-mode-map [remap modalka-kill] 'modalka-sp-kill)
   ;;                                           (define-key smartparens-strict-mode-map [remap modalka-delete] 'modalka-sp-delete)))
 
+  ;; remove defaults
+  (sp-pair "\\\\(" nil :actions :rem)
+  (sp-pair "\\{"   nil :actions :rem)
+  (sp-pair "\\("   nil :actions :rem)
+  (sp-pair "\\\""  nil :actions :rem)
+
   (defun start-smartparens ()
     (smartparens-mode t)
     ;; (show-smartparens-mode t)

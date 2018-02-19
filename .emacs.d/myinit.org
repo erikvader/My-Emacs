@@ -2087,17 +2087,24 @@ reflected in the local value.
 
   ;; advice from internet to hihglight parentheses inside them
   ;; show-paren-function
-  (define-advice sp-show--pair-function (:around (fn) fix)
+  (define-advice sp-show--pair-function (:around (fn) larger-reach)
     "Highlight enclosing parens."
     (when show-smartparens-mode
       (cond ((looking-at-p "\\s(") (funcall fn))
-            (t (save-excursion
-                 ;; (ignore-errors (sp-backward-up-sexp))
+            (t
+             (save-excursion
+               (let ((last-pos -1))
                  (ignore-errors (backward-up-list 1 t t))
-                 (while (and (characterp (char-after))
-                             (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
+                 (while (and
+                         (not (= (point) last-pos))
+                         (characterp (char-after))
+                         (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
+                   (setq last-pos (point))
                    (ignore-errors (backward-up-list 1 t t)))
-                 (funcall fn))))))
+                 (funcall fn)))))))
+
+  (define-advice sp-skip-closing-pair (:after (&optional last test-only) larger-reach-fix)
+    (sp-show--pair-function))
 
   ;; (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
 #+end_src

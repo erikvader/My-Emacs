@@ -871,6 +871,16 @@ reflected in the local value.
   (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
   (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
 
+  (define-key my-keys-map (kbd "C-<right>") 'enlarge-window-horizontally)
+  (define-key my-keys-map (kbd "C-<left>") 'shrink-window-horizontally)
+  (define-key my-keys-map (kbd "C-<up>") 'enlarge-window)
+  (define-key my-keys-map (kbd "C-<down>") 'shrink-window)
+
+  (define-key my-keys-map (kbd "C-S-<right>") 'buf-move-right)
+  (define-key my-keys-map (kbd "C-S-<left>") 'buf-move-left)
+  (define-key my-keys-map (kbd "C-S-<up>") 'buf-move-up)
+  (define-key my-keys-map (kbd "C-S-<down>") 'buf-move-down)
+
   (define-key my-keys-map (kbd "H-l") 'windmove-right)
   (define-key my-keys-map (kbd "H-h") 'windmove-left)
   (define-key my-keys-map (kbd "H-k") 'windmove-up)

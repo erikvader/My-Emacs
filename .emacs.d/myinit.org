@@ -1476,6 +1476,8 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC s N") 'moccur)
   (define-key evil-normal-state-map (kbd "SPC s O") 'occur-by-moccur)
 
+  (define-key evil-normal-state-map (kbd "SPC s f") 'find-dired)
+
   (define-key evil-normal-state-map (kbd "SPC s a p") 'projectile-ag)
   (define-key evil-normal-state-map (kbd "SPC s a c") 'counsel-ag)
   (define-key evil-normal-state-map (kbd "SPC s a a") 'ag)
@@ -2103,13 +2105,13 @@ reflected in the local value.
 #+end_src
 ** highlight parentheses
 #+begin_src emacs-lisp :tangle yes
-  (defvar highlight-parens-on t "whether to blah")
+  (defvar highlight-parens-on nil "whether to blah")
 
   (defun toggle-highlight-parens ()
     (interactive)
     (setq highlight-parens-on (not highlight-parens-on)))
 
-  (define-key eriks-map (kbd "C-h") 'toggle-highlight-parens)
+  (define-key eriks-map (kbd "h") 'toggle-highlight-parens)
 
   ;; advice from internet to highlight parentheses inside them
   ;; TODO: make it work better with tags somehow
@@ -2142,6 +2144,7 @@ reflected in the local value.
 
   ;; (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
 
+  ;; show alternative face for modes with tags
   (defun show-paren-alt-hook ()
     (face-remap-set-base 'show-paren-match '(:underline t)))
 

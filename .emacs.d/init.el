@@ -51,6 +51,7 @@
  '(avy-highlight-first nil)
  '(avy-style (quote at-full))
  '(backup-directory-alist (quote (("" . "~/.emacs_backups"))))
+ '(blink-matching-paren nil)
  '(c-basic-offset 3)
  '(c-hanging-braces-alist (quote set-from-style))
  '(column-number-mode t)
@@ -136,7 +137,8 @@
  '(sp-autodelete-opening-pair nil)
  '(sp-autodelete-pair nil)
  '(sp-echo-match-when-invisible nil)
- '(sp-escape-quotes-after-insert nil)
+ '(sp-escape-quotes-after-insert t)
+ '(sp-escape-wrapped-region t)
  '(sp-highlight-pair-overlay nil)
  '(sp-navigate-consider-sgml-tags
    (quote

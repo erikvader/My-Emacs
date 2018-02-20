@@ -1735,9 +1735,10 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC pt") 'sp-transpose-sexp)
   (define-key evil-normal-state-map (kbd "SPC pc") 'sp-convolute-sexp)
   (define-key evil-normal-state-map (kbd "SPC pb") 'sp-extract-before-sexp)
-  (define-key evil-normal-state-map (kbd "SPC pa") 'sp-extract-after-sexp)
+  (define-key evil-normal-state-map (kbd "SPC pf") 'sp-extract-after-sexp)
   (define-key evil-normal-state-map (kbd "SPC pu") 'sp-splice-sexp)
   (define-key evil-normal-state-map (kbd "SPC pk") 'sp-kill-sexp)
+  (define-key evil-normal-state-map (kbd "SPC pd") 'sp-splice-sexp-killing-around)
 
   (define-key evil-normal-state-map (kbd "H-]") 'sp-forward-slurp-sexp)
   (define-key evil-normal-state-map (kbd "H-[") 'sp-backward-slurp-sexp)
@@ -1747,10 +1748,11 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "H-j") 'sp-join-sexp)
   (define-key evil-normal-state-map (kbd "H-c") 'sp-convolute-sexp)
   (define-key evil-normal-state-map (kbd "H-b") 'sp-extract-before-sexp)
-  (define-key evil-normal-state-map (kbd "H-a") 'sp-extract-after-sexp)
+  (define-key evil-normal-state-map (kbd "H-f") 'sp-extract-after-sexp)
   (define-key evil-normal-state-map (kbd "H-t") 'sp-transpose-sexp)
   (define-key evil-normal-state-map (kbd "H-u") 'sp-splice-sexp)
   (define-key evil-normal-state-map (kbd "H-k") 'sp-kill-sexp)
+  (define-key evil-normal-state-map (kbd "H-d") 'sp-splice-sexp-killing-around)
 
   ;; (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
 

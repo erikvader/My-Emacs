@@ -2086,41 +2086,39 @@ reflected in the local value.
 #+end_src
 ** highlight parentheses
 #+begin_src emacs-lisp :tangle yes
-  ;; (setq hl-paren-attributes '((:underline t :weight extra-bold)))
-  ;; (setq hl-paren-colors '("#ccccc7"))
-  ;; (require 'highlight-parentheses)
+  (defvar highlight-parens-on t "whether to blah")
 
-  ;; (show-paren-mode)                        ;; activate the needed timer
-  ;; (setq show-paren-mode ())                ;; The timer will do nothing if this is nil
+  (defun toggle-highlight-parens ()
+    (interactive)
+    (setq highlight-parens-on (not highlight-parens-on)))
 
-  ;; (defun show-paren-local-mode ()
-  ;;   (interactive)
-  ;;   (make-local-variable 'show-paren-mode) ;; The value of shom-paren-mode will be local to this buffer.
-  ;;   (setq show-paren-mode t))
+  (define-key eriks-map (kbd "C-h") 'toggle-highlight-parens)
 
   ;; advice from internet to highlight parentheses inside them
   ;; TODO: make it work better with tags somehow
   ;; TODO: sp-point-in-string kanske?
-  ;; TODO: add a toggle?
   ;; TODO: optimisera
   (define-advice sp-show--pair-function (:around (fn) larger-reach)
     "Highlight enclosing parens."
     (when show-smartparens-mode
-      (sp-show--pair-delete-overlays)
-      (when (not (sp-point-in-comment))
-        (cond ((looking-at-p "\\s(") (funcall fn))
-              (t
-               (save-excursion
-                 (let ((last-pos (point))
-                       (inhibit-message t))
-                   (ignore-errors (sp-backward-up-sexp))
-                   (while (and
-                           (not (= (point) last-pos))
-                           (characterp (char-after))
-                           (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
-                     (setq last-pos (point))
-                     (ignore-errors (sp-backward-up-sexp)))
-                   (funcall fn))))))))
+      (if highlight-parens-on
+          (progn
+            (sp-show--pair-delete-overlays)
+            (when (not (sp-point-in-comment))
+              (cond ((looking-at-p "\\s(") (funcall fn))
+                    (t
+                     (save-excursion
+                       (let ((last-pos (point))
+                             (inhibit-message t))
+                         (ignore-errors (sp-backward-up-sexp))
+                         (while (and
+                                 (not (= (point) last-pos))
+                                 (characterp (char-after))
+                                 (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
+                           (setq last-pos (point))
+                           (ignore-errors (sp-backward-up-sexp)))
+                         (funcall fn)))))))
+        (funcall fn))))
 
   (define-advice sp-skip-closing-pair (:after (&optional last test-only) larger-reach-fix)
     (sp-show--pair-function))

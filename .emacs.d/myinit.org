@@ -1316,10 +1316,28 @@ reflected in the local value.
       (end-of-line)
       (newline ARG)))
 
+  (defun evil-open-line-below-comment ()
+    (interactive)
+    (end-of-line)
+    (indent-new-comment-line)
+    (evil-insert 1))
+
+  (defun evil-open-line-above-comment ()
+    (interactive)
+    (evil-open-line-below-comment)
+    (transpose-lines 1)
+    (forward-line -2)
+    (end-of-line)
+    (evil-insert 1))
+
   ;;opposite to J (join-lines)
   (define-key evil-normal-state-map (kbd "S") 'evil-open-line)
   (define-key evil-normal-state-map (kbd "gO") 'evil-open-line-above)
   (define-key evil-normal-state-map (kbd "go") 'evil-open-line-below)
+  (define-key evil-normal-state-map (kbd "SPC o") 'evil-open-line-below-comment)
+  (define-key evil-normal-state-map (kbd "SPC O") 'evil-open-line-above-comment)
+
+  (define-key evil-normal-state-map (kbd "C-M-j") 'indent-new-comment-line)
 
   ;; copy of the normal evil-join
   (evil-define-operator eriks/evil-join (beg end)

@@ -138,6 +138,9 @@
  '(sp-echo-match-when-invisible nil)
  '(sp-escape-quotes-after-insert nil)
  '(sp-highlight-pair-overlay nil)
+ '(sp-navigate-consider-sgml-tags
+   (quote
+    (html-erb-mode jinja2-mode web-mode nxml-mode nxhtml-mode rhtml-mode sgml-mode html-mode mhtml-mode)))
  '(sp-navigate-reindent-after-up nil)
  '(sp-navigate-reindent-after-up-in-string nil)
  '(split-height-threshold nil)

@@ -2098,28 +2098,40 @@ reflected in the local value.
   ;;   (make-local-variable 'show-paren-mode) ;; The value of shom-paren-mode will be local to this buffer.
   ;;   (setq show-paren-mode t))
 
-  ;; advice from internet to hihglight parentheses inside them
-  ;; show-paren-function
+  ;; advice from internet to highlight parentheses inside them
+  ;; TODO: make it work better with tags somehow
+  ;; TODO: sp-point-in-string kanske?
+  ;; TODO: add a toggle?
+  ;; TODO: optimisera
   (define-advice sp-show--pair-function (:around (fn) larger-reach)
     "Highlight enclosing parens."
     (when show-smartparens-mode
-      (cond ((looking-at-p "\\s(") (funcall fn))
-            (t
-             (save-excursion
-               (let ((last-pos -1))
-                 (ignore-errors (backward-up-list 1 t t))
-                 (while (and
-                         (not (= (point) last-pos))
-                         (characterp (char-after))
-                         (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
-                   (setq last-pos (point))
-                   (ignore-errors (backward-up-list 1 t t)))
-                 (funcall fn)))))))
+      (sp-show--pair-delete-overlays)
+      (when (not (sp-point-in-comment))
+        (cond ((looking-at-p "\\s(") (funcall fn))
+              (t
+               (save-excursion
+                 (let ((last-pos (point))
+                       (inhibit-message t))
+                   (ignore-errors (sp-backward-up-sexp))
+                   (while (and
+                           (not (= (point) last-pos))
+                           (characterp (char-after))
+                           (= (char-syntax (char-after)) ?\")) ;; if char is a string, continue up
+                     (setq last-pos (point))
+                     (ignore-errors (sp-backward-up-sexp)))
+                   (funcall fn))))))))
 
   (define-advice sp-skip-closing-pair (:after (&optional last test-only) larger-reach-fix)
     (sp-show--pair-function))
 
   ;; (define-advice sp-show--pair-echo-match (:around (fn a b c d) remove-it))
+
+  (defun show-paren-alt-hook ()
+    (face-remap-set-base 'show-paren-match '(:underline t)))
+
+  (mapc (lambda (m) (add-hook m 'show-paren-alt-hook)) '(html-erb-mode jinja2-mode web-mode nxml-mode nxhtml-mode rhtml-mode sgml-mode html-mode mhtml-mode))
+
 #+end_src
 ** eyebrowse
 #+begin_src emacs-lisp :tangle yes

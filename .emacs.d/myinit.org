@@ -557,8 +557,8 @@ reflected in the local value.
     (if newline-without-break-tab (indent-according-to-mode)))
 
   ;;(define-key cua-global-keymap [C-return] nil) ;;ta bort C-return from cua
-  (define-key my-keys-map (kbd "<C-return>") 'newline-without-break-down)
-  (define-key my-keys-map (kbd "<C-S-return>") 'newline-without-break-up)
+  ;; (define-key my-keys-map (kbd "<C-return>") 'newline-without-break-down)
+  ;; (define-key my-keys-map (kbd "<C-S-return>") 'newline-without-break-up)
 
 #+end_src
 ** move lines from internet
@@ -717,7 +717,7 @@ reflected in the local value.
         ;;   (setq last-post-command-position (point)))
       ))
 
-  (add-hook 'post-command-hook 'do-stuff-if-moved-post-command)
+  ;; (add-hook 'post-command-hook 'do-stuff-if-moved-post-command)
 
 
 #+end_src
@@ -835,9 +835,9 @@ reflected in the local value.
         (push-mark (+ (point) 1) t t)
         (funcall f (point) (mark)))))
 
-  (advice-add 'kill-ring-save :around 'eriks-kill-dwim)
-  (advice-add 'kill-region :around 'eriks-kill-dwim)
-  (advice-add 'sp-kill-region :around 'eriks-kill-dwim)
+  ;; (advice-add 'kill-ring-save :around 'eriks-kill-dwim)
+  ;; (advice-add 'kill-region :around 'eriks-kill-dwim)
+  ;; (advice-add 'sp-kill-region :around 'eriks-kill-dwim)
 
   ;; (defun eriks-kill-dwim ()
   ;;   (interactive)

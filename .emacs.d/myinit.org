@@ -2188,7 +2188,7 @@ reflected in the local value.
   (defun show-paren-alt-hook ()
     (face-remap-set-base 'show-paren-match '(:underline t)))
 
-  (mapc (lambda (m) (add-hook m 'show-paren-alt-hook)) '(html-erb-mode jinja2-mode web-mode nxml-mode nxhtml-mode rhtml-mode sgml-mode html-mode mhtml-mode))
+  (mapc (lambda (m) (add-hook m 'show-paren-alt-hook)) '(html-erb-mode-hook jinja2-mode-hook web-mode-hook nxml-mode-hook nxhtml-mode-hook rhtml-mode-hook sgml-mode-hook html-mode-hook mhtml-mode-hook))
 
 #+end_src
 ** eyebrowse

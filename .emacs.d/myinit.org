@@ -1823,7 +1823,7 @@ reflected in the local value.
   (define-key evil-motion-state-map (kbd "[p") 'backward-paragraph)
 
   (define-key evil-motion-state-map (kbd "][") 'sp-next-sexp)
-  (define-key evil-motion-state-map (kbd "]]") 'sp-forward-sexp)
+  (define-key evil-motion-state-map (kbd "]]") 'sp-forward-sexp) ;; sp-forward-parallel-sexp
   (define-key evil-motion-state-map (kbd "[[") 'sp-backward-sexp)
   (define-key evil-motion-state-map (kbd "[]") 'sp-previous-sexp)
 

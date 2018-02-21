@@ -1749,17 +1749,48 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "H-[") 'sp-backward-slurp-sexp)
   (define-key evil-normal-state-map (kbd "H-}") 'sp-forward-barf-sexp)
   (define-key evil-normal-state-map (kbd "H-{") 'sp-backward-barf-sexp)
-  (define-key evil-normal-state-map (kbd "H-s") 'sp-split-sexp)
-  (define-key evil-normal-state-map (kbd "H-j") 'sp-join-sexp)
-  (define-key evil-normal-state-map (kbd "H-c") 'sp-convolute-sexp)
-  (define-key evil-normal-state-map (kbd "H-b") 'sp-extract-before-sexp)
-  (define-key evil-normal-state-map (kbd "H-f") 'sp-extract-after-sexp)
-  (define-key evil-normal-state-map (kbd "H-t") 'sp-transpose-sexp)
+  ;; (define-key evil-normal-state-map (kbd "H-s") 'sp-split-sexp)
+  ;; (define-key evil-normal-state-map (kbd "H-i") 'sp-join-sexp)
+  (define-key evil-normal-state-map (kbd "H-h") 'sp-move-sexp-back)
+  (define-key evil-normal-state-map (kbd "H-j") 'sp-add-to-next-sexp)
+  (define-key evil-normal-state-map (kbd "H-k") 'sp-extract-before-sexp)
+  (define-key evil-normal-state-map (kbd "H-l") 'sp-move-sexp-forward)
+  ;; (define-key evil-normal-state-map (kbd "H-c") 'sp-convolute-sexp)
+  ;; (define-key evil-normal-state-map (kbd "H-f") 'sp-extract-after-sexp)
   (define-key evil-normal-state-map (kbd "H-u") 'sp-splice-sexp)
   (define-key evil-normal-state-map (kbd "H-k") 'sp-kill-sexp)
   (define-key evil-normal-state-map (kbd "H-d") 'sp-splice-sexp-killing-around)
 
-  ;; (define-key evil-spc (kbd "c") 'eriks-duplicate-line)
+  ;; ARG is most likely not supported
+  (defun sp-move-sexp-back (&optional ARG)
+    "Moves the current sexp backward. Point needs to be on the most left
+  side of the sexp"
+    (interactive "p")
+    (let ((p (point)))
+      (save-excursion
+        (sp-backward-parallel-sexp ARG)
+        (setq p (< (point) p)))
+      (when p
+        (sp-forward-sexp)
+        (sp-transpose-sexp (- (or ARG 1)))
+        (sp-backward-sexp))))
+
+  (defun sp-move-sexp-forward (&optional ARG)
+    "Moves the current sexp forward. Point needs to be on the most left
+  side of the sexp"
+    (interactive "p")
+    (let ((q (point))
+          p)
+      (sp-forward-sexp)
+      (setq p (point))
+      (save-excursion
+        (sp-forward-parallel-sexp)
+        (setq p (> (point) p)))
+      (if p
+          (progn
+            (sp-transpose-sexp)
+            (sp-backward-sexp))
+        (goto-char q))))
 
   (define-key evil-normal-state-map (kbd "SPC y") 'browse-kill-ring)
   (define-key evil-normal-state-map (kbd "SPC Y") 'counsel-yank-pop)

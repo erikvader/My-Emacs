@@ -1744,6 +1744,7 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC pu") 'sp-splice-sexp)
   (define-key evil-normal-state-map (kbd "SPC pk") 'sp-kill-sexp)
   (define-key evil-normal-state-map (kbd "SPC pd") 'sp-splice-sexp-killing-around)
+  ;; TODO: add move-sexp bindings
 
   (define-key evil-normal-state-map (kbd "H-]") 'sp-forward-slurp-sexp)
   (define-key evil-normal-state-map (kbd "H-[") 'sp-backward-slurp-sexp)

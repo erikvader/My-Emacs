@@ -1724,7 +1724,7 @@ reflected in the local value.
   ;; (define-key evil-normal-state-map (kbd "SPC") 'evil-spc)
   ;;(define-key evil-visual-state-map (kbd "SPC") 'evil-spc)
 
-  (define-key evil-normal-state-map (kbd "SPC M-+") 'hydra-evil-numbers/body)
+  ;; (define-key evil-normal-state-map (kbd "SPC M-+") 'hydra-evil-numbers/body)
 
   ;;(define-key evil-spc (kbd ";") 'comment-dwim)
 
@@ -1740,11 +1740,12 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "SPC pt") 'sp-transpose-sexp)
   (define-key evil-normal-state-map (kbd "SPC pc") 'sp-convolute-sexp)
   (define-key evil-normal-state-map (kbd "SPC pb") 'sp-extract-before-sexp)
-  (define-key evil-normal-state-map (kbd "SPC pf") 'sp-extract-after-sexp)
+  (define-key evil-normal-state-map (kbd "SPC pa") 'sp-extract-after-sexp)
   (define-key evil-normal-state-map (kbd "SPC pu") 'sp-splice-sexp)
   (define-key evil-normal-state-map (kbd "SPC pk") 'sp-kill-sexp)
   (define-key evil-normal-state-map (kbd "SPC pd") 'sp-splice-sexp-killing-around)
-  ;; TODO: add move-sexp bindings
+  (define-key evil-normal-state-map (kbd "SPC pl") 'sp-move-sexp-forward)
+  (define-key evil-normal-state-map (kbd "SPC ph") 'sp-move-sexp-back)
 
   (define-key evil-normal-state-map (kbd "H-]") 'sp-forward-slurp-sexp)
   (define-key evil-normal-state-map (kbd "H-[") 'sp-backward-slurp-sexp)
@@ -1752,14 +1753,14 @@ reflected in the local value.
   (define-key evil-normal-state-map (kbd "H-{") 'sp-backward-barf-sexp)
   ;; (define-key evil-normal-state-map (kbd "H-s") 'sp-split-sexp)
   ;; (define-key evil-normal-state-map (kbd "H-i") 'sp-join-sexp)
-  (define-key evil-normal-state-map (kbd "H-h") 'sp-move-sexp-back)
-  (define-key evil-normal-state-map (kbd "H-j") 'sp-add-to-next-sexp)
-  (define-key evil-normal-state-map (kbd "H-k") 'sp-extract-before-sexp)
-  (define-key evil-normal-state-map (kbd "H-l") 'sp-move-sexp-forward)
+  (define-key evil-normal-state-map (kbd "H-k") 'sp-move-sexp-back)
+  (define-key evil-normal-state-map (kbd "H-j") 'sp-move-sexp-forward)
+  ;; (define-key evil-normal-state-map (kbd "H-a") 'sp-add-to-next-sexp)
+  ;; (define-key evil-normal-state-map (kbd "H-b") 'sp-extract-before-sexp)
   ;; (define-key evil-normal-state-map (kbd "H-c") 'sp-convolute-sexp)
   ;; (define-key evil-normal-state-map (kbd "H-f") 'sp-extract-after-sexp)
   (define-key evil-normal-state-map (kbd "H-u") 'sp-splice-sexp)
-  (define-key evil-normal-state-map (kbd "H-k") 'sp-kill-sexp)
+  ;; (define-key evil-normal-state-map (kbd "H-k") 'sp-kill-sexp)
   (define-key evil-normal-state-map (kbd "H-d") 'sp-splice-sexp-killing-around)
 
   ;; ARG is most likely not supported

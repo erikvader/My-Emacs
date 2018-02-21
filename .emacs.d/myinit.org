@@ -1112,6 +1112,7 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   ;; (defvar outline-minor-mode-prefix "\M-#")
   (require 'outshine)
+  ;; (setq outshine-use-speed-commands t)
   (add-hook 'outline-minor-mode-hook (lambda ()
                                        (outshine-hook-function)
                                        (define-key outline-minor-mode-map [remap self-insert-command] nil) ;;remove annyoing remap to outshine-self-insert-command
@@ -1135,23 +1136,6 @@ reflected in the local value.
               (lambda (&rest args) (unless (outline-on-heading-p t)
                                      (outline-previous-visible-heading 1))))
 
-  (evil-define-key '(normal visual motion) outline-minor-mode-map
-    (kbd "zxu") 'outline-up-heading
-    (kbd "zxj") 'outline-forward-same-level
-    (kbd "zxk") 'outline-backward-same-level
-    (kbd "zxl") 'outline-next-visible-heading
-    (kbd "zxh") 'outline-previous-visible-heading
-    (kbd "zxn") 'outshine-narrow-to-subtree
-    (kbd "zxw") 'widen
-    (kbd "zxJ") 'outline-move-subtree-down
-    (kbd "zxK") 'outline-move-subtree-up
-    (kbd "zxH") 'outline-promote
-    (kbd "zxL") 'outline-demote
-    (kbd "zxi") 'outshine-insert-heading
-    (kbd "zxc") 'outshine-cycle-buffer
-    (kbd "zxf") 'outline-hide-entry
-    (kbd "zxs") 'outline-show-entry
-    )
 #+end_src
 ** ibuffer
 #+begin_src emacs-lisp :tangle yes
@@ -1579,6 +1563,27 @@ reflected in the local value.
     (set-keymap-parent evil-operator-state-local-map evil-operator-state-map) ;makes evil-surround find non-buffer-local text objects (required to change in evil-surround.el)
     )
   (advice-add 'evil-initialize-local-keymaps :after 'erik-evil-surround-advice)
+
+  ;;; outline minor mode
+  (evil-define-key '(normal visual motion) outline-minor-mode-map
+    (kbd "z^") 'outline-up-heading
+    (kbd "zxn") 'outshine-narrow-to-subtree
+    (kbd "zxw") 'widen
+    (kbd "zxj") 'outline-forward-same-level
+    (kbd "zxk") 'outline-backward-same-level
+    (kbd "zxl") 'outline-next-visible-heading
+    (kbd "zxh") 'outline-previous-visible-heading
+    (kbd "zxJ") 'outline-move-subtree-down
+    (kbd "zxK") 'outline-move-subtree-up
+    (kbd "zxH") 'outline-promote
+    (kbd "zxL") 'outline-demote
+    (kbd "zxi") 'outshine-insert-heading
+    ;; (kbd "zxc") 'outshine-cycle-buffer
+    ;; (kbd "zxf") 'outline-hide-entry
+    ;; (kbd "zxs") 'outline-show-entry
+    )
+
+  (define-key evil-normal-state-map (kbd "zu") 'evil-scroll-top-line-to-bottom)
 
   ;;; generic
   (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)

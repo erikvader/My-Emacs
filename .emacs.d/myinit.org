@@ -1791,8 +1791,8 @@ reflected in the local value.
             (sp-backward-sexp))
         (goto-char q))))
 
-  (define-key evil-normal-state-map (kbd "SPC y") 'browse-kill-ring)
-  (define-key evil-normal-state-map (kbd "SPC Y") 'counsel-yank-pop)
+  (define-key evil-normal-state-map (kbd "SPC Y") 'browse-kill-ring)
+  (define-key evil-normal-state-map (kbd "SPC y") 'counsel-yank-pop)
 
   ;;; insert motion
   (define-key evil-insert-state-map (kbd "C-^") 'sp-up-sexp)

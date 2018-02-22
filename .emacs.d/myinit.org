@@ -252,6 +252,24 @@ reflected in the local value.
   (global-set-key (kbd "M-u") 'universal-argument)
   (define-key universal-argument-map (kbd "M-u") 'universal-argument-more)
   (define-key universal-argument-map (kbd "C-u") nil)
+
+  (defun eriks/kill-empty-parens ()
+    "Kills an empty set om parens (anything in the parens syntax class).
+  Point can be immediately after the closing paren, inside the parens or
+  immediately before the opening paren."
+    (interactive)
+    (save-excursion
+      (let ((done nil)
+            (i 0))
+        (while (and
+                (not done)
+                (< i 3))
+          (when (looking-at-p "\\s(\\s)")
+            (kill-region (point) (+ 2 (point)))
+            (setq done t))
+          (setq i (1+ i))
+          (setq done (or done
+                         (not (ignore-errors (progn (backward-char) t)))))))))
 #+end_src
 * Eriks map / prefix key
 ** random
@@ -1724,6 +1742,8 @@ reflected in the local value.
   ;; (define-key evil-normal-state-map (kbd "SPC M-+") 'hydra-evil-numbers/body)
 
   ;;(define-key evil-spc (kbd ";") 'comment-dwim)
+
+  (define-key evil-normal-state-map (kbd "SPC x") 'eriks/kill-empty-parens)
 
   (define-key evil-normal-state-map (kbd "SPC u") 'undo-tree-visualize)
   (define-key evil-normal-state-map (kbd "SPC .") 'repeat)

@@ -260,16 +260,19 @@ reflected in the local value.
     (interactive)
     (save-excursion
       (let ((done nil)
+            (ok nil)
             (i 0))
         (while (and
                 (not done)
                 (< i 3))
           (when (looking-at-p "\\s(\\s)")
             (kill-region (point) (+ 2 (point)))
-            (setq done t))
+            (setq done t ok t))
           (setq i (1+ i))
           (setq done (or done
-                         (not (ignore-errors (progn (backward-char) t)))))))))
+                         (not (ignore-errors (progn (backward-char) t))))))
+        (when (not ok)
+          (message "There wasn't anything to remove...")))))
 #+end_src
 * Eriks map / prefix key
 ** random

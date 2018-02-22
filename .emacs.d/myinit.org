@@ -258,7 +258,7 @@ reflected in the local value.
 #+begin_src emacs-lisp :tangle yes
   (define-prefix-command 'eriks-map)
   ;;(global-set-key (kbd "C-ö") 'eriks-map)
-  ;; (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
+  (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
   ;;(define-key my-keys-map (kbd "<C-m>") 'set-mark-command)
 
   ;; (define-key eriks-map (kbd "e") 'eclim-project-mode)
@@ -1215,9 +1215,6 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-w") 'evil-delete-backward-word)
 
   (evil-set-initial-state 'dired-mode 'emacs)
-
-  (define-key evil-normal-state-map (kbd "SPC x") 'eriks-map)
-  (define-key evil-visual-state-map (kbd "SPC x") 'eriks-map)
 
   ;;; evil remap
   (defun evil-remap (trigger action &optional map)

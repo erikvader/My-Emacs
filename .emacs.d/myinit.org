@@ -1747,6 +1747,7 @@ reflected in the local value.
   ;;(define-key evil-spc (kbd ";") 'comment-dwim)
 
   (define-key evil-normal-state-map (kbd "SPC x") 'eriks/delete-empty-parens)
+  (define-key evil-normal-state-map (kbd "H-x") 'eriks/delete-empty-parens)
 
   (define-key evil-normal-state-map (kbd "SPC u") 'undo-tree-visualize)
   (define-key evil-normal-state-map (kbd "SPC .") 'repeat)

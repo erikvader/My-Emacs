@@ -265,7 +265,7 @@ reflected in the local value.
         (while (and
                 (not done)
                 (< i 3))
-          (when (looking-at-p "\\s(\\s)\\|\\s\"\\s\"\\|\\s/\\s/\\|\\s\$\\s\$") ; delimeters, strings, character delimeter, paired delimeter
+          (when (looking-at-p "\\s(\\s)\\|\\s\"\\s\"\\|\\s/\\s/\\|\\s$\\s$") ; delimeters, strings, character delimeter, paired delimeter
             (delete-region (point) (+ 2 (point)))
             (setq done t ok t))
           (setq i (1+ i))
@@ -1236,6 +1236,8 @@ reflected in the local value.
   (define-key my-keys-map (kbd "C-w") 'evil-delete-backward-word)
 
   (evil-set-initial-state 'dired-mode 'emacs)
+
+  (define-key evil-normal-state-map (kbd "SPC :") 'eval-expression)
 
   ;;; evil remap
   (defun evil-remap (trigger action &optional map)

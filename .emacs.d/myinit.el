@@ -664,44 +664,6 @@ Uses a default face unless C-u is used."
 (evil-define-key 'normal evil-surround-mode-map "gs" 'evil-surround-edit)
 (evil-define-key 'normal evil-surround-mode-map "gS" 'evil-Surround-edit)
 
-;;make global inner and outer text objects with specified start delimeter and end delimeter.
-(defmacro define-and-bind-text-object-global (key start-regex end-regex)
-  (let ((inner-name (make-symbol "inner-name"))
-        (outer-name (make-symbol "outer-name")))
-    `(progn
-       (evil-define-text-object ,inner-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
-       (evil-define-text-object ,outer-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count t))
-       (define-key evil-inner-text-objects-map (kbd ,key) (quote ,inner-name))
-       (define-key evil-outer-text-objects-map (kbd ,key) (quote ,outer-name)))))
-
-;;make local inner and outer text objects with specified start
-;;delimeter and end delimeter. binds key buffer locally by binding it
-;;to `evil-operator-state-local-map'. This will work for any
-;;case except for evil-surround delete and change (or any other
-;;function/package that uses evil-(inner/outer)-state-map internally).
-;;For that to work the local map has to get its global counterpart as
-;;parent (do this in mode hook), and a change in evil-surround.el (or
-;;corresponding function/package) has to be made to use the local
-;;version instead.
-(defmacro define-and-bind-text-object-local (key start-regex end-regex)
-  (let ((inner-name (make-symbol "inner-name"))
-        (outer-name (make-symbol "outer-name")))
-    `(progn
-       (evil-define-text-object ,inner-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
-       (evil-define-text-object ,outer-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count t))
-       (define-key evil-visual-state-local-map   (kbd (format "i %s" ,key)) (quote ,inner-name)) ;;TODO: extract these
-       (define-key evil-operator-state-local-map (kbd (format "i %s" ,key)) (quote ,inner-name))
-       (define-key evil-visual-state-local-map   (kbd (format "a %s" ,key)) (quote ,outer-name))
-       (define-key evil-operator-state-local-map (kbd (format "a %s" ,key)) (quote ,outer-name)))))
-
-(defun erik-evil-surround-advice ()
-  (set-keymap-parent evil-operator-state-local-map evil-operator-state-map) ;makes evil-surround find non-buffer-local text objects (required to change in evil-surround.el)
-  )
-(advice-add 'evil-initialize-local-keymaps :after 'erik-evil-surround-advice)
 
 ;;;;; outline minor mode
 (evil-define-key '(normal visual motion) outline-minor-mode-map
@@ -800,23 +762,7 @@ Uses a default face unless C-u is used."
 
 (setq-default evil-surround-pairs-alist (cons '(?b . erik-evil-surround-between-cmd) evil-surround-pairs-alist))
 
-;;;;; global
-(define-and-bind-text-object-global "f" "\\_<[a-bA-b0-9._-]+?(" ")")
 
-;;;;; latex
-(defun erik-evil-surround-latex-cmd ()
-  (let ((text (read-from-minibuffer "" "")))
-    (cons (concat "\\" text "{") "}")))
-
-(sp-local-pair '(tex-mode plain-tex-mode latex-mode LaTeX-mode) "$" "$")
-
-(defun erik-evil-surround-latex-hook ()
-  (setq evil-surround-pairs-alist (cons '(?f . erik-evil-surround-latex-cmd) evil-surround-pairs-alist))
-  (define-and-bind-text-object-local "f" "\\\\[a-bA-b0-9._-]+?{" "}")
-  (define-and-bind-text-object-local "$" "\\$" "\\$"))
-
-(dolist (hk '(tex-mode-hook plain-tex-mode-hook latex-mode-hook LaTeX-mode-hook))
-  (add-hook hk 'erik-evil-surround-latex-hook))
 
 ;;;;; visual mode
 ;; (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)

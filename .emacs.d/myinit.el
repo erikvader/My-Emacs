@@ -665,28 +665,6 @@ Uses a default face unless C-u is used."
 (evil-define-key 'normal evil-surround-mode-map "gS" 'evil-Surround-edit)
 
 
-;;;;; outline minor mode
-(evil-define-key '(normal visual motion) outline-minor-mode-map
-  (kbd "zS")  'outline-show-subtree
-  (kbd "zs")  'outline-show-branches
-  (kbd "z^")  'outline-up-heading
-  (kbd "zxn") 'outshine-narrow-to-subtree
-  (kbd "zxw") 'widen
-  (kbd "zxj") 'outline-forward-same-level
-  (kbd "zxk") 'outline-backward-same-level
-  (kbd "zxl") 'outline-next-visible-heading
-  (kbd "zxh") 'outline-previous-visible-heading
-  (kbd "zxJ") 'outline-move-subtree-down
-  (kbd "zxK") 'outline-move-subtree-up
-  (kbd "zxH") 'outline-promote
-  (kbd "zxL") 'outline-demote
-  (kbd "zxi") 'outshine-insert-heading
-  (kbd "zxc") 'outshine-cycle-buffer
-  ;; (kbd "zxf") 'outline-hide-entry
-  ;; (kbd "zxs") 'outline-show-entry
-  )
-
-(define-key evil-normal-state-map (kbd "zu") 'evil-scroll-top-line-to-bottom)
 
 ;;;;; generic
 (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)
@@ -762,7 +740,28 @@ Uses a default face unless C-u is used."
 
 (setq-default evil-surround-pairs-alist (cons '(?b . erik-evil-surround-between-cmd) evil-surround-pairs-alist))
 
+;;;;; outline minor mode
+(evil-define-key '(normal visual motion) outline-minor-mode-map
+  (kbd "zS")  'outline-show-subtree
+  (kbd "zs")  'outline-show-branches
+  (kbd "z^")  'outline-up-heading
+  (kbd "zxn") 'outshine-narrow-to-subtree
+  (kbd "zxw") 'widen
+  (kbd "zxj") 'outline-forward-same-level
+  (kbd "zxk") 'outline-backward-same-level
+  (kbd "zxl") 'outline-next-visible-heading
+  (kbd "zxh") 'outline-previous-visible-heading
+  (kbd "zxJ") 'outline-move-subtree-down
+  (kbd "zxK") 'outline-move-subtree-up
+  (kbd "zxH") 'outline-promote
+  (kbd "zxL") 'outline-demote
+  (kbd "zxi") 'outshine-insert-heading
+  (kbd "zxc") 'outshine-cycle-buffer
+  ;; (kbd "zxf") 'outline-hide-entry
+  ;; (kbd "zxs") 'outline-show-entry
+  )
 
+(define-key evil-normal-state-map (kbd "zu") 'evil-scroll-top-line-to-bottom)
 
 ;;;;; visual mode
 ;; (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)

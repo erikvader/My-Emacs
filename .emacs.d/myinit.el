@@ -1154,6 +1154,29 @@ side of the sexp"
 
 (evil-mode 1)
 
+;;;;; modifications
+
+;;;;;; from evil-commands.el
+
+;; incorrectly moved point one step too far forward
+(defun evil-paste-from-register (register)
+  "Paste from REGISTER."
+  (interactive
+   (let ((overlay (make-overlay (point) (point)))
+         (string "\""))
+     (unwind-protect
+         (progn
+           ;; display " in the buffer while reading register
+           (put-text-property 0 1 'face 'minibuffer-prompt string)
+           (put-text-property 0 1 'cursor t string)
+           (overlay-put overlay 'after-string string)
+           (list (or evil-this-register (read-char))))
+       (delete-overlay overlay))))
+  (when (evil-paste-before nil register t)
+    ;; go to end of pasted text
+    ;; (unless (eobp) ;; removed these
+    ;;   (forward-char))
+    ))
 ;;;; git-gutter
 (setq git-gutter-fr+-side 'right-fringe)
 (require 'git-gutter-fringe+)

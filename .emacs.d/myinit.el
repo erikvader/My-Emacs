@@ -705,7 +705,9 @@ Uses a default face unless C-u is used."
 
 ;;;;; outline minor mode
 (evil-define-key '(normal visual motion) outline-minor-mode-map
-  (kbd "z^") 'outline-up-heading
+  (kbd "zS")  'outline-show-subtree
+  (kbd "zs")  'outline-show-branches
+  (kbd "z^")  'outline-up-heading
   (kbd "zxn") 'outshine-narrow-to-subtree
   (kbd "zxw") 'widen
   (kbd "zxj") 'outline-forward-same-level
@@ -717,7 +719,7 @@ Uses a default face unless C-u is used."
   (kbd "zxH") 'outline-promote
   (kbd "zxL") 'outline-demote
   (kbd "zxi") 'outshine-insert-heading
-  ;; (kbd "zxc") 'outshine-cycle-buffer
+  (kbd "zxc") 'outshine-cycle-buffer
   ;; (kbd "zxf") 'outline-hide-entry
   ;; (kbd "zxs") 'outline-show-entry
   )

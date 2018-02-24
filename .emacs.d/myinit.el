@@ -1177,6 +1177,61 @@ side of the sexp"
     ;; (unless (eobp) ;; removed these
     ;;   (forward-char))
     ))
+
+;;;;;; evil-lion.el
+
+;; improvements, can now give COUNT arger than 1
+(defun evil-lion--align-region (type count beg end regex)
+  "Build input for (align-region) and call it.
+
+TYPE can be either 'left or 'right.
+If COUNT is 1, the alignment will be performed on the first occurance
+only.
+BEG and END specify the retion to align.
+REGEX is the regex to align by."
+  (when (> (length regex) 0)
+
+    ;; (when (and count (> count 1))
+    ;;   (user-error "Only COUNT `1' is supported at the moment"))
+
+    (save-restriction
+      (narrow-to-region beg end)
+
+      ;; squeeze spaces if configured to do so
+      ;; (when evil-lion-squeeze-spaces
+      ;;   (evil-lion--squeeze-spaces type count (point-min) (point-max) regex))
+
+      ;; left --  (%s.*?){%d}\(\s-*\)%s
+      ;; right -- (%s.*?){%d}%s\(\s-*\)
+
+      ;; prepare input for align-region and call it
+      (let* ((indent-tabs-mode nil)
+             (group-regex
+              (if evil-lion-squeeze-spaces "\\(\\s-*\\)" "\\(\\)"))
+             (regexp
+              (cond ((and (not (null count)) (> count 1))
+                     (if (eq type 'left)
+                         (format "\\(%s.*?\\)\\{%d\\}%s%s" regex (- count 1) group-regex regex)
+                       (format "\\(%s.*?\\)\\{%d\\}%s%s" regex (- count 1) regex group-regex)))
+                    (t
+                     (if (eq type 'left)
+                         (concat group-regex regex)
+                       (concat regex group-regex)))))
+             (spacing 1)
+             (repeat
+              (if (or (null count) (eq count 0)) t nil))
+             (group (if (and (not (null count)) (> count 1)) 2 1))
+             (rule
+              (list (list nil (cons 'regexp regexp)
+                          (cons 'group group)
+                          (cons 'spacing spacing)
+                          (cons 'repeat repeat)))))
+        ;; if align-region isn't loaded, load it
+        (unless (fboundp 'align-region)
+          (require 'align))
+        (align-region (point-min) (point-max) 'entire rule nil nil)))))
+
+
 ;;;; git-gutter
 (setq git-gutter-fr+-side 'right-fringe)
 (require 'git-gutter-fringe+)

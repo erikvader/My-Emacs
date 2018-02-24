@@ -205,6 +205,13 @@ if NOTNEWLINE, then don't count newlines as whitespace."
           (lambda ()
             (setq ggtags-mode-line-project-name nil)))
 
+;; disable linum-mode in main config file (this one)
+(add-hook 'outline-minor-mode-hook (lambda ()
+                                     (when (and
+                                            buffer-file-name
+                                            (equal "myinit.el"
+                                                    (replace-regexp-in-string "\\(^.*/\\).*?$" "" buffer-file-name nil nil 1)))
+                                       (linum-mode -1))))
 ;;;; ivy, swiper and counsel
 (ivy-mode 1)
 (counsel-mode 1)

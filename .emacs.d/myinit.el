@@ -123,26 +123,26 @@
 (define-key universal-argument-map (kbd "M-u") 'universal-argument-more)
 (define-key universal-argument-map (kbd "C-u") nil)
 
-(defun eriks/delete-empty-parens ()
-  "Kills an empty set om parens (anything in the parens syntax class).
-Point can be immediately after the closing paren, inside the parens or
-immediately before the opening paren."
-  (interactive)
-  (save-excursion
-    (let ((done nil)
-          (ok nil)
-          (i 0))
-      (while (and
-              (not done)
-              (< i 3))
-        (when (looking-at-p "\\s(\\s)\\|\\s\"\\s\"\\|\\s/\\s/\\|\\s$\\s$") ; delimeters, strings, character delimeter, paired delimeter
-          (delete-region (point) (+ 2 (point)))
-          (setq done t ok t))
-        (setq i (1+ i))
-        (setq done (or done
-                       (not (ignore-errors (progn (backward-char) t))))))
-      (when (not ok)
-        (message "There wasn't anything to remove...")))))
+;; (defun eriks/delete-empty-parens ()
+;;   "Kills an empty set om parens (anything in the parens syntax class).
+;; Point can be immediately after the closing paren, inside the parens or
+;; immediately before the opening paren."
+;;   (interactive)
+;;   (save-excursion
+;;     (let ((done nil)
+;;           (ok nil)
+;;           (i 0))
+;;       (while (and
+;;               (not done)
+;;               (< i 3))
+;;         (when (looking-at-p "\\s(\\s)\\|\\s\"\\s\"\\|\\s/\\s/\\|\\s$\\s$") ; delimeters, strings, character delimeter, paired delimeter
+;;           (delete-region (point) (+ 2 (point)))
+;;           (setq done t ok t))
+;;         (setq i (1+ i))
+;;         (setq done (or done
+;;                        (not (ignore-errors (progn (backward-char) t))))))
+;;       (when (not ok)
+;;         (message "There wasn't anything to remove...")))))
 
 (defun is-whitespace (char &optional NOTNEWLINE)
   "Checks whether char is a space, newline or tab.
@@ -815,8 +815,7 @@ Uses a default face unless C-u is used."
 
 ;;(define-key evil-spc (kbd ";") 'comment-dwim)
 
-(define-key evil-normal-state-map (kbd "SPC x") 'eriks/delete-empty-parens)
-(define-key evil-normal-state-map (kbd "H-x") 'eriks/delete-empty-parens)
+;; (define-key evil-normal-state-map (kbd "SPC x") 'eriks/delete-empty-parens)
 
 (define-key evil-normal-state-map (kbd "SPC u") 'undo-tree-visualize)
 (define-key evil-normal-state-map (kbd "SPC .") 'repeat)

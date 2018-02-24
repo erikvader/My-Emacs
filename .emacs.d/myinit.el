@@ -158,8 +158,10 @@ if NOTNEWLINE, then don't count newlines as whitespace."
 (define-prefix-command 'eriks-map)
 (define-key my-keys-map (kbd "S-SPC") 'eriks-map)
 (define-key eriks-map (kbd "C-f") 'ff-find-other-file)
+
 (define-key eriks-map (kbd "gs") 'magit-status)
 (define-key eriks-map (kbd "gt") 'git-timemachine)
+
 (define-key eriks-map (kbd "U") 'counsel-unicode-char)
 
 (define-key eriks-map (kbd "t U") 'untabify)
@@ -665,8 +667,7 @@ Uses a default face unless C-u is used."
 (evil-define-key 'normal evil-surround-mode-map "gS" 'evil-Surround-edit)
 
 
-
-;;;;; generic
+;;;;;; generic
 (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)
   (let ((text (read-from-minibuffer "" "")))
     (if erik-evil-generic-outer
@@ -713,23 +714,7 @@ Uses a default face unless C-u is used."
 (advice-add 'evil-surround-inner-overlay :before 'erik-evil-generic-before-inner)
 (advice-add 'evil-surround-inner-overlay :after 'erik-evil-generic-after-inner)
 
-;;;;; between
-;; (evil-define-text-object erik-evil-between-outer-text-object (count &optional beg end type)
-;;   (let ((text (evil-read-key)))
-;;     (if erik-evil-generic-outer
-;;         (setq erik-evil-generic-latest text))
-;;     (evil-select-paren text text beg end type count t)))
-
-;; (evil-define-text-object erik-evil-between-inner-text-object (count &optional beg end type)
-;;   (let ((text (if (and erik-evil-generic-inner
-;;                        erik-evil-generic-latest)
-;;                   erik-evil-generic-latest
-;;                 (evil-read-key))))
-;;     (evil-select-paren text text beg end type count nil)))
-
-;; (define-key evil-inner-text-objects-map (kbd "b") 'erik-evil-between-inner-text-object) ;;vib" -- gives weird behaviour when inner is only one character long
-;; (define-key evil-outer-text-objects-map (kbd "b") 'erik-evil-between-outer-text-object)
-
+;;;;;; between
 (setq evil-textobj-between-a-key "b")
 (setq evil-textobj-between-i-key "b")
 (require 'evil-textobj-between)

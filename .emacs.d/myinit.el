@@ -161,6 +161,7 @@ if NOTNEWLINE, then don't count newlines as whitespace."
 
 (define-key eriks-map (kbd "gs") 'magit-status)
 (define-key eriks-map (kbd "gt") 'git-timemachine)
+(define-key eriks-map (kbd "gv") 'vc-annotate)
 
 (define-key eriks-map (kbd "U") 'counsel-unicode-char)
 
@@ -345,7 +346,7 @@ if NOTNEWLINE, then don't count newlines as whitespace."
       (append
        evil-emacs-state-modes
        evil-motion-state-modes
-       '(moccur-grep-mode)))
+       '(moccur-grep-mode git-timemachine-mode)))
 (setq evil-motion-state-modes nil)
 
 (setq evil-emacs-state-cursor 'bar)

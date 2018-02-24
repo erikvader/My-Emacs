@@ -882,15 +882,24 @@ side of the sexp"
 (require 'evil-easymotion)
 (evilem-default-keybindings "SPC")
 
+(defun eriks/avy-goto-char-in-line-exclusive ()
+  (interactive)
+  (let ((before (point))
+        after)
+    (call-interactively 'avy-goto-char-in-line)
+    (setq after (point))
+    (cond ((> after before)
+           (goto-char (1- after)))
+          ((< after before)
+           (goto-char (1+ after))))))
+
+(evil-define-avy-motion eriks/avy-goto-char-in-line-exclusive inclusive)
+(define-key evil-motion-state-map (kbd ".") 'evil-eriks/avy-goto-char-in-line-exclusive)
+
 (define-key evil-motion-state-map (kbd ",") 'avy-goto-char-in-line)
 (define-key evil-motion-state-map (kbd "SPC SPC") 'avy-goto-char)
-(evil-declare-not-repeat 'avy-goto-char-in-line)
 
 (define-key evil-motion-state-map (kbd ";") 'avy-goto-char-timer)
-
-(define-key evil-motion-state-map (kbd "SPC /") 'avy-goto-char-timer)
-(define-key evil-motion-state-map (kbd "C-/") 'avy-goto-char-timer)
-(evil-declare-not-repeat 'avy-goto-char-timer)
 
 (define-key evil-motion-state-map (kbd "C-;") 'evil-repeat-find-char)
 (define-key evil-motion-state-map (kbd "C-,") 'evil-repeat-find-char-reverse)

@@ -1167,6 +1167,8 @@ side of the sexp"
 
 ;;;;;; evil-lion.el
 
+(require 'evil-lion)
+
 ;; improvements, can now give COUNT arger than 1
 (defun evil-lion--align-region (type count beg end regex)
   "Build input for (align-region) and call it.

@@ -667,6 +667,9 @@ Uses a default face unless C-u is used."
 (evil-define-key 'normal evil-surround-mode-map "gs" 'evil-surround-edit)
 (evil-define-key 'normal evil-surround-mode-map "gS" 'evil-Surround-edit)
 
+;; makes point stay where it is
+(define-advice evil-surround-edit (:around (fn OPERATION) keep-point)
+  (save-excursion (funcall fn OPERATION)))
 
 ;;;;;; generic
 (evil-define-text-object erik-evil-generic-outer-text-object (count &optional beg end type)

@@ -322,6 +322,8 @@ if NOTNEWLINE, then don't count newlines as whitespace."
 (global-company-mode t)
 (define-key my-keys-map (kbd "C-SPC") 'company-complete)
 (define-key company-active-map (kbd "<escape>") 'company-abort)
+(define-key company-active-map (kbd "C-n") 'company-select-next)
+(define-key company-active-map (kbd "C-p") 'company-select-previous)
 
 ;;;; framemove
 (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
@@ -360,6 +362,7 @@ if NOTNEWLINE, then don't count newlines as whitespace."
 (evil-set-initial-state 'dired-mode 'emacs)
 
 (define-key evil-normal-state-map (kbd "SPC :") 'eval-expression)
+(define-key evil-normal-state-map (kbd "SPC x") 'calc)
 
 ;;;;; evil remap
 (defun evil-remap (trigger action &optional map)
@@ -729,28 +732,40 @@ Uses a default face unless C-u is used."
 
 (setq-default evil-surround-pairs-alist (cons '(?b . erik-evil-surround-between-cmd) evil-surround-pairs-alist))
 
-;;;;; outline minor mode
+;;;;; evil collection typ
+;; (setq evil-want-integration nil)
+;; (require 'evil-collection)
+;; (require 'evil-collection-calc)
+;; (evil-collection-calc-setup)
+;;;;;; outline minor mode
 (evil-define-key '(normal visual motion) outline-minor-mode-map
-  (kbd "zS")  'outline-show-subtree
-  (kbd "zs")  'outline-show-branches
-  (kbd "z^")  'outline-up-heading
+  (kbd "zp")  'outline-hide-other
+  (kbd "zB")  'outline-hide-body
+  (kbd "zb")  'outline-hide-entry
+  (kbd "ze")  'outline-show-entry
+  (kbd "zl")  'outline-hide-leaves
+  (kbd "zk")  'outline-show-children
+  (kbd "zK")  'outline-show-branches
+  (kbd "zu")  'outline-up-heading
+
   (kbd "zxn") 'outshine-narrow-to-subtree
   (kbd "zxw") 'widen
+
   (kbd "zxj") 'outline-forward-same-level
   (kbd "zxk") 'outline-backward-same-level
   (kbd "zxl") 'outline-next-visible-heading
   (kbd "zxh") 'outline-previous-visible-heading
+
   (kbd "zxJ") 'outline-move-subtree-down
   (kbd "zxK") 'outline-move-subtree-up
   (kbd "zxH") 'outline-promote
   (kbd "zxL") 'outline-demote
+
   (kbd "zxi") 'outshine-insert-heading
   (kbd "zxc") 'outshine-cycle-buffer
   ;; (kbd "zxf") 'outline-hide-entry
   ;; (kbd "zxs") 'outline-show-entry
   )
-
-(define-key evil-normal-state-map (kbd "zu") 'evil-scroll-top-line-to-bottom)
 
 ;;;;; visual mode
 ;; (define-key evil-visual-state-map (kbd "gx") 'exchange-point-and-mark)

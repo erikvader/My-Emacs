@@ -154,6 +154,21 @@ if NOTNEWLINE, then don't count newlines as whitespace."
    ;;(bolp)
    ;;(eolp)
    ))
+
+(defun eriks-skip-space (ARG &optional SAMELINE)
+  "Move point forward or backward until it doesnt encounter whitespace anymore.
+if SAMELINE then don't move the cursor between lines."
+  (interactive "p")
+  (if (< ARG 0)
+      (while (is-whitespace (preceding-char) SAMELINE)
+        (left-char))
+    (while (is-whitespace (following-char) SAMELINE)
+      (right-char))))
+
+(defun eriks-skip-space-backwards (&optional SAMELINE)
+  (interactive)
+  (eriks-skip-space -1 SAMELINE))
+
 ;;; eriks-map
 (define-prefix-command 'eriks-map)
 (define-key my-keys-map (kbd "S-SPC") 'eriks-map)

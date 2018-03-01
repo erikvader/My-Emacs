@@ -1,3 +1,24 @@
+(defvar evil-debug-yank-last-register-value nil)
+
+(defun evil-debug-yank ()
+  (let ((reg (evil-get-register ?0))
+        (cmd this-command))
+    (if (and
+         (equal cmd 'evil-yank)
+         (equal reg evil-debug-yank-last-register-value))
+        (message "SAKEN KOPIERADES INTE!!")
+      (let ((inhibit-message t))
+        (if (not (equal evil-debug-yank-last-register-value reg))
+            (progn
+              (setq evil-debug-yank-last-register-value reg)
+              (message "---evil register debug value changed---\n  command-name: %s\n  register contents: %s\n---" cmd reg))
+          (message "---evil register debug--- %s" cmd))))))
+
+(add-hook 'post-command-hook 'evil-debug-yank)
+(defun evil-debug-yank-remove-hook ()
+  (interactive)
+  (remove-hook 'post-command-hook 'evil-debug-yank))
+
 ;;; fonts
 
 (defface eriks-fix-later-face

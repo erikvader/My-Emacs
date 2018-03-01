@@ -528,8 +528,8 @@ argument is specified."
 (define-key evil-normal-state-map (kbd "gA") 'evil-lion-right)
 
 (define-key evil-normal-state-map (kbd "U")   'undo-tree-redo)
-(define-key evil-normal-state-map (kbd "C-d") 'golden-ratio-scroll-screen-up)
-(define-key evil-normal-state-map (kbd "C-u") 'golden-ratio-scroll-screen-down)
+(define-key evil-normal-state-map (kbd "C-d") 'scroll-up-command)
+(define-key evil-normal-state-map (kbd "C-u") 'scroll-down-command)
 
 (define-key evil-normal-state-map (kbd "C-M--") 'evil-numbers/dec-at-pt)
 (define-key evil-normal-state-map (kbd "C-M-+") 'evil-numbers/inc-at-pt)

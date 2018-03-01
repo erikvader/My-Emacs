@@ -631,6 +631,13 @@ argument is specified."
 (define-key evil-outer-text-objects-map (kbd "C-l") 'evil-a-little-word)
 (define-key evil-inner-text-objects-map (kbd "C-l") 'evil-inner-little-word)
 
+(define-key evil-motion-state-map (kbd "H-w") 'evil-forward-little-word-begin)
+(define-key evil-motion-state-map (kbd "H-b") 'evil-backward-little-word-begin)
+(define-key evil-motion-state-map (kbd "H-e") 'evil-forward-little-word-end)
+(define-key evil-motion-state-map (kbd "H-B") 'evil-backward-little-word-end)
+(define-key evil-outer-text-objects-map (kbd "H-l") 'evil-a-little-word)
+(define-key evil-inner-text-objects-map (kbd "H-l") 'evil-inner-little-word)
+
 (define-key evil-normal-state-map (kbd "SPC s M") 'dmoccur)
 (define-key evil-normal-state-map (kbd "SPC s N") 'moccur)
 (define-key evil-normal-state-map (kbd "SPC s O") 'occur-by-moccur)

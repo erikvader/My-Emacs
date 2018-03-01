@@ -366,17 +366,34 @@ if SAMELINE then don't move the cursor between lines."
        '(moccur-grep-mode git-timemachine-mode)))
 (setq evil-motion-state-modes nil)
 
-(setq evil-emacs-state-cursor 'bar)
+;; make magit-commit popup enter insert-state
+(add-hook 'with-editor-mode-hook 'evil-insert-state)
+
+(setq evil-emacs-state-cursor '(hollow))
 
 (evil-indent-plus-default-bindings) ;;ii iI ai aI iJ aJ
 
 (define-key evil-emacs-state-map [escape] 'evil-normal-state)
-(define-key evil-emacs-state-map (kbd "C-w") 'evil-delete-backward-word)
-(define-key my-keys-map (kbd "C-w") 'evil-delete-backward-word)
+
+;; (defmacro eriks/look-in-global-map (key)
+;;   `(lambda ()
+;;      (interactive)
+;;      (call-interactively (lookup-key global-map ,key))))
+
+;; (evil-define-key 'emacs my-keys-map
+;;   [escape] 'evil-normal-state
+;;   (kbd "C-w") 'evil-delete-backward-word
+;;   (kbd "C-e") 'evil-scroll-line-down
+;;   (kbd "C-y") 'evil-scroll-line-up
+;;   (kbd "C-d") 'golden-ratio-scroll-screen-up
+;;   (kbd "C-u") 'golden-ratio-scroll-screen-down
+;;   (kbd "C-p") (eriks/look-in-global-map (kbd "C-y"))
+;;   )
 
 (evil-set-initial-state 'dired-mode 'emacs)
 
 (define-key evil-normal-state-map (kbd "SPC :") 'eval-expression)
+(define-key evil-normal-state-map (kbd "SPC ;") 'set-variable)
 (define-key evil-normal-state-map (kbd "SPC x") 'calc)
 
 ;;;;; evil remap
@@ -513,8 +530,6 @@ argument is specified."
 (define-key evil-normal-state-map (kbd "U")   'undo-tree-redo)
 (define-key evil-normal-state-map (kbd "C-d") 'golden-ratio-scroll-screen-up)
 (define-key evil-normal-state-map (kbd "C-u") 'golden-ratio-scroll-screen-down)
-
-(define-key evil-normal-state-map (kbd "C-w") 'hydra-windows/body)
 
 (define-key evil-normal-state-map (kbd "C-M--") 'evil-numbers/dec-at-pt)
 (define-key evil-normal-state-map (kbd "C-M-+") 'evil-numbers/inc-at-pt)

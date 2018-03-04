@@ -1042,6 +1042,12 @@ side of the sexp"
 (evil-exchange-install)
 
 ;;;;; multiple cursors
+;; yank fix
+;; https://github.com/gabesoft/evil-mc/issues/70
+(add-hook 'evil-mc-after-cursors-deleted
+          (lambda ()
+            (setq evil-was-yanked-without-register t)))
+
 (defvar evil-mc-key-map
   (let ((map (make-sparse-keymap))
         (keys '(("gmm"   . evil-mc-make-all-cursors)

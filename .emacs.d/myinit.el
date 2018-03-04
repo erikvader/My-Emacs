@@ -935,6 +935,7 @@ side of the sexp"
 (evilem-default-keybindings "SPC")
 
 (defun eriks/avy-goto-char-in-line-exclusive ()
+  "Same as `avy-goto-char-in-line' except that it is exclusive"
   (interactive)
   (let ((before (point))
         after)

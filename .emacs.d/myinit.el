@@ -959,6 +959,16 @@ side of the sexp"
 (define-key evil-motion-state-map (kbd "H-.") 'evil-repeat-find-char)
 (define-key evil-motion-state-map (kbd "H-,") 'evil-repeat-find-char-reverse)
 
+(evilem-make-motion
+ evilem-motion-forward-WORD-end #'evil-forward-WORD-end
+  :pre-hook (setq evil-this-type 'inclusive)
+  :scope 'line)
+
+(evilem-make-motion
+ evilem-motion-forward-word-end #'evil-forward-word-end
+  :pre-hook (setq evil-this-type 'inclusive)
+  :scope 'line)
+
 (evilem-define (kbd "SPC ][") 'sp-next-sexp)
 (evilem-define (kbd "SPC ]]") 'sp-forward-sexp)
 (evilem-define (kbd "SPC [[") 'sp-backward-sexp)

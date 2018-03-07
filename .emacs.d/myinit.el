@@ -1399,8 +1399,6 @@ REGEX is the regex to align by."
 (add-hook 'prog-mode-hook
           (lambda ()
             (evil-set-initial-state major-mode 'normal)
-            (make-local-variable 'newline-without-break-tab)
-            (setq newline-without-break-tab t)
             (show-smartparens-mode t)
             (smartparens-mode t)
             (setq show-trailing-whitespace t)

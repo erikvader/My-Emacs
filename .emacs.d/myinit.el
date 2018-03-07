@@ -361,15 +361,17 @@ if SAMELINE then don't move the cursor between lines."
 (setq framemove-hook-into-windmove t)
 ;;;; evil
 ;;;;; setup
-(setq evil-emacs-state-modes
-      (append
-       evil-emacs-state-modes
-       evil-motion-state-modes
-       '(moccur-grep-mode git-timemachine-mode)))
+(setq evil-emacs-state-modes nil)
 (setq evil-motion-state-modes nil)
+(setq evil-insert-state-modes nil)
+(setq evil-normal-state-modes '(prog-mode))
 
-;; make magit-commit popup enter insert-state
-(add-hook 'with-editor-mode-hook 'evil-insert-state)
+(setq evil-buffer-regexps (append
+                           '(("^COMMIT_EDITMSG$" . insert)
+                             ("^timemachine:" . emacs))
+                           evil-buffer-regexps))
+
+(add-hook 'magit-blame-mode-hook 'evil-emacs-state)
 
 (setq evil-emacs-state-cursor '(hollow))
 
@@ -1398,7 +1400,7 @@ REGEX is the regex to align by."
 ;;;; prog-mode
 (add-hook 'prog-mode-hook
           (lambda ()
-            (evil-set-initial-state major-mode 'normal)
+            ;; (evil-set-initial-state major-mode 'normal)
             (show-smartparens-mode t)
             (smartparens-mode t)
             (setq show-trailing-whitespace t)

@@ -1,5 +1,3 @@
-;; -*- lexical-binding: t; -*-
-
 ;;; fonts
 
 (defface eriks-fix-later-face

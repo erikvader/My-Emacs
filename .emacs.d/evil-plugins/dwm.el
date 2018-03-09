@@ -33,6 +33,7 @@
   "Ignore buffers name regexp")
 
 (defun dwm-window-edges-alist ()
+  "returns a list with each window and each windows edge-distances"
   (mapcar #'(lambda (win) (cons (window-edges win) win))
           (window-list-1)))
 
@@ -49,6 +50,7 @@
   (cadddr win-edge))
 
 (cl-defun dwm-find-window (&key left-pos top-pos right-pos bottom-pos)
+  "finds and returns the first window that satisfies the position given in the aguments"
   (cdr
    (cl-find-if
     #'(lambda (edge-win)
@@ -104,10 +106,12 @@
   (cdr (car (last (dwm-sub-windows)))))
 
 (defun dwm-create-sub-buffer (buffer)
+  "creates the initial sub buffer"
   (let ((sub-window (split-window (dwm-main-window) nil 'right)))
     (set-window-buffer sub-window buffer)))
 
 (defun dwm-load-sub-buffer (buffer)
+  "creates a new sub buffer"
   (let ((sub-window (dwm-first-sub-window)))
     (if sub-window
         (progn
@@ -144,6 +148,7 @@
       t))
 
 (defun dwm--load-buffer (win loading-buf &optional before-win-buf)
+  "set win to loading-buf and place before-win-buf in a sub window"
   (unless (and before-win-buf
                (equal (buffer-name loading-buf)
                       (buffer-name before-win-buf)))
@@ -157,6 +162,7 @@
     (set-buffer loading-buf)))
 
 (defun dwm-load-buffer ()
+  "focus the current window into master"
   (interactive)
   (let* ((buf (current-buffer))
          (main-win (dwm-main-window))
@@ -165,6 +171,7 @@
       (dwm--load-buffer main-win buf win-buf))))
 
 (defun dwm-switch-to-buffer (org-func buffer-or-name &rest args)
+  "load buffer-or-name in main and move main to a sub window"
   (let* ((main-window (dwm-main-window))
          (win-buf (window-buffer main-window))
          (loading-buf (get-buffer-create buffer-or-name)))
@@ -175,14 +182,17 @@
                         win-buf))))
 
 (defun dwm-next-buffer ()
+  "goto next"
   (interactive)
   (select-window (dwm-find-next-window (selected-window))))
 
 (defun dwm-prev-buffer ()
+  "goto previous"
   (interactive)
   (select-window (dwm-find-prev-window (selected-window))))
 
 (defun dwm-continue-main-window (org-func &optional window)
+  "Makes sure that the main window always exist in a deletion of a window"
   (let ((win (or window (selected-window))))
     (if (equal win (dwm-main-window))
         (dwm--load-buffer win (window-buffer (dwm-first-sub-window)))

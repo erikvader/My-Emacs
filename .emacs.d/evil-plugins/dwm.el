@@ -219,8 +219,29 @@
       (funcall org-func window)
       (balance-windows))))
 
+(defun dwm-quit-window-always-close (org-func &optional kill window)
+  "makes `quit-window' always close instead of replacing the buffer and 
+ending up having two windows with the same buffer"
+  (delete-window (or window (selected-window))))
+
+(defun dwm-switch-if-open (buf-or-name)
+  "switches to buf-or-name if it is visible in a live window. returns
+t if it switched or nil if there wasn't anything to switch to"
+  (let ((suc (get-buffer-window buf-or-name)))
+    (when suc
+      (select-window suc))
+    suc))
+
+(defun dwm-set-buffer (buf-or-name)
+  "set the current window to buf-or-name, but if bur-or-name is
+already open in a window, switch to that window instead."
+  (interactive "B")
+  (let ((buf-or-name (get-buffer-create buf-or-name)))
+    (unless (dwm-switch-if-open buf-or-name)
+      (set-window-buffer (selected-window) buf-or-name))))
+
 (defvar dwm-mode-key-map (make-sparse-keymap))
-(let ((keys '(("C-x B" . dwm-default-switch-to-buffer)
+(let ((keys '(("C-x B" . dwm-set-buffer)
               ("C-x b" . switch-to-buffer)
               ("S-<down>" . dwm-prev-buffer)
               ("S-<up>" . dwm-next-buffer)
@@ -242,10 +263,13 @@
         (advice-add 'switch-to-buffer-other-window :around 'dwm-switch-to-buffer)
         (advice-add 'switch-to-buffer :around 'dwm-switch-to-buffer)
         (advice-add 'pop-to-buffer :around 'dwm-switch-to-buffer))
+        (advice-add 'quit-window :around 'dwm-quit-window-always-close)
+        )
     (advice-remove 'delete-window 'dwm-continue-main-window)
     (advice-remove 'switch-to-buffer-other-window 'dwm-switch-to-buffer)
     (advice-remove 'switch-to-buffer 'dwm-switch-to-buffer)
     (advice-remove 'pop-to-buffer 'dwm-switch-to-buffer)
+    (advice-remove 'quit-window 'dwm-quit-window-always-close)
     ))
 
 (provide 'dwm)

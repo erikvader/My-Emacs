@@ -342,11 +342,12 @@ if SAMELINE then don't move the cursor between lines."
 
 ;;;; framemove
 (require 'dwm)
+(dwm-mode 1)
 
-(define-key my-keys-map (kbd "S-<right>") 'windmove-right)
-(define-key my-keys-map (kbd "S-<left>") 'windmove-left)
-(define-key my-keys-map (kbd "S-<up>") 'windmove-up)
-(define-key my-keys-map (kbd "S-<down>") 'windmove-down)
+;; (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
+;; (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
+;; (define-key my-keys-map (kbd "S-<up>") 'windmove-up)
+;; (define-key my-keys-map (kbd "S-<down>") 'windmove-down)
 
 (define-key my-keys-map (kbd "C-<right>") 'enlarge-window-horizontally)
 (define-key my-keys-map (kbd "C-<left>") 'shrink-window-horizontally)
@@ -357,6 +358,9 @@ if SAMELINE then don't move the cursor between lines."
 (define-key my-keys-map (kbd "C-S-<left>") 'buf-move-left)
 (define-key my-keys-map (kbd "C-S-<up>") 'buf-move-up)
 (define-key my-keys-map (kbd "C-S-<down>") 'buf-move-down)
+
+;; (define-key my-keys-map (kbd "M-<left>") 'winner-undo)
+;; (define-key my-keys-map (kbd "M-<right>") 'winner-redo)
 
 (setq framemove-hook-into-windmove t)
 ;;;; evil

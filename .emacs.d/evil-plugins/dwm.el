@@ -196,6 +196,30 @@
                         loading-buf
                         win-buf))))
 
+(defun dwm-switch-to-buffer-display (org-func buffer-or-name &optional ACTION FRAME)
+  "same as `dwm-switch-to-buffer-sub' except that this return the window
+instead of the buffer and that it doesn't select to window. Used with `display-buffer'"
+  ;; (message "debug display-buffer %s" ACTION)
+  ;; (if ACTION
+  ;;     (funcall org-func buffer-or-name ACTION FRAME))
+  (save-selected-window
+    (let ((b (dwm-switch-to-buffer-sub org-func buffer-or-name ACTION FRAME)))
+      (if (buffer-live-p b)
+          (get-buffer-window b)
+        b))))
+
+(defun dwm-switch-to-buffer-sub (org-func buffer-or-name &rest args)
+  "load buffer-or-name in first subwindow and select it"
+  (unless (dwm-switch-if-open buffer-or-name)
+    (let* ((loading-buf (get-buffer-create buffer-or-name)))
+      (if (dwm-match-ignore-p loading-buf)
+          (apply org-func buffer-or-name args)
+        ;; (dwm-delete-duplicated-buffer loading-buf)
+        (dwm-load-sub-buffer loading-buf)
+        (balance-windows)
+        (select-window (get-buffer-window loading-buf))
+        loading-buf))))
+
 (defun dwm-next-buffer ()
   "goto next"
   (interactive)
@@ -240,6 +264,16 @@ already open in a window, switch to that window instead."
     (unless (dwm-switch-if-open buf-or-name)
       (set-window-buffer (selected-window) buf-or-name))))
 
+;; (defun dwm-default-switch-to-buffer ()
+;;   "Temporarily remove advice from `switch-to-buffer' to get the default behaviour"
+;;   (interactive)
+;;   (let ((has-advice (advice-member-p 'dwm-switch-to-buffer 'switch-to-buffer)))
+;;     (when has-advice
+;;       (advice-remove 'switch-to-buffer 'dwm-switch-to-buffer))
+;;     (call-interactively 'switch-to-buffer)
+;;     (when has-advice
+;;       (advice-add 'switch-to-buffer :around 'dwm-switch-to-buffer))))
+
 (defvar dwm-mode-key-map (make-sparse-keymap))
 (let ((keys '(("C-x B" . dwm-set-buffer)
               ("C-x b" . switch-to-buffer)
@@ -260,17 +294,17 @@ already open in a window, switch to that window instead."
   (if dwm-mode
       (progn
         (advice-add 'delete-window :around 'dwm-continue-main-window)
-        (advice-add 'switch-to-buffer-other-window :around 'dwm-switch-to-buffer)
+        (advice-add 'switch-to-buffer-other-window :around 'dwm-switch-to-buffer-sub)
         (advice-add 'switch-to-buffer :around 'dwm-switch-to-buffer)
-        (advice-add 'pop-to-buffer :around 'dwm-switch-to-buffer))
-        (advice-add 'quit-window :around 'dwm-quit-window-always-close)
-        )
+        (advice-add 'pop-to-buffer :around 'dwm-switch-to-buffer)
+        (advice-add 'display-buffer :around 'dwm-switch-to-buffer-display)
+        (advice-add 'quit-window :around 'dwm-quit-window-always-close))
     (advice-remove 'delete-window 'dwm-continue-main-window)
-    (advice-remove 'switch-to-buffer-other-window 'dwm-switch-to-buffer)
+    (advice-remove 'switch-to-buffer-other-window 'dwm-switch-to-buffer-sub)
     (advice-remove 'switch-to-buffer 'dwm-switch-to-buffer)
     (advice-remove 'pop-to-buffer 'dwm-switch-to-buffer)
-    (advice-remove 'quit-window 'dwm-quit-window-always-close)
-    ))
+    (advice-remove 'display-buffer 'dwm-switch-to-buffer-display)
+    (advice-remove 'quit-window 'dwm-quit-window-always-close)))
 
 (provide 'dwm)
 ;;; dwm.el ends here

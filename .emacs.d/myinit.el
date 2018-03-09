@@ -341,6 +341,8 @@ if SAMELINE then don't move the cursor between lines."
 (define-key company-active-map (kbd "C-p") 'company-select-previous)
 
 ;;;; framemove
+(require 'dwm)
+
 (define-key my-keys-map (kbd "S-<right>") 'windmove-right)
 (define-key my-keys-map (kbd "S-<left>") 'windmove-left)
 (define-key my-keys-map (kbd "S-<up>") 'windmove-up)

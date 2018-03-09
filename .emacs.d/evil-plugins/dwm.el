@@ -110,6 +110,21 @@
   (let ((sub-window (split-window (dwm-main-window) nil 'right)))
     (set-window-buffer sub-window buffer)))
 
+(defun dwm-rotate-buffers (arg)
+  (interactive "p")
+  (save-selected-window
+    (let* ((wins (window-list-1))
+           (bufs (mapcar #'window-buffer wins)))
+      (when (< 1 (length wins))
+        (if (< 0 arg)
+            (setq bufs (append (last bufs) (butlast bufs)))
+          (setq bufs (append (cdr bufs) (list (car bufs)))))
+        (mapcar* #'set-window-buffer wins bufs)))))
+
+(defun dwm-rotate-buffers-backwards (arg)
+  (interactive "p")
+  (dwm-rotate-buffers (- arg)))
+
 (defun dwm-load-sub-buffer (buffer)
   "creates a new sub buffer"
   (let ((sub-window (dwm-first-sub-window)))
@@ -191,6 +206,11 @@
   (interactive)
   (select-window (dwm-find-prev-window (selected-window))))
 
+(defun dwm-goto-main ()
+  "goto main"
+  (interactive)
+  (select-window (dwm-main-window)))
+
 (defun dwm-continue-main-window (org-func &optional window)
   "Makes sure that the main window always exist in a deletion of a window"
   (let ((win (or window (selected-window))))
@@ -200,9 +220,15 @@
       (balance-windows))))
 
 (defvar dwm-mode-key-map (make-sparse-keymap))
-(let ((keys '(("S-<up>" . dwm-prev-buffer)
-              ("S-<down>" . dwm-next-buffer)
-              ("M-<return>" . dwm-focus-buffer))))
+(let ((keys '(("C-x B" . dwm-default-switch-to-buffer)
+              ("C-x b" . switch-to-buffer)
+              ("S-<down>" . dwm-prev-buffer)
+              ("S-<up>" . dwm-next-buffer)
+              ("S-<left>" . dwm-goto-main)
+              ("M-<return>" . dwm-focus-buffer)
+              ("M-<left>" . dwm-focus-buffer)
+              ("M-<up>" . dwm-rotate-buffers)
+              ("M-<down>". dwm-rotate-buffers-backwards))))
   (dolist (key-data keys)
     (define-key dwm-mode-key-map (kbd (car key-data)) (cdr key-data))))
 

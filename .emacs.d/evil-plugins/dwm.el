@@ -29,7 +29,7 @@
   :prefix "dwm-"
   :group 'convenience)
 
-(defcustom dwm-ignore-buffers-regexp '("helm")
+(defcustom dwm-ignore-buffers-regexp '("helm" "*dashboard*")
   "Ignore buffers name regexp")
 
 (defun dwm-window-edges-alist ()
@@ -161,7 +161,7 @@
       (balance-windows))
     (set-buffer loading-buf)))
 
-(defun dwm-load-buffer ()
+(defun dwm-focus-buffer ()
   "focus the current window into master"
   (interactive)
   (let* ((buf (current-buffer))
@@ -196,11 +196,20 @@
   (let ((win (or window (selected-window))))
     (if (equal win (dwm-main-window))
         (dwm--load-buffer win (window-buffer (dwm-first-sub-window)))
-      (funcall org-func window))))
+      (funcall org-func window)
+      (balance-windows))))
+
+(defvar dwm-mode-key-map (make-sparse-keymap))
+(let ((keys '(("S-<up>" . dwm-prev-buffer)
+              ("S-<down>" . dwm-next-buffer)
+              ("M-<return>" . dwm-focus-buffer))))
+  (dolist (key-data keys)
+    (define-key dwm-mode-key-map (kbd (car key-data)) (cdr key-data))))
 
 (define-minor-mode dwm-mode
   "Enable tiled window manage"
-  nil nil nil
+  :keymap dwm-mode-key-map
+  :global t
   (if dwm-mode
       (progn
         (advice-add 'delete-window :around 'dwm-continue-main-window)

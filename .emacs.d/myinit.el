@@ -199,6 +199,7 @@ if SAMELINE then don't move the cursor between lines."
 (require 'rotate-text)
 (require 'atomic-chrome)
 (require 'eyebrowse)
+(require 'switch-window)
 
 ;;;; random
 (sml/setup)
@@ -1400,6 +1401,28 @@ REGEX is the regex to align by."
     (message "You need to install magit for this")))
 
 (define-key git-timemachine-mode-map (kbd "c") 'eriks/git-timemachine-show-commit)
+;;;; switch-window
+
+(define-key my-keys-map (kbd "C-x o") 'switch-window)
+(define-key my-keys-map (kbd "C-x 1") 'switch-window-then-maximize)
+(define-key my-keys-map (kbd "C-x 0") 'switch-window-then-delete)
+
+(setq switch-window-shortcut-style 'qwerty)
+(setq switch-window-qwerty-shortcuts '("f" "j" "g" "h" "d" "k" "s" "l" "a"))
+(setq switch-window-threshold 1)
+(setq switch-window-minibuffer-shortcut ?z)
+
+(defun switch-window-dwm-focus ()
+  "Display an overlay in each window showing a unique key.
+In the mean time, ask user for the window to focus"
+  (interactive)
+  (switch-window--then
+   "dwm focus window: "
+   nil
+   #'dwm-focus-buffer))
+
+(define-key my-keys-map (kbd "C-x O") 'switch-window-dwm-focus)
+
 ;;; mode hooks
 ;;;; prog-mode
 (add-hook 'prog-mode-hook

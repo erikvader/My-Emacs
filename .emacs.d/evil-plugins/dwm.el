@@ -264,6 +264,12 @@ already open in a window, switch to that window instead."
     (unless (dwm-switch-if-open buf-or-name)
       (set-window-buffer (selected-window) buf-or-name))))
 
+(defun dwm-maximize-main ()
+  "deletes all other windows than the main one"
+  (interactive)
+  (select-window (dwm-main-window))
+  (delete-other-windows))
+
 ;; (defun dwm-default-switch-to-buffer ()
 ;;   "Temporarily remove advice from `switch-to-buffer' to get the default behaviour"
 ;;   (interactive)
@@ -280,6 +286,7 @@ already open in a window, switch to that window instead."
               ("S-<down>" . dwm-prev-buffer)
               ("S-<up>" . dwm-next-buffer)
               ("S-<left>" . dwm-goto-main)
+              ("S-<right>" . dwm-maximize-main)
               ("M-<return>" . dwm-focus-buffer)
               ("M-<left>" . dwm-focus-buffer)
               ("M-<up>" . dwm-rotate-buffers)

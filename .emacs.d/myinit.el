@@ -196,7 +196,6 @@ if SAMELINE then don't move the cursor between lines."
 (require 'framemove)
 (require 'smartparens-config)
 (require 'outshine)
-(require 'dashboard)
 (require 'rotate-text)
 (require 'atomic-chrome)
 (require 'eyebrowse)
@@ -261,13 +260,6 @@ if SAMELINE then don't move the cursor between lines."
   (indent-according-to-mode))
 
 (sp-local-pair '(c-mode java-mode css-mode js-mode) "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
-
-;;;; dashboard
-(dashboard-setup-startup-hook)
-
-(setq dashboard-items '((recents  . 5)
-                        (bookmarks . 5)
-                        (projects . 5)))
 
 ;;;; outshine
 ;; (setq outshine-use-speed-commands t)

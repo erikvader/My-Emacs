@@ -29,7 +29,7 @@
   :prefix "dwm-"
   :group 'convenience)
 
-(defcustom dwm-ignore-buffers-regexp '("helm" "*dashboard*")
+(defcustom dwm-ignore-buffers-regexp '("helm")
   "Ignore buffers name regexp")
 
 (defun dwm-window-edges-alist ()

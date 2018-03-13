@@ -55,10 +55,6 @@
  '(c-basic-offset 3)
  '(c-hanging-braces-alist 'set-from-style)
  '(column-number-mode t)
- '(company-backends
-   '(company-emacs-eclim company-bbdb company-css company-semantic company-xcode company-cmake company-capf company-files
-                         (company-dabbrev-code company-gtags company-etags company-keywords)
-                         company-oddmuse company-dabbrev))
  '(company-begin-commands nil)
  '(company-frontends
    '(company-pseudo-tooltip-frontend company-echo-metadata-frontend))

@@ -1,8 +1,3 @@
-;; Potential things to improve/change
-;;TODO: evil-mc save contents of register ?0 for restoring (they are set to nil at the moment)
-;;TODO: dwm `display-buffer' follow some of the rules maybe?
-
-;; Should do
 
 ;;; fonts
 

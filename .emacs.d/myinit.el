@@ -962,15 +962,10 @@ target character"
 (define-key evil-motion-state-map (kbd "H-.") 'evil-repeat-find-char)
 (define-key evil-motion-state-map (kbd "H-,") 'evil-repeat-find-char-reverse)
 
-;; (evilem-make-motion
-;;  evilem-motion-forward-WORD-end #'evil-forward-WORD-end
-;;   :pre-hook (setq evil-this-type 'inclusive)
-;;   :scope 'line)
-
-;; (evilem-make-motion
-;;  evilem-motion-forward-word-end #'evil-forward-word-end
-;;   :pre-hook (setq evil-this-type 'inclusive)
-;;   :scope 'line)
+;; evilem doesn't get inclusivity right
+;; d SPC e doesn't work if it finds a word that is one character long
+(evil-set-command-property 'evilem-motion-forward-WORD-end :type 'inclusive)
+(evil-set-command-property 'evilem-motion-forward-word-end :type 'inclusive)
 
 (evilem-define (kbd "SPC ][") 'sp-next-sexp)
 (evilem-define (kbd "SPC ]]") 'sp-forward-sexp)
@@ -1525,4 +1520,6 @@ In the mean time, ask user for the window to focus"
 (add-hook 'abbrev-mode-hook
           (lambda ()
             (diminish 'abbrev-mode)))
+
+(diminish 'eldoc-mode)
 

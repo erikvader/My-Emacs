@@ -2,6 +2,8 @@
 ;;TODO: evil-mc save contents of register ?0 for restoring (they are set to nil at the moment)
 ;;TODO: dwm `display-buffer' follow some of the rules maybe?
 
+;; Should do
+
 ;;; fonts
 
 (defface eriks-fix-later-face
@@ -948,7 +950,8 @@ side of the sexp"
 (evilem-default-keybindings "SPC")
 
 (defun eriks/avy-goto-char-in-line-exclusive ()
-  "Same as `avy-goto-char-in-line' except that it is exclusive"
+  "Same as `avy-goto-char-in-line' except that it doesn't include the
+target character"
   (interactive)
   (let ((before (point))
         after)

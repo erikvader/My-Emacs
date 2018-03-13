@@ -313,5 +313,34 @@ already open in a window, switch to that window instead."
     (advice-remove 'display-buffer 'dwm-switch-to-buffer-display)
     (advice-remove 'quit-window 'dwm-quit-window-always-close)))
 
+
+(defmacro dwm-add-debug-advice (cmd)
+  (let ((name (intern (concat "dwm-print-debug-" (symbol-name cmd)))))
+    `(mapcar #'eval '((defun ,name (&rest args)
+                        (message "%s (%s): %s" ',cmd real-this-command args))
+                      (advice-add ',cmd :before ',name)))))
+
+(defmacro dwm-remove-debug-advice (cmd)
+  (let ((name (intern (concat "dwm-print-debug-" (symbol-name cmd)))))
+    `(advice-remove ',cmd ',name)))
+
+(defun dwm-add-debug ()
+  (interactive)
+  (dwm-add-debug-advice delete-window)
+  (dwm-add-debug-advice switch-to-buffer-other-window)
+  (dwm-add-debug-advice switch-to-buffer)
+  (dwm-add-debug-advice pop-to-buffer)
+  (dwm-add-debug-advice display-buffer)
+  (dwm-add-debug-advice quit-window))
+
+(defun dwm-remove-debug ()
+  (interactive)
+  (dwm-remove-debug-advice delete-window)
+  (dwm-remove-debug-advice switch-to-buffer-other-window)
+  (dwm-remove-debug-advice switch-to-buffer)
+  (dwm-remove-debug-advice pop-to-buffer)
+  (dwm-remove-debug-advice display-buffer)
+  (dwm-remove-debug-advice quit-window))
+
 (provide 'dwm)
 ;;; dwm.el ends here

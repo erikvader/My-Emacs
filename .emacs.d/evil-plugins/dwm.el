@@ -187,7 +187,7 @@ before-win-buf, if specified, must be the buffer that currently is in win."
       (dwm--load-buffer main-win buf win-buf))))
 
 (defun dwm-switch-to-buffer (org-func buffer-or-name &rest args)
-  "load buffer-or-name in main and move main to a sub window"
+  "load buffer-or-name in main and move previous main to a sub window"
   (let* ((main-window (dwm-main-window))
          (win-buf (window-buffer main-window))
          (loading-buf (get-buffer-create buffer-or-name)))
@@ -271,16 +271,6 @@ already open in a window, switch to that window instead."
   (select-window (dwm-main-window))
   (delete-other-windows))
 
-;; (defun dwm-default-switch-to-buffer ()
-;;   "Temporarily remove advice from `switch-to-buffer' to get the default behaviour"
-;;   (interactive)
-;;   (let ((has-advice (advice-member-p 'dwm-switch-to-buffer 'switch-to-buffer)))
-;;     (when has-advice
-;;       (advice-remove 'switch-to-buffer 'dwm-switch-to-buffer))
-;;     (call-interactively 'switch-to-buffer)
-;;     (when has-advice
-;;       (advice-add 'switch-to-buffer :around 'dwm-switch-to-buffer))))
-
 (defvar dwm-mode-key-map (make-sparse-keymap))
 (let ((keys '(("C-x B"      . dwm-set-buffer)
               ("C-x b"      . switch-to-buffer)
@@ -307,13 +297,17 @@ already open in a window, switch to that window instead."
         (advice-add 'switch-to-buffer :around 'dwm-switch-to-buffer)
         (advice-add 'pop-to-buffer :around 'dwm-switch-to-buffer)
         (advice-add 'display-buffer :around 'dwm-switch-to-buffer-display)
-        (advice-add 'quit-window :around 'dwm-quit-window-always-close))
+        (advice-add 'quit-window :around 'dwm-quit-window-always-close) ;; help
+        ;; (advice-add 'top-level :after 'dwm-delete-duplicated-sub-buffers)
+        )
     (advice-remove 'delete-window 'dwm-continue-main-window)
     (advice-remove 'switch-to-buffer-other-window 'dwm-switch-to-buffer-sub)
     (advice-remove 'switch-to-buffer 'dwm-switch-to-buffer)
     (advice-remove 'pop-to-buffer 'dwm-switch-to-buffer)
     (advice-remove 'display-buffer 'dwm-switch-to-buffer-display)
-    (advice-remove 'quit-window 'dwm-quit-window-always-close)))
+    (advice-remove 'quit-window 'dwm-quit-window-always-close)
+    ;; (advice-remove 'top-level 'dwm-delete-duplicated-sub-buffers)
+    ))
 
 
 (defmacro dwm-add-debug-advice (cmd)

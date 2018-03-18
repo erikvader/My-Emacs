@@ -146,30 +146,30 @@ this doesn't care if duplicates are created"
       (dwm-create-sub-buffer buffer))
     (dwm-first-sub-window)))
 
-(defun dwm-delete-all-buffers (buf &optional preserve-win)
-  "deletes all windows that has buf open. This preserves the main
-window by switching places of buffers if it has to.
+;; (defun dwm-delete-all-buffers (buf &optional preserve-win)
+;;   "deletes all windows that has buf open. This preserves the main
+;; window by switching places of buffers if it has to.
 
-If preserve-win is a window, then do not delete that window. This will
-cause duplicated buffers though."
-  (let ((main (dwm-main-window))
-        (subs (dwm-sub-windows t)))
-    ;; check if main is going to be removed
-    (when (and
-           subs
-           (equal (window-buffer main) buf))
-      (let ((random-window (find-if (lambda (sub)
-                                     (not (equal (window-buffer sub) (window-buffer main))))
-                                    subs)))
-        (when random-window
-          (set-window-buffer main (window-buffer random-window))
-          ;; if random-window should be preserved, don't do anything with it
-          (unless (and
-                   preserve-win
-                   (equal preserve-win random-window))
-            (set-window-buffer random-window buf))))))
-  (delete-windows-on buf)
-  (balance-windows))
+;; If preserve-win is a window, then do not delete that window. This will
+;; cause duplicated buffers though."
+;;   (let ((main (dwm-main-window))
+;;         (subs (dwm-sub-windows t)))
+;;     ;; check if main is going to be removed
+;;     (when (and
+;;            subs
+;;            (equal (window-buffer main) buf))
+;;       (let ((random-window (find-if (lambda (sub)
+;;                                      (not (equal (window-buffer sub) (window-buffer main))))
+;;                                     subs)))
+;;         (when random-window
+;;           (set-window-buffer main (window-buffer random-window))
+;;           ;; if random-window should be preserved, don't do anything with it
+;;           (unless (and
+;;                    preserve-win
+;;                    (equal preserve-win random-window))
+;;             (set-window-buffer random-window buf))))))
+;;   (delete-windows-on buf)
+;;   (balance-windows))
 
 (defun dwm-delete-duplicated-sub-buffers ()
   "removes all sub windows that show duplicated buffers"
@@ -200,6 +200,12 @@ cause duplicated buffers though."
                     dwm-ignore-buffers-regexp)
         t)))
 
+(defun dwm-swap (win1 win2)
+  (let ((buf1 (window-buffer win1))
+        (buf2 (window-buffer win2)))
+    (set-window-buffer win1 buf2)
+    (set-window-buffer win2 buf1)))
+
 (defun dwm-load-buffer (win buffer-or-name &optional keep-old-buffer)
   "makes sure that win is displaying buffer-or-name and that it is selected.
 If keep-old-buffer is non-nil, then make sure that the previous buffer is still open"
@@ -208,13 +214,13 @@ If keep-old-buffer is non-nil, then make sure that the previous buffer is still 
     (select-window win)
     (unless (equal loading-buf old-buf)
       (save-selected-window
-        (dwm-delete-all-buffers loading-buf win)
-        (set-window-buffer win loading-buf)
-        (if (and
-             keep-old-buffer
-             (not (get-buffer-window old-buf)))
-            (dwm-load-sub-buffer old-buf))
-        (balance-windows)))
+        (let ((other-win (get-buffer-window loading-buf)))
+          (if other-win
+              (dwm-swap other-win win)
+            (set-window-buffer win loading-buf)
+            (when keep-old-buffer
+              (dwm-load-sub-buffer old-buf)
+              (balance-windows))))))
     ;; (set-buffer loading-buf)
     ))
 
@@ -273,11 +279,14 @@ instead of the buffer and that it doesn't select to window. Used with `display-b
 
 (defun dwm-continue-main-window (org-func &optional window)
   "Makes sure that the main window always exist in a deletion of a window"
-  (let ((win (or window (selected-window))))
-    (if (equal win (dwm-main-window))
-        (dwm-load-buffer win (window-buffer (dwm-first-sub-window)))
-      (funcall org-func window)
-      (balance-windows))))
+  (let ((win (or window (selected-window)))
+        (first-sub (dwm-first-sub-window)))
+    (when (equal win (dwm-main-window))
+      ;; select main and swap main and first sub
+      (dwm-load-buffer win (window-buffer first-sub))
+      (setq win first-sub))
+    (funcall org-func win)
+    (balance-windows)))
 
 (defun dwm-quit-window-always-close (org-func &optional kill window)
   "makes `quit-window' always close instead of replacing the buffer and 

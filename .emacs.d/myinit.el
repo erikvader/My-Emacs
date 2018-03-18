@@ -236,6 +236,9 @@ if SAMELINE then don't move the cursor between lines."
 (counsel-mode 1)
 (define-key my-keys-map (kbd "C-s") 'swiper)
 (define-key ivy-minibuffer-map (kbd "<escape>") 'keyboard-escape-quit)
+;; compatability with dwm-mode
+(define-key ivy-mode-map [remap switch-to-buffer] nil)
+(define-key ivy-mode-map [remap switch-to-buffer-other-window] nil)
 (setq ivy-use-selectable-prompt t)
 
 ;;;; avy

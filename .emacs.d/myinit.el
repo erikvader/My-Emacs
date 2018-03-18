@@ -1430,8 +1430,8 @@ REGEX is the regex to align by."
 (define-key my-keys-map (kbd "C-x 1") 'switch-window-then-maximize)
 (define-key my-keys-map (kbd "C-x 0") 'switch-window-then-delete)
 
-(setq switch-window-shortcut-style 'qwerty)
-(setq switch-window-qwerty-shortcuts '("f" "j" "g" "h" "d" "k" "s" "l" "a"))
+;; (setq switch-window-shortcut-style 'qwerty)
+;; (setq switch-window-qwerty-shortcuts '("f" "j" "g" "h" "d" "k" "s" "l" "a"))
 (setq switch-window-threshold 1)
 (setq switch-window-minibuffer-shortcut ?z)
 
